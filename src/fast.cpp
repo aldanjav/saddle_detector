@@ -1011,6 +1011,8 @@ namespace cmp
 		  }
 		  cornerpos[-1] = ncorners;
 
+
+		  bool nmsFlag;
 		  const double* prev = bufSc[(i - 4 + 3)%3];
 		  const double* pprev = bufSc[(i - 5 + 3)%3];
 
@@ -1020,9 +1022,21 @@ namespace cmp
 			  j = cornerpos[k];
 			  float scoreSc = prev[j];
 
-			  keypoints.push_back(SadKeyPoint((float)(j+0.5), (float)(i-0.5), 7.f, -1, (float)scoreSc, 1.f ));
-		  }
+			  // Compute the NMS
+			  if (strictMaximum)
+				nmsFlag = scoreSc > responsethr && scoreSc > prev[j+1] && scoreSc > prev[j-1] &&
+						  scoreSc > pprev[j-1] && scoreSc > pprev[j] && scoreSc > pprev[j+1] &&
+						  scoreSc > curr[j-1] && scoreSc > curr[j] && scoreSc > curr[j+1];
+			  else
+				nmsFlag = scoreSc >= responsethr && scoreSc >= prev[j+1] && scoreSc >= prev[j-1] &&
+						  scoreSc >= pprev[j-1] && scoreSc >= pprev[j] && scoreSc >= pprev[j+1] &&
+						  scoreSc >= curr[j-1] && scoreSc >= curr[j] && scoreSc >= curr[j+1];
 
+			  if( !(nonmax_suppression>0) || nmsFlag )
+			  {
+				  keypoints.push_back(SadKeyPoint((float)(j+0.5), (float)(i-0.5), 7.f, -1, (float)scoreSc, 1.f ));
+			  }
+		  }
 
 	  }
   }
