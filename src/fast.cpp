@@ -830,6 +830,7 @@ namespace cmp
   						bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
   {
 	  printf("--- Using Shifted Inner Circle --- \n");
+	  printf("NMS: %d\n", nonmax_suppression);
 
 	  const Mat img = _img.getMat();
 	  int i, j, k, idx, pixel_inner[25], pixel_outer[25];
