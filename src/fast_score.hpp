@@ -55,6 +55,7 @@ namespace cmp
 {
 
 void makeOffsets(int pixel[25], int row_stride, int patternSize);
+void makeShiftedOffsets(int pixel[25], int rowStride, int patternSize);
 
 double saddleScore(const uchar* ptr, const int pixel[]);
 double saddleScore2(const uchar* ptr, const int pixel[], double norm2);

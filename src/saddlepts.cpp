@@ -110,7 +110,7 @@ int main( int argc, char** argv )
 	if( opt->getValue( 'n' ) || opt->getValue( "nms" ) )
 		doNMS = atoi(opt->getValue( 'n' ));
 	else
-		doNMS = 2;
+		doNMS = 1;
 
 	if( opt->getValue( 'w' ) || opt->getValue( "word" ) )
 		descSize = atoi(opt->getValue( 'w' ));

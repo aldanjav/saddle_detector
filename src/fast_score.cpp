@@ -83,6 +83,35 @@ void makeOffsets(int pixel[25], int rowStride, int patternSize)
         pixel[k] = pixel[k - patternSize];
 }
 
+/* Author: Javier Aldana */
+void makeShiftedOffsets(int pixel[25], int rowStride, int patternSize)
+{
+    static const int offsets20[][2] =
+    {
+        {0,  4}, {1,  4}, { 2,  4}, { 3,  3}, { 4,  2}, { 4, 1}, { 4, 0}, { 4, -1}, { 3, -2}, { 2, -3},
+        {1, -3}, {0, -3}, {-1, -3}, {-2, -2}, {-3, -1}, {-3, 0}, {-3, 1}, {-3,  2}, {-2,  3}, {-1,  4}
+    };
+
+    static const int offsets8[][2] =
+    {
+        {0,  2}, {1,  2}, { 2,  1}, { 2, 0},
+        {1, -1}, {0, -1}, {-1,  0}, {-1, 1}
+    };
+
+    const int (*offsets)[2] = patternSize == 20 ? offsets20 :
+                              patternSize == 8  ? offsets8  : 0;
+
+    CV_Assert(pixel && offsets);
+
+    int k = 0;
+    for( ; k < patternSize; k++ )
+        pixel[k] = offsets[k][0] + offsets[k][1] * rowStride;
+    for( ; k < 25; k++ )
+        pixel[k] = pixel[k - patternSize];
+}
+/**/
+
+
 #if VERIFY_CORNERS
 static void testCorner(const uchar* ptr, const int pixel[], int K, int N, int threshold) {
     // check that with the computed "threshold" the pixel is still a corner
