@@ -830,7 +830,8 @@ namespace cmp
   						bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
   {
 	  printf("--- Using Shifted Inner Circle --- \n");
-	  printf("NMS: %d\n", nonmax_suppression);
+	  printf("NMS: %d , SPP: %d\n", nonmax_suppression, subPixPrecision);
+
 
 	  const Mat img = _img.getMat();
 	  int i, j, k, idx, pixel_inner[25], pixel_outer[25];
@@ -1035,7 +1036,30 @@ namespace cmp
 
 			  if( !(nonmax_suppression>0) || nmsFlag )
 			  {
-				  keypoints.push_back(SadKeyPoint((float)(j+0.5), (float)(i-0.5), 7.f, -1, (float)scoreSc, 1.f ));
+				  //
+				  if (subPixPrecision == 0)
+					  keypoints.push_back(SadKeyPoint((float)(j+0.5), (float)(i-0.5), 7.f, -1, (float)scoreSc, 1.f ));
+				  else if (subPixPrecision == 1)
+				  {
+					  float sumresp = prev[j] + prev[j + 1] + prev[j-1] + pprev[j] + pprev[j + 1] + pprev[j-1] + curr[j] + curr[j + 1] + curr[j-1];
+					  float thetaX = (j-1)*(pprev[j-1] + prev[j-1] + curr[j-1] ) + (j)*(pprev[j] + prev[j] + curr[j] ) + (j+1)*(pprev[j+1] + prev[j+1] + curr[j+1] );
+					  float thetaY = (i-1)*(prev[j-1] + prev[j] + prev[j+1]) + (i)*(curr[j-1] + curr[j] + curr[j+1]) + (i-2)*(pprev[j-1] + pprev[j] + pprev[j+1]) ;
+					  thetaX = thetaX/sumresp;
+					  thetaY = thetaY/sumresp;
+//					  keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 7.f, -1, (float)scoreSc, 1.f ));
+					  keypoints.push_back(SadKeyPoint((float)thetaX+0.5, (float)thetaY+0.5, 7.f, -1, (float)scoreSc, 1.f ));
+				  }
+				  else if (subPixPrecision == 2)
+				  {
+					  double offset[2];
+					  scoreSc = (float)FitQuadratic( offset, pprev, prev, curr, j);
+					  float thetaX = (float)j + offset[1];
+					  float thetaY = (float)(i-1) + offset[0];
+//					  keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 7.f, -1, (float)scoreSc, 1.f ));
+					  keypoints.push_back(SadKeyPoint((float)(thetaX+0.5), (float)(thetaY+0.5), 7.f, -1, (float)scoreSc, 1.f ));
+				  }
+				  else
+					  std::cerr << "Unknown sub-pixel precision estimation" << std::endl;
 			  }
 		  }
 
