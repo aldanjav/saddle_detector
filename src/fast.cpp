@@ -843,6 +843,19 @@ namespace cmp
 	  keypoints.clear();
 
 
+	  // Relating delta and epsilon (there is no adaptation)
+	  if (threshold == 0)
+	  {
+		  threshold = (int)(deltaThr/2);
+	      threshold2 = scEps*(double)threshold;
+	  }
+	  else if (threshold > 0)
+	  {
+		  threshold = std::min(std::max(threshold, 0), 255);
+	      threshold2 = scEps*(double)threshold;
+	  }
+
+
 	  // ----- My try of unification (Scores and Coordinates positions) ----- //
 	  AutoBuffer<double> _bufScCp(img.cols*3*(sizeof(double) + sizeof(int) + sizeof(double) + sizeof(uchar)) + 12 );//12 = 3*4(int size)
 	  // Set the pointers for SCORES
@@ -869,7 +882,7 @@ namespace cmp
 	  bufDl[2] = bufDl[1] + img.cols;
 
 
-	  uchar p_regs, count_elem;
+	  uchar p_regs, count_elem, maxBlueLength = 2;
 	  uchar *labels, *begins, *lengths;
 	  labels  = new uchar[9];
 	  begins  = new uchar[9];
@@ -889,15 +902,16 @@ namespace cmp
 			  // Scanning X-axis
 			  for( ; j < img.cols - 4; j++, ptr++)
 			  {
-				  //
+
 				  double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
 				  uchar N = 0;
 				  inner_sym_test(pixel_inner, ptr, A, B, C, D, N );
 
 				  if (!N)
 					continue;
-				  uchar delta = std::max( A-B, C-D );
 
+				  uchar delta = std::max( A-B, C-D );
+#if true
 				  if (N == 4)
 				  {
 					if ((A >= D) && (B <= C))
@@ -991,7 +1005,7 @@ namespace cmp
 				  {
 					if (labels[m] == 0)
 					{
-						discard = (lengths[m]>2);
+						discard = (lengths[m]>maxBlueLength);
 					  }
 					else
 					{
@@ -1002,7 +1016,7 @@ namespace cmp
 
 				  if ( discard || (red_green_labels[0] != red_green_labels[2] ) )  // Swapping color constrain
 					continue;
-
+#endif
 
 				  // Include the point in the feature set
 				  cornerpos[ncorners++] = j;
@@ -1477,7 +1491,7 @@ namespace cmp
         FASTsaddle_central<16>(_img, keypoints, threshold, nonmax_suppression);
         break;
       case FastFeatureDetector::TYPE_SADDLE_INNER_PATTERN:
-        FASTsaddle_shinner(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, deltaThr, scoreType,
+        FASTsaddle_inner(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, deltaThr, scoreType,
         					allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
         break;
       }
