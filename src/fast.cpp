@@ -1491,7 +1491,7 @@ namespace cmp
         FASTsaddle_central<16>(_img, keypoints, threshold, nonmax_suppression);
         break;
       case FastFeatureDetector::TYPE_SADDLE_INNER_PATTERN:
-        FASTsaddle_inner(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, deltaThr, scoreType,
+        FASTsaddle_shinner(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, deltaThr, scoreType,
         					allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
         break;
       }
