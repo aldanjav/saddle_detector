@@ -825,7 +825,7 @@ namespace cmp
   }
 
   /*--------- My FAST detector for SADDLE with inner pattern with simpler implementation (Begin) ---------InputArray _resp,----------*/
-  void FASTsaddle_shinner(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
+  void cd (InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                           int threshold, int nonmax_suppression, float scale, double responsethr, uchar deltaThr, int scoreType,
   						bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
   {
@@ -1491,7 +1491,7 @@ namespace cmp
         FASTsaddle_central<16>(_img, keypoints, threshold, nonmax_suppression);
         break;
       case FastFeatureDetector::TYPE_SADDLE_INNER_PATTERN:
-        FASTsaddle_shinner(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, deltaThr, scoreType,
+        FASTsaddle_inner(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, deltaThr, scoreType,
         					allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
         break;
       }
