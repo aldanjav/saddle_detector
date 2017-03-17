@@ -825,7 +825,7 @@ namespace cmp
   }
 
   /*--------- My FAST detector for SADDLE with inner pattern with simpler implementation (Begin) ---------InputArray _resp,----------*/
-  void cd (InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
+  void FASTsaddle_shinner(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                           int threshold, int nonmax_suppression, float scale, double responsethr, uchar deltaThr, int scoreType,
   						bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
   {
@@ -1093,10 +1093,10 @@ namespace cmp
      binImg = Mat::zeros(img.rows, img.cols, CV_8UC1);
 
      // -----------------  Save images of scales ------------------------- //
-//     ostringstream ss;
-//     ss << scale;
-//     String imgpath = (("./imscale_" + ss.str() ) + ".ppm");
-//     imwrite( imgpath, img );
+     ostringstream ss;
+     ss << scale;
+     String imgpath = (("./imscale_" + ss.str() ) + ".ppm");
+     imwrite( imgpath, img );
      // ------------------------------------------------------------------ //
 
     int i, j, k, pixel[25], pixel_inner[25], pixel_mid[25];
