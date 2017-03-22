@@ -1031,12 +1031,17 @@ namespace cmp
 		  bool nmsFlag;
 		  const double* prev = bufSc[(i - 4 + 3)%3];
 		  const double* pprev = bufSc[(i - 5 + 3)%3];
+		  const double* prevV = bufV[(i - 4 + 3)%3];
+		  const uchar* prevDl = bufDl[(i - 4 + 3)%3];
+
 
 		  for( k = 0; k < ncorners; k++ )
 		  {
 			  // Begin
 			  j = cornerpos[k];
 			  float scoreSc = prev[j];
+			  double v = prevV[j];
+			  uchar delta = prevDl[j];
 
 			  // Compute the NMS
 			  if (strictMaximum)
@@ -1074,6 +1079,10 @@ namespace cmp
 				  }
 				  else
 					  std::cerr << "Unknown sub-pixel precision estimation" << std::endl;
+
+				  keypoints.back().intensityCenter = v;
+				  keypoints.back().delta = delta;
+
 			  }
 		  }
 
@@ -1415,10 +1424,10 @@ namespace cmp
                     	keypoints.back().labels[l] = 0;
                 }
 //                fprintf(ftfile, "%02d %03d %03d %02d %.3f %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
-//                		NN++, j, i-1, delta, v, keypoints.back().labels[0], keypoints.back().labels[1], keypoints.back().labels[2], keypoints.back().labels[3],
-//						keypoints.back().labels[4], keypoints.back().labels[5], keypoints.back().labels[6], keypoints.back().labels[7], keypoints.back().labels[8],
-//						keypoints.back().labels[9], keypoints.back().labels[10], keypoints.back().labels[11], keypoints.back().labels[12], keypoints.back().labels[13],
-//						keypoints.back().labels[14], keypoints.back().labels[15]);
+//                NN++, j, i-1, delta, v, keypoints.back().labels[0], keypoints.back().labels[1], keypoints.back().labels[2], keypoints.back().labels[3],
+//				  keypoints.back().labels[4], keypoints.back().labels[5], keypoints.back().labels[6], keypoints.back().labels[7], keypoints.back().labels[8],
+//				  keypoints.back().labels[9], keypoints.back().labels[10], keypoints.back().labels[11], keypoints.back().labels[12], keypoints.back().labels[13],
+//				  keypoints.back().labels[14], keypoints.back().labels[15]);
             }
         }
     }
