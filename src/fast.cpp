@@ -894,6 +894,8 @@ namespace cmp
 		  const uchar* ptr = img.ptr<uchar>(i) + 3;
 		  double* curr = bufSc[(i - 3)%3];
 		  int* cornerpos = bufCp[(i - 3)%3];
+		  double* currV = bufV[(i - 3)%3];
+		  uchar* currDl = bufDl[(i - 3)%3];
 		  int ncorners = 0;
 
 		  if( i < img.rows - 3 )
@@ -1021,6 +1023,8 @@ namespace cmp
 				  // Include the point in the feature set
 				  cornerpos[ncorners++] = j;
 				  curr[j] = delta;
+				  currV[j] = v;
+				  currDl[j] = delta;
 				  continue;
 
 			  }
