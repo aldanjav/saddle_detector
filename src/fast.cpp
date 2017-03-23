@@ -830,12 +830,17 @@ namespace cmp
   						bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
   {
 	  printf("     --- Using Shifted Inner Circle --- \n");
-//	  printf("NMS: %d , SPP: %d , MAX: %d\n", nonmax_suppression, subPixPrecision, strictMaximum);
-
 
 	  const Mat img = _img.getMat();
 	  int i, j, k, idx, pixel_inner[25], pixel_outer[25];
 	  double threshold2, scEps = 2.0;
+
+	  // -----------------  Save images of scales ------------------------- //
+	  ostringstream ss;
+	  ss << scale;
+	  String imgpath = (("./imscale_" + ss.str() ) + ".ppm");
+	  imwrite( imgpath, img );
+	  // ------------------------------------------------------------------ //
 
 
 	  makeShiftedOffsets(pixel_inner, (int)img.step, 8);
