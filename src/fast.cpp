@@ -891,11 +891,15 @@ namespace cmp
 	  // Scanning Y-axis
 	  for(i = 3; i < img.rows-3; i++)
 	  {
+
 		  const uchar* ptr = img.ptr<uchar>(i) + 3;
-		  double* curr = bufSc[(i - 3)%3];
+
+		  double* curr   = bufSc[(i - 3)%3];
+		  double* currV  = bufV [(i - 3)%3];
+		  uchar*  currDl = bufDl[(i - 3)%3];
 		  int* cornerpos = bufCp[(i - 3)%3];
-		  double* currV = bufV[(i - 3)%3];
-		  uchar* currDl = bufDl[(i - 3)%3];
+
+		  memset(curr, 0, img.cols*sizeof(double));
 		  int ncorners = 0;
 
 		  if( i < img.rows - 3 )
@@ -907,6 +911,10 @@ namespace cmp
 
 				  double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
 				  uchar N = 0;
+				  //  X         Y
+				  if (j==183 && i==186)
+					  printf("Seeking feat 77\n");
+
 				  inner_sym_test(pixel_inner, ptr, A, B, C, D, N );
 
 				  if (!N)
@@ -1171,10 +1179,9 @@ namespace cmp
         const uchar* ptr = img.ptr<uchar>(i) + 3;
 
         double* curr = bufSc[(i - 3)%3];
-        int* cornerpos = bufCp[(i - 3)%3];
         double* currV = bufV[(i - 3)%3];
         uchar* currDl = bufDl[(i - 3)%3];
-
+        int* cornerpos = bufCp[(i - 3)%3];
 
         memset(curr, 0, img.cols*sizeof(double) );
         int ncorners = 0;
