@@ -1066,7 +1066,7 @@ namespace cmp
 			  {
 				  //
 				  if (subPixPrecision == 0)
-					  keypoints.push_back(SadKeyPoint((float)(j+0.5), (float)(i-0.5), 7.f, -1, (float)scoreSc, 1.f ));
+					  keypoints.push_back(SadKeyPoint((float)(j+0.5), (float)(i-0.5), 8.f, -1, (float)scoreSc, 1.f ));
 				  else if (subPixPrecision == 1)
 				  {
 					  float sumresp = prev[j] + prev[j + 1] + prev[j-1] + pprev[j] + pprev[j + 1] + pprev[j-1] + curr[j] + curr[j + 1] + curr[j-1];
@@ -1074,8 +1074,8 @@ namespace cmp
 					  float thetaY = (i-1)*(prev[j-1] + prev[j] + prev[j+1]) + (i)*(curr[j-1] + curr[j] + curr[j+1]) + (i-2)*(pprev[j-1] + pprev[j] + pprev[j+1]) ;
 					  thetaX = thetaX/sumresp;
 					  thetaY = thetaY/sumresp;
-//					  keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 7.f, -1, (float)scoreSc, 1.f ));
-					  keypoints.push_back(SadKeyPoint((float)thetaX+0.5, (float)thetaY+0.5, 7.f, -1, (float)scoreSc, 1.f ));
+//					  keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 8.f, -1, (float)scoreSc, 1.f ));
+					  keypoints.push_back(SadKeyPoint((float)thetaX+0.5, (float)thetaY+0.5, 8.f, -1, (float)scoreSc, 1.f ));
 				  }
 				  else if (subPixPrecision == 2)
 				  {
@@ -1083,8 +1083,8 @@ namespace cmp
 					  scoreSc = (float)FitQuadratic( offset, pprev, prev, curr, j);
 					  float thetaX = (float)j + offset[1];
 					  float thetaY = (float)(i-1) + offset[0];
-//					  keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 7.f, -1, (float)scoreSc, 1.f ));
-					  keypoints.push_back(SadKeyPoint((float)(thetaX+0.5), (float)(thetaY+0.5), 7.f, -1, (float)scoreSc, 1.f ));
+//					  keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 8.f, -1, (float)scoreSc, 1.f ));
+					  keypoints.push_back(SadKeyPoint((float)(thetaX+0.5), (float)(thetaY+0.5), 8.f, -1, (float)scoreSc, 1.f ));
 				  }
 				  else
 					  std::cerr << "Unknown sub-pixel precision estimation" << std::endl;
