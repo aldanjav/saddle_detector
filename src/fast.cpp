@@ -911,9 +911,6 @@ namespace cmp
 
 				  double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
 				  uchar N = 0;
-				  //  X         Y
-				  if (j==183 && i==186)
-					  printf("Seeking feat 77\n");
 
 				  inner_sym_test(pixel_inner, ptr, A, B, C, D, N );
 
