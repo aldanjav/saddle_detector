@@ -42,6 +42,7 @@ int main( int argc, char** argv )
 	bool showVis, savefile, allC1feats, strictMaximum, gravityCenter;
 	double responseThr, scaleFactor;
 	uchar deltaThr;
+	short ringsType;
 
 //	string source = "/home/aldanjav/mount_point/cmp_datagrid/Work/data/youtube_downloads/hertford_oxford/Clip01/video.mp4";
 //	VideoCapture inputVideo(source);              // Open input
@@ -172,6 +173,11 @@ int main( int argc, char** argv )
 	else
 		scoreType = cmp::SORB::DELTA_SCORE;
 
+	if( opt->getValue( 'j' ) || opt->getValue( "ringstype" ) )
+		ringsType = atoi(opt->getValue( 'j' ));
+	else
+		ringsType = 4; //TYPE_SADDLE_INNER_PATTERN
+
 	delete opt;
 
 
@@ -189,7 +195,7 @@ int main( int argc, char** argv )
 
 	cmp::SORB detector(responseThr, scaleFactor, nlevels, edgeThreshold, epsilon, 2, scoreType, 31,
 						doNMS, descSize, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision,
-						gravityCenter, innerTstType, minArcLength, maxArcLength);
+						gravityCenter, innerTstType, minArcLength, maxArcLength, ringsType );
 
 	vector<cmp::SadKeyPoint> kpts;
 	Mat dcts, mask;
@@ -275,6 +281,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->addUsage( " -x  --innertype  	Inner circle test type. (0) baseline, (1) extension positions only, (2) extension sum, (3) extension avg., (4) extension sqrt 2." );
 	opt->addUsage( " -q  --minarc		Minimum arc length for the outer circle test (suggested from 2 to 3)." );
 	opt->addUsage( " -u  --maxarc		Maximum arc length for the outer circle test (suggested from 5 to 8)." );
+	opt->addUsage( " -j  --ringstype  	Type of rings configuration for the inner and outer tests. (3) TYPE_SADDLE_CENTRAL_PIXEL, (4) TYPE_SADDLE_INNER_PATTERN, (5) TYPE_SHADDLE. (Default)" );
 	opt->addUsage( " -v  --visu  		Flag for visualizing the image features " );
 	opt->addUsage( " -c  --c1feat		Flag to pass all features that fulfill inner circle condition. Feature score is contrast (delta)" );
 	opt->addUsage( " -m  --maxstrict  	Flag keeping response extremas only, without it the tides are allowed and passed all." );
@@ -299,6 +306,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->setOption(  "innertype", 	'x' );
 	opt->setOption(  "minarc", 	'q' );
 	opt->setOption(  "maxarc", 	'u' );
+	opt->setOption(  "ringstype", 'j' );
 	opt->setFlag(    "visu", 	'v' );
 	opt->setFlag(    "c1feat", 	'c' );
 	opt->setFlag(    "maxstrict", 	'm' );

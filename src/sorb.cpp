@@ -617,13 +617,14 @@ static inline double getScaleDouble(int level, int firstLevel, double scaleFacto
  */
 SORB::SORB(double _responseThr, float _scaleFactor, int _nlevels, int _edgeThreshold,
          int _epsilon, int _WTA_K, int _scoreType, int _patchSize, int _doNMS, int _descSize, uchar _deltaThr, int _nfeatures,
-		 bool _allC1feats , bool _strictMaximum, int _subPixPrecision , bool _gravityCenter, int _innerTstType, int _minArcLength, int _maxArcLength ) :
+		 bool _allC1feats , bool _strictMaximum, int _subPixPrecision , bool _gravityCenter, int _innerTstType, int _minArcLength,
+		 int _maxArcLength, short _ringsType ) :
 		 responseThr(_responseThr), scaleFactor(_scaleFactor), nlevels(_nlevels),
 		 edgeThreshold(_edgeThreshold), epsilon(_epsilon), WTA_K(_WTA_K),
 		 scoreType(_scoreType), patchSize(_patchSize), doNMS(_doNMS),
 		 descSize(_descSize), deltaThr(_deltaThr), nfeatures(_nfeatures),
 		 allC1feats(_allC1feats), strictMaximum(_strictMaximum), subPixPrecision(_subPixPrecision), gravityCenter(_gravityCenter),
-		 innerTstType(_innerTstType), minArcLength(_minArcLength), maxArcLength(_maxArcLength)
+		 innerTstType(_innerTstType), minArcLength(_minArcLength), maxArcLength(_maxArcLength), ringsType(_ringsType)
 {}
 
 int SORB::descriptorSize() const
@@ -956,12 +957,12 @@ static void computeKeyPoints(const vector<Mat>& imagePyramid,
                              double responseThr, int epsilon, float scaleFactor,
                              int edgeThreshold, int patchSize, int scoreType, int doNMS, uchar deltaThr, int nfeatures,
 							 bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
-							 int minArcLength, int maxArcLength)
+							 int minArcLength, int maxArcLength, short ringsType )
 {
 
 	int nlevels = (int)imagePyramid.size();
-	printf("\nSADDLE detector parameters: \n   nLevels: %d, scaleFactor: %.1f, epsilon: %d, responseThr: %.2f, borderGab: %d, doNMS: %d\n   deltaThr: %d, nFeats: %d, allC1features: %d, strictMaxNMS: %d, subpixelMethod: %d\n   C1C2gravityCenter: %d, InnerTstMethod: %d, ScoreType: %d, minArc: %d, maxArc: %d\n",
-				nlevels, scaleFactor, epsilon, responseThr, edgeThreshold, doNMS, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, scoreType, minArcLength, maxArcLength );
+	printf("\nSADDLE detector parameters: \n   nLevels: %d, scaleFactor: %.1f, epsilon: %d, responseThr: %.2f, borderGab: %d, doNMS: %d\n   deltaThr: %d, nFeats: %d, allC1features: %d, strictMaxNMS: %d, subpixelMethod: %d\n   C1C2gravityCenter: %d, InnerTstMethod: %d, ScoreType: %d, minArc: %d, maxArc: %d, ringsType: %d\n",
+				nlevels, scaleFactor, epsilon, responseThr, edgeThreshold, doNMS, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, scoreType, minArcLength, maxArcLength, ringsType );
     vector<int> nfeaturesPerLevel(nlevels);
 
     // fill the extractors and descriptors for the corresponding scales
@@ -1012,7 +1013,7 @@ static void computeKeyPoints(const vector<Mat>& imagePyramid,
         vector<SadKeyPoint> & keypoints = allKeypoints[level];
 
         // Detect SADDLE features
-        FastFeatureDetector2 fd( epsilon, doNMS, FastFeatureDetector::TYPE_SADDLE_INNER_PATTERN, level,
+        FastFeatureDetector2 fd( epsilon, doNMS, ringsType, level,
                                  responseThr, deltaThr, scoreType,
 								 allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
         fd.detect2(imagePyramid[level], keypoints, respPyramid[level], maskPyramid[level]);
@@ -1246,7 +1247,7 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
                          responseThr, epsilon, scaleFactor, edgeThreshold,
 						 patchSize, scoreType, doNMS, deltaThr, nfeatures,
 						 allC1feats, strictMaximum, subPixPrecision, gravityCenter,
-						 innerTstType, minArcLength, maxArcLength);
+						 innerTstType, minArcLength, maxArcLength, ringsType);
     }
     else
     {

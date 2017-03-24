@@ -38,7 +38,7 @@ public:
 
     CV_WRAP explicit SORB(double responseThr = 0.0, float scaleFactor = 1.2f, int nlevels = 8, int edgeThreshold = 31,
                 int epsilon = 1, int WTA_K=2, int scoreType=SUMOFABS_SCORE, int patchSize=31, int doNMS=2, int descSize=K_BYTES, uchar deltaThr=0, int nfeatures = 5000,
-				bool allC1feats = false , bool strictMaximum = false, int subPixPrecision = 0, bool gravityCenter = false, int innerTstType = 0, int minArcLength = 2, int maxArcLength = 8 );
+				bool allC1feats = false , bool strictMaximum = false, int subPixPrecision = 0, bool gravityCenter = false, int innerTstType = 0, int minArcLength = 2, int maxArcLength = 8, short ringsType = 4);
 
     // returns the descriptor size in bytes
     int descriptorSize() const;
@@ -95,6 +95,7 @@ protected:
     CV_PROP_RW int innerTstType;
     CV_PROP_RW int minArcLength;
     CV_PROP_RW int maxArcLength;
+    CV_PROP_RW short ringsType;
 
 };
 
