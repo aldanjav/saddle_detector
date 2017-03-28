@@ -836,10 +836,12 @@ namespace cmp
 	  double threshold2, scEps = 2.0;
 
 	  // -----------------  Save images of scales ------------------------- //
+#if false
 	  ostringstream ss;
 	  ss << scale;
 	  String imgpath = (("./imscale_" + ss.str() ) + ".ppm");
 	  imwrite( imgpath, img );
+#endif
 	  // ------------------------------------------------------------------ //
 
 
@@ -1116,10 +1118,12 @@ namespace cmp
      binImg = Mat::zeros(img.rows, img.cols, CV_8UC1);
 
      // -----------------  Save images of scales ------------------------- //
+#if false
      ostringstream ss;
      ss << scale;
      String imgpath = (("./imscale_" + ss.str() ) + ".ppm");
      imwrite( imgpath, img );
+#endif
      // ------------------------------------------------------------------ //
 
     int i, j, k, pixel[25], pixel_inner[25], pixel_mid[25];

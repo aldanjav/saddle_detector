@@ -281,7 +281,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->addUsage( " -x  --innertype  	Inner circle test type. (0) baseline, (1) extension positions only, (2) extension sum, (3) extension avg., (4) extension sqrt 2." );
 	opt->addUsage( " -q  --minarc		Minimum arc length for the outer circle test (suggested from 2 to 3)." );
 	opt->addUsage( " -u  --maxarc		Maximum arc length for the outer circle test (suggested from 5 to 8)." );
-	opt->addUsage( " -j  --ringstype  	Type of rings configuration for the inner and outer tests. (3) TYPE_SADDLE_CENTRAL_PIXEL, (4) TYPE_SADDLE_INNER_PATTERN, (5) TYPE_SHADDLE. (Default)" );
+	opt->addUsage( " -j  --ringstype  	Type of rings configuration for the inner and outer tests. (3) TYPE_SADDLE_CENTRAL_PIXEL, (4) TYPE_SADDLE_INNER_PATTERN, (5) TYPE_SHADDLE. (Default 4)" );
 	opt->addUsage( " -v  --visu  		Flag for visualizing the image features " );
 	opt->addUsage( " -c  --c1feat		Flag to pass all features that fulfill inner circle condition. Feature score is contrast (delta)" );
 	opt->addUsage( " -m  --maxstrict  	Flag keeping response extremas only, without it the tides are allowed and passed all." );
