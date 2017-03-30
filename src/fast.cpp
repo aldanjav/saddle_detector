@@ -829,7 +829,7 @@ namespace cmp
                           int threshold, int nonmax_suppression, float scale, double responsethr, uchar deltaThr, int scoreType,
   						bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
   {
-	  printf("     --- Using Shifted Inner Circle --- \n");
+//	  printf("     --- Using Shifted Inner Circle --- \n");
 
 	  const Mat img = _img.getMat();
 	  int i, j, k, idx, pixel_inner[25], pixel_outer[25];
