@@ -1348,9 +1348,9 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
             double scale = getScaleDouble(level, firstLevel, scaleFactor);
             for (vector<SadKeyPoint>::iterator keypoint = keypoints.begin(),
                  keypointEnd = keypoints.end(); keypoint != keypointEnd; ++keypoint) {
-                keypoint->pt *= scale;
-//                keypoint->pt.x = (keypoint->pt.x + errorResize[level])*scale;
-//                keypoint->pt.y = (keypoint->pt.y + errorResize[level])*scale;
+//                keypoint->pt *= scale;
+                keypoint->pt.x = (keypoint->pt.x + errorResize[level])*scale;
+                keypoint->pt.y = (keypoint->pt.y + errorResize[level])*scale;
               }
         }
         // And add the keypoints to the output
