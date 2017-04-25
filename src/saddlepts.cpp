@@ -253,6 +253,7 @@ int main( int argc, char** argv )
 		drawKeypoints(img, kptsShow, img_feats, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
 		namedWindow("Saddle features", cv::WINDOW_NORMAL);
 		imshow( "Saddle features", img_feats );
+
 		waitKey(0);
 	}
 	return 0;

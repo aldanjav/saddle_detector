@@ -1038,8 +1038,8 @@ static void computeKeyPoints(const vector<Mat>& imagePyramid,
              keypointEnd = keypoints.end(); keypoint != keypointEnd; ++keypoint)
         {
             keypoint->octave = level;
-//            keypoint->size = patchSize*sf;
-            keypoint->size *= sf;
+            keypoint->size = patchSize*sf;
+//            keypoint->size *= sf;
         }
         computeOrientation(imagePyramid[level], keypoints, halfPatchSize, umax);
 
@@ -1201,8 +1201,8 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
 //				Mat blurredImg;
 //				cv::GaussianBlur(image, blurredImg, Size(0,0), sigma, 0);
 //				resize(blurredImg, imagePyramid[level], sz, 0, 0, INTER_LINEAR);
-            	resize(image, imagePyramid[level], sz, 0, 0, INTER_LINEAR);
                 if (!mask.empty())
+            	resize(image, imagePyramid[level], sz, 0, 0, INTER_LINEAR);
                     resize(mask, maskPyramid[level], sz, 0, 0, INTER_LINEAR);
             }
             else
