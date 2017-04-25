@@ -1038,8 +1038,8 @@ static void computeKeyPoints(const vector<Mat>& imagePyramid,
              keypointEnd = keypoints.end(); keypoint != keypointEnd; ++keypoint)
         {
             keypoint->octave = level;
-            keypoint->size = patchSize*sf;
-//            keypoint->size *= sf;
+//            keypoint->size = patchSize*sf;
+            keypoint->size *= sf;
         }
         computeOrientation(imagePyramid[level], keypoints, halfPatchSize, umax);
 
