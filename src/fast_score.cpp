@@ -501,6 +501,30 @@ double cmpFeatureScore(const uchar* ptr, const int pixel[], const int* labels, d
 			return ((a * b - c * c - harris_k * (a+b) * (a+b)) * scale_sq_sq);
 			break;
 		}
+		case SORB::GM_DELTA_SCORE:
+		{
+			int lengths[] = {0,0,0,0}, *ptr;
+			ptr = lengths;
+
+			for (int iElem=0; iElem<15; iElem++)
+			{
+				if (labels[iElem] != 0)
+					*ptr++;
+				if ((labels[iElem]!=labels[iElem+1]) && (labels[iElem+1]!=0) && (*ptr>0))
+					ptr++;
+			}
+
+			if (labels[15] != 0)
+			{
+				if (labels[15]==labels[0])
+					ptr = lengths;
+				*ptr++;
+			}
+
+			return (double)delta * pow(lengths[0]*lengths[1]*lengths[2]*lengths[3],1.0/4);
+			break;
+
+		}
 	}
 }
 
