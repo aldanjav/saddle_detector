@@ -271,7 +271,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->addUsage( " -t  --thres		Response threshold not squared (Default 0.0) ");
 	opt->addUsage( " -e  --epsilon  	Intensity difference between darker and brighter pixels (Default 1) " );
 	opt->addUsage( " -l  --levels  		Number of levels in the image pyramid (Default 8) " );
-	opt->addUsage( " -y  --scoretype  	Feature response function for ranking and NMS. (0)zeros, (1) delta, (2) sum of abs, (3) avg of abs, (4) norm, (5) Hessian and (6) minus Harris (Default 1) " );
+	opt->addUsage( " -y  --scoretype  	Feature response function for ranking and NMS. (0)zeros, (1) delta, (2) sum of abs, (3) avg of abs, (4) norm, (5) Hessian, (6) minus Harris, and (7) Geo. mean delta (Default 1) " );
 	opt->addUsage( " -g  --gab  		Gab in the border of the image for computing feats and descriptors (Default 3) " );
 	opt->addUsage( " -s  --scalefac		Scale factor from one level to the next one (Default 1.3) " );
 	opt->addUsage( " -n  --nms  		Option for non maximum suppression (0) without, (1) levelwise only, (2) 3D nms (Default 2) " );

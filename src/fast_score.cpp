@@ -422,7 +422,7 @@ double cmpFeatureScore(const uchar* ptr, const int pixel[], const int* labels, d
 		case SORB::ZERO_SCORE:
 		{
 //			printf("ZERO_SCORE\n");
-			return 0;
+			return 0.0;
 			break;
 		}
 
@@ -503,28 +503,30 @@ double cmpFeatureScore(const uchar* ptr, const int pixel[], const int* labels, d
 		}
 		case SORB::GM_DELTA_SCORE:
 		{
-			int lengths[] = {0,0,0,0}, *ptr;
+			int lengths[] = {0,0,0,0,0}, *ptr;
 			ptr = lengths;
 
 			for (int iElem=0; iElem<15; iElem++)
 			{
 				if (labels[iElem] != 0)
-					*ptr++;
+					(*ptr)++;
 				if ((labels[iElem]!=labels[iElem+1]) && (labels[iElem+1]!=0) && (*ptr>0))
 					ptr++;
 			}
 
 			if (labels[15] != 0)
-			{
-				if (labels[15]==labels[0])
-					ptr = lengths;
-				*ptr++;
-			}
+				(*ptr)++;
 
-			return (double)delta * pow(lengths[0]*lengths[1]*lengths[2]*lengths[3],1.0/4);
+			lengths[0] += lengths[4];
+
+			return (double)delta * pow(lengths[0]*lengths[1]*lengths[2]*lengths[3], 0.25);
 			break;
 
 		}
+		default:
+			printf("Unknown feature response function, returning zeros\n");
+			return 0.0;
+			break;
 	}
 }
 
