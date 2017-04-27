@@ -1118,7 +1118,7 @@ namespace cmp
      binImg = Mat::zeros(img.rows, img.cols, CV_8UC1);
 
      // -----------------  Save images of scales ------------------------- //
-#if false
+#if true
      ostringstream ss;
      ss << scale;
      String imgpath = (("./imscale_" + ss.str() ) + ".ppm");
