@@ -110,15 +110,15 @@ CV_WRAP SadKeyPoint() : cv::KeyPoint(), intensityCenter(0), delta(0) {}
 CV_WRAP SadKeyPoint(cv::Point2f _pt, float _size, float _angle=-1,
 float _response=0, int _octave=0, int _class_id=-1, double intensityCenter=0, uchar delta=0):
 		cv::KeyPoint(_pt, _size, _angle, _response, _octave, _class_id), intensityCenter(intensityCenter), delta(delta) {
-	outLabels.assign(16,10);
+//	outLabels.reserve(16);
 }
 
 CV_WRAP SadKeyPoint(float x, float y, float _size, float _angle=-1,
 float _response=0, int _octave=0, int _class_id=-1, double intensityCenter=0, uchar delta=0): cv::KeyPoint(x, y, _size, _angle, _response, _octave, _class_id), intensityCenter(intensityCenter), delta(delta) {}
 
 double intensityCenter;
-vector<uchar> outLabels;
-unsigned char labels[16];
+std::vector<uchar> outLabels;
+uchar labels[16];
 uchar intensityPixels[16];
 uchar delta;
 
@@ -144,6 +144,7 @@ bool isMerged;
 uchar type;
 uchar channel;
 uchar maxima;
+
 };
 
 
