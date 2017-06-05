@@ -206,9 +206,9 @@ int main( int argc, char** argv )
 	int num_kpts = (int)kpts.size();
 	printf("\nTotal number of features %d\n\n", num_kpts);
 
-//	printf("Labels:");
-//	for (int i=0; i<16; i++)
-//		printf(" %d", kpts[0].outLabels[i]);
+	printf("Labels:");
+	for (int i=0; i<16; i++)
+		printf(" %d", kpts[0].outLabels[i]);
 
 
 	if (savefile)

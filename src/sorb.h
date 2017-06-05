@@ -110,7 +110,7 @@ CV_WRAP SadKeyPoint() : cv::KeyPoint(), intensityCenter(0), delta(0) {}
 CV_WRAP SadKeyPoint(cv::Point2f _pt, float _size, float _angle=-1,
 float _response=0, int _octave=0, int _class_id=-1, double intensityCenter=0, uchar delta=0):
 		cv::KeyPoint(_pt, _size, _angle, _response, _octave, _class_id), intensityCenter(intensityCenter), delta(delta) {
-	outLabels.reserve(16);
+	outLabels.assign(16,10);
 }
 
 CV_WRAP SadKeyPoint(float x, float y, float _size, float _angle=-1,
