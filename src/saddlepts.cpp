@@ -206,6 +206,7 @@ int main( int argc, char** argv )
 	int num_kpts = (int)kpts.size();
 	printf("\nTotal number of features %d\n\n", num_kpts);
 
+
 	if (savefile)
 		if (!txt_from_feats( kpts, dcts, outpath))
 			return -1;

@@ -99,6 +99,7 @@ protected:
 
 };
 
+
 class CV_EXPORTS_W_SIMPLE SadKeyPoint : public cv::KeyPoint
 {
 public:
@@ -107,13 +108,17 @@ public:
 CV_WRAP SadKeyPoint() : cv::KeyPoint(), intensityCenter(0), delta(0) {}
 //! the full constructor
 CV_WRAP SadKeyPoint(cv::Point2f _pt, float _size, float _angle=-1,
-float _response=0, int _octave=0, int _class_id=-1, double intensityCenter=0, uchar delta=0): cv::KeyPoint(_pt, _size, _angle, _response, _octave, _class_id), intensityCenter(intensityCenter), delta(delta) {}
+float _response=0, int _octave=0, int _class_id=-1, double intensityCenter=0, uchar delta=0):
+		cv::KeyPoint(_pt, _size, _angle, _response, _octave, _class_id), intensityCenter(intensityCenter), delta(delta) {
+//	assert(outLbs.size() <= 16);
+//	std::copy(outLbs.begin(), outLbs.end(), outLabels);
+}
 
 CV_WRAP SadKeyPoint(float x, float y, float _size, float _angle=-1,
 float _response=0, int _octave=0, int _class_id=-1, double intensityCenter=0, uchar delta=0): cv::KeyPoint(x, y, _size, _angle, _response, _octave, _class_id), intensityCenter(intensityCenter), delta(delta) {}
 
 double intensityCenter;
-uchar labels[16];
+unsigned char labels[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 uchar intensityPixels[16];
 uchar delta;
 
