@@ -1426,19 +1426,33 @@ namespace cmp
 
 //                const uchar* ptr1 =  img.ptr<uchar>(i - 1) + j;
                 ptr1 =  img.ptr<uchar>(i - 1) + j;
-                for(int l = 0; l < 16; l++)
+//                for(int l = 0; l < 16; l++)
+//                {
+//                	keypoints.back().intensityPixels[l] = ptr1[pixel[l]];
+//
+//                    double upperThr = v + (double)threshold;
+//                    double lowerThr = v - (double)threshold;
+//
+//                    if (ptr1[pixel[l]] > upperThr)
+//                    	keypoints.back().labels[l] = 2; // 2	50
+//                    else if (ptr1[pixel[l]] < lowerThr)
+//                    	keypoints.back().labels[l] = 1; // 1	49
+//                    else
+//                    	keypoints.back().labels[l] = 0; // 0	48
+//                }
+                for(unsigned int l = 0; l < 16; l++)
                 {
                 	keypoints.back().intensityPixels[l] = ptr1[pixel[l]];
 
                     double upperThr = v + (double)threshold;
                     double lowerThr = v - (double)threshold;
 
-                    if (ptr1[pixel[l]] > upperThr)
-                    	keypoints.back().labels[l] = 2; // 2	50
-                    else if (ptr1[pixel[l]] < lowerThr)
-                    	keypoints.back().labels[l] = 1; // 1	49
-                    else
-                    	keypoints.back().labels[l] = 0; // 0	48
+//                    if (ptr1[pixel[l]] > upperThr)
+//                    	keypoints.back().outLabels[l] = 2; // 2	50
+//                    else if (ptr1[pixel[l]] < lowerThr)
+//                    	keypoints.back().outLabels[l] = 1; // 1	49
+//                    else
+//                    	keypoints.back().outLabels[l] = 0; // 0	48
                 }
 //                fprintf(ftfile, "%02d %03d %03d %02d %.3f %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
 //                NN++, j, i-1, delta, v, keypoints.back().labels[0], keypoints.back().labels[1], keypoints.back().labels[2], keypoints.back().labels[3],
