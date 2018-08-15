@@ -14,8 +14,8 @@ set(CMAKE_CXX_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_CXX_TARGET_INCLUDE_PATH
-  "/home/aldanjav/lib/opencv-2.4.9orig/install/include/opencv"
-  "/home/aldanjav/lib/opencv-2.4.9orig/install/include"
+  "/home/aldanjav/lib/opencv-2.4.13/install_T520/include/opencv"
+  "/home/aldanjav/lib/opencv-2.4.13/install_T520/include"
   )
 
 # Targets to which this target links.

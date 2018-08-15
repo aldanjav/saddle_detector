@@ -53,6 +53,7 @@ namespace cmp
 
 const float HARRIS_K = 0.04f;
 const int DESCRIPTOR_SIZE = 32;
+const bool VERBOSE = false;
 
 /**
  * Function that computes the Harris responses in a
@@ -961,8 +962,8 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
 {
 
 	int nlevels = (int)imagePyramid.size();
-#if false
-	printf("\nSADDLE detector parameters: \n   nLevels: %d, scaleFactor: %.1f, epsilon: %d, responseThr: %.2f, borderGab: %d, doNMS: %d\n   deltaThr: %d, nFeats: %d, allC1features: %d, strictMaxNMS: %d, subpixelMethod: %d\n   C1C2gravityCenter: %d, InnerTstMethod: %d, ScoreType: %d, minArc: %d, maxArc: %d, ringsType: %d\n",
+#if VERBOSE
+    printf("\nSADDLE detector parameters: \n   nLevels: %d, scaleFactor: %.1f, epsilon: %d, responseThr: %.2f, borderGab: %d, doNMS: %d\n   deltaThr: %d, nFeats: %d, allC1features: %d, strictMaxNMS: %d, subpixelMethod: %d\n   C1C2gravityCenter: %d, InnerTstMethod: %d, ScoreType: %d, minArc: %d, maxArc: %d, ringsType: %d\n",
 				nlevels, scaleFactor, epsilon, responseThr, edgeThreshold, doNMS, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, scoreType, minArcLength, maxArcLength, ringsType );
 #endif
     vector<int> nfeaturesPerLevel(nlevels);
@@ -1186,7 +1187,7 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
         errorResize[level] = image.cols*scale - cvRound(image.cols*scale);
 
 #if false
-        resize(image, imagePyramid[level], sz, 0, 0, INTER_LINEAR);
+        resize(image, imagePyramid[level], sz, 0, 0, INTER_AREA);
 		copyMakeBorder(imagePyramid[level], imagePyramid[level], border, border, border, border, BORDER_REFLECT_101+BORDER_ISOLATED);
 		imagePyramid[level] = imagePyramid[level](Rect(border, border, sz.width, sz.height));
 #else
@@ -1203,20 +1204,20 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
             {
 //				Mat blurredImg;
 //				cv::GaussianBlur(image, blurredImg, Size(0,0), sigma, 0);
-//				resize(blurredImg, imagePyramid[level], sz, 0, 0, INTER_LINEAR);
+//				resize(blurredImg, imagePyramid[level], sz, 0, 0, INTER_AREA);
                 if (!mask.empty())
-            	resize(image, imagePyramid[level], sz, 0, 0, INTER_LINEAR);
-                    resize(mask, maskPyramid[level], sz, 0, 0, INTER_LINEAR);
+            	resize(image, imagePyramid[level], sz, 0, 0, INTER_AREA);
+                    resize(mask, maskPyramid[level], sz, 0, 0, INTER_AREA);
             }
             else
             {
 //				Mat blurredImg;
 //				cv::GaussianBlur(imagePyramid[level-1], blurredImg, Size(0,0), sigma, 0);
-//				resize(blurredImg, imagePyramid[level], sz, 0, 0, INTER_LINEAR);
-                resize(imagePyramid[level-1], imagePyramid[level], sz, 0, 0, INTER_LINEAR);
+//				resize(blurredImg, imagePyramid[level], sz, 0, 0, INTER_AREA);
+                resize(imagePyramid[level-1], imagePyramid[level], sz, 0, 0, INTER_AREA);
                 if (!mask.empty())
                 {
-                    resize(maskPyramid[level-1], maskPyramid[level], sz, 0, 0, INTER_LINEAR);
+                    resize(maskPyramid[level-1], maskPyramid[level], sz, 0, 0, INTER_AREA);
                     threshold(maskPyramid[level], maskPyramid[level], 254, 0, THRESH_TOZERO);
                 }
             }
