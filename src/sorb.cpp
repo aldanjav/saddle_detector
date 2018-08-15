@@ -950,7 +950,7 @@ static void runByImageBorder( vector<SadKeyPoint>& keypoints, Size imageSize, in
     }
 }
 
-static void computeKeyPoints(const vector<Mat>& imagePyramid,
+void computeKeyPoints(const vector<Mat>& imagePyramid,
                              const vector<Mat>& maskPyramid,
 							 vector<Mat>& respPyramid,
                              vector<vector<SadKeyPoint> >& allKeypoints,
@@ -961,8 +961,10 @@ static void computeKeyPoints(const vector<Mat>& imagePyramid,
 {
 
 	int nlevels = (int)imagePyramid.size();
+#if false
 	printf("\nSADDLE detector parameters: \n   nLevels: %d, scaleFactor: %.1f, epsilon: %d, responseThr: %.2f, borderGab: %d, doNMS: %d\n   deltaThr: %d, nFeats: %d, allC1features: %d, strictMaxNMS: %d, subpixelMethod: %d\n   C1C2gravityCenter: %d, InnerTstMethod: %d, ScoreType: %d, minArc: %d, maxArc: %d, ringsType: %d\n",
 				nlevels, scaleFactor, epsilon, responseThr, edgeThreshold, doNMS, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, scoreType, minArcLength, maxArcLength, ringsType );
+#endif
     vector<int> nfeaturesPerLevel(nlevels);
 
     // fill the extractors and descriptors for the corresponding scales
@@ -1018,6 +1020,7 @@ static void computeKeyPoints(const vector<Mat>& imagePyramid,
 								 allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
         fd.detect2(imagePyramid[level], keypoints, respPyramid[level], maskPyramid[level]);
 
+        
         // Remove keypoints very close to the border
         runByImageBorder(keypoints, imagePyramid[level].size(), edgeThreshold);
 

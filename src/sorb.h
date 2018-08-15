@@ -12,9 +12,19 @@
 
 using namespace cv;
 
+
 namespace cmp{
 
 class SadKeyPoint;
+
+void computeKeyPoints(const vector<Mat>& imagePyramid,
+                             const vector<Mat>& maskPyramid,
+                             vector<Mat>& respPyramid,
+                             vector<vector<SadKeyPoint> >& allKeypoints,
+                             double responseThr, int epsilon, float scaleFactor,
+                             int edgeThreshold, int patchSize, int scoreType, int doNMS, uchar deltaThr, int nfeatures,
+                             bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
+                             int minArcLength, int maxArcLength, short ringsType );
 
 class CV_EXPORTS_W FeatureDetector{
 public:

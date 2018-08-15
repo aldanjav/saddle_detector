@@ -1109,7 +1109,7 @@ namespace cmp
                         int threshold, int nonmax_suppression, float scale, double responsethr, uchar deltaThr, int scoreType,
 						bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
   {
-
+        
      double scEps = 2.0, threshold2;
      double st;
      const Mat img = _img.getMat();
@@ -1192,15 +1192,12 @@ namespace cmp
         memset(curr, 0, img.cols*sizeof(double) );
         int ncorners = 0;
 
-
-
         if( i < img.rows - 3 )
         {
             j = 3;
 
             for( ; j < img.cols - 3; j++, ptr++)
-            {
-
+            {        
                 double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
                 uchar N = 0;
                 // 0:inner,1:ExtOnly,2:ExtSum,3:ExtAvg,4:sqrt2 // , rej2, rej3, rej4, accp
