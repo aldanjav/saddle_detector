@@ -21,6 +21,8 @@
 #include "anyoption.h"
 #include "nms.cpp"
 #include "sorb.h"
+#include "lbq.h"
+#include "fast.hpp"
 
 
 using namespace cv;
@@ -38,27 +40,11 @@ int main( int argc, char** argv )
 {
 	AnyOption *opt = new AnyOption();
 	char *imgpath, *outpath;
-	int epsilon, nlevels, edgeThreshold, doNMS, scoreType, descSize, nfeatures, subPixPrecision, innerTstType, minArcLength, maxArcLength;
+	int epsilon, nlevels, edgeThreshold, doNMS, scoreType, descSize, nfeatures, subPixPrecision, innerTstType, minArcLength, maxArcLength, binPattern;
 	bool showVis, savefile, allC1feats, strictMaximum, gravityCenter;
 	double responseThr, scaleFactor;
 	uchar deltaThr;
 	short ringsType;
-
-//	string source = "/home/aldanjav/mount_point/cmp_datagrid/Work/data/youtube_downloads/hertford_oxford/Clip01/video.mp4";
-//	VideoCapture inputVideo(source);              // Open input
-//	if (!inputVideo.isOpened())
-//	{
-//		cout  << "Could not open the input video: " << source << endl;
-//		return -1;
-//	}
-//
-//	Mat src;
-//	inputVideo >> src;              // read
-//
-//	namedWindow( "Frame", cv::WINDOW_NORMAL);
-//	imshow( "Frame", src );
-
-
 	bool saveDeltas = true;
 	char deltaoutpath[] = "./outputs/deltas.txt";
 	char* ptrdeltapath = deltaoutpath;
@@ -178,11 +164,14 @@ int main( int argc, char** argv )
 	else
 		ringsType = 4; //TYPE_SADDLE_INNER_PATTERN
 
+	if( opt->getValue( 'b' ) || opt->getValue( "binpattern" ) )
+		binPattern = atoi(opt->getValue( 'b' ));
+	else
+		binPattern = Binpat::OCV;
+
 	delete opt;
 
-
 	// Loading image
-//	Mat img(Size(320,240),CV_8UC1);
 	Mat img = imread( imgpath , IMREAD_GRAYSCALE );
 	if (img.empty())
 	{
@@ -195,7 +184,7 @@ int main( int argc, char** argv )
 
 	cmp::SORB detector(responseThr, scaleFactor, nlevels, edgeThreshold, epsilon, 2, scoreType, 31,
 						doNMS, descSize, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision,
-						gravityCenter, innerTstType, minArcLength, maxArcLength, ringsType );
+						gravityCenter, innerTstType, minArcLength, maxArcLength, ringsType, binPattern );
 
 	vector<cmp::SadKeyPoint> kpts;
 	Mat dcts, mask;
@@ -284,6 +273,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->addUsage( " -q  --minarc		Minimum arc length for the outer circle test (suggested from 2 to 3)." );
 	opt->addUsage( " -u  --maxarc		Maximum arc length for the outer circle test (suggested from 5 to 8)." );
 	opt->addUsage( " -j  --ringstype  	Type of rings configuration for the inner and outer tests. (3) TYPE_SADDLE_CENTRAL_PIXEL, (4) TYPE_SADDLE_INNER_PATTERN, (5) TYPE_SHADDLE. (Default 4)" );
+	opt->addUsage( " -b  --binpattern  	Binary pattern for fBRIEF descriptor. (0) ORB_GV, (1) ORB_ORIENTED, (2) Saddle_GV, (3) Saddle_ORIENTED, (4) SURF_GV, (5) SURF_ORIENTED, (6) OCV. (Default 6)" );
 	opt->addUsage( " -v  --visu  		Flag for visualizing the image features " );
 	opt->addUsage( " -c  --c1feat		Flag to pass all features that fulfill inner circle condition. Feature score is contrast (delta)" );
 	opt->addUsage( " -m  --maxstrict  	Flag keeping response extremas only, without it the tides are allowed and passed all." );
@@ -309,6 +299,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->setOption(  "minarc", 	'q' );
 	opt->setOption(  "maxarc", 	'u' );
 	opt->setOption(  "ringstype", 'j' );
+	opt->setOption(  "binpattern", 'b' );
 	opt->setFlag(    "visu", 	'v' );
 	opt->setFlag(    "c1feat", 	'c' );
 	opt->setFlag(    "maxstrict", 	'm' );

@@ -8,6 +8,7 @@ CMakeFiles/saddlepts.dir/fast.cpp.o
  /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast.cpp
  /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast.hpp
  /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast_score.hpp
+ /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.h
  /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.h
  /home/aldanjav/lib/opencv-2.4.13/install_T520_gcc5.4/include/opencv2/calib3d/calib3d.hpp
  /home/aldanjav/lib/opencv-2.4.13/install_T520_gcc5.4/include/opencv2/contrib/contrib.hpp
@@ -41,6 +42,7 @@ CMakeFiles/saddlepts.dir/fast.cpp.o
 CMakeFiles/saddlepts.dir/fast_score.cpp.o
  /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast_score.cpp
  /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast_score.hpp
+ /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.h
  /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.h
  /home/aldanjav/lib/opencv-2.4.13/install_T520_gcc5.4/include/opencv2/core/core.hpp
  /home/aldanjav/lib/opencv-2.4.13/install_T520_gcc5.4/include/opencv2/core/mat.hpp
@@ -56,6 +58,8 @@ CMakeFiles/saddlepts.dir/lbq.cpp.o
  /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.h
 CMakeFiles/saddlepts.dir/saddlepts.cpp.o
  /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/anyoption.h
+ /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast.hpp
+ /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.h
  /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/nms.cpp
  /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/saddlepts.cpp
  /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.h
