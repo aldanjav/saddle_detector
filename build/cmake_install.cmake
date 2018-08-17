@@ -1,4 +1,4 @@
-# Install script for directory: /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src
+# Install script for directory: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

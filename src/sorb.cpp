@@ -45,6 +45,7 @@
 #include <opencv2/highgui/highgui_c.h>
 
 #include "sorb.h"
+#include "lbq.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -329,7 +330,12 @@ static void initializeOrbPattern( const Point* pattern0, vector<Point>& pattern,
         }
     }
 }
+<<<<<<< HEAD
 # if FALSE
+=======
+
+#if true
+>>>>>>> d1f3e80b9ed9e80f55bd4a8c9372a935c8cf0389
 static int bit_pattern_31_[256*4] =
 {
     8,-3, 9,5/*mean (0), correlation (0)*/,
@@ -1299,7 +1305,8 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
 
         const int npoints = 512;
         Point patternbuf[npoints];
-        const Point* pattern0 = (const Point*)bit_pattern_31_;
+        Binpat::BitPatterns learn_bin_patterns(Binpat::Saddle_ORIENTED);
+        const Point* pattern0 = (const Point*)learn_bin_patterns.get_pattern();
 
         if( patchSize != 31 )
         {

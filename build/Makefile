@@ -48,10 +48,10 @@ RM = /usr/local/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src
+CMAKE_SOURCE_DIR = /home/aldanjav/Work/C_CPP_projects/saddle_detector/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520
+CMAKE_BINARY_DIR = /home/aldanjav/Work/C_CPP_projects/saddle_detector/build
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles /home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -204,6 +204,33 @@ fast_score.cpp.s:
 	$(MAKE) -f CMakeFiles/saddlepts.dir/build.make CMakeFiles/saddlepts.dir/fast_score.cpp.s
 .PHONY : fast_score.cpp.s
 
+lbq.o: lbq.cpp.o
+
+.PHONY : lbq.o
+
+# target to build an object file
+lbq.cpp.o:
+	$(MAKE) -f CMakeFiles/saddlepts.dir/build.make CMakeFiles/saddlepts.dir/lbq.cpp.o
+.PHONY : lbq.cpp.o
+
+lbq.i: lbq.cpp.i
+
+.PHONY : lbq.i
+
+# target to preprocess a source file
+lbq.cpp.i:
+	$(MAKE) -f CMakeFiles/saddlepts.dir/build.make CMakeFiles/saddlepts.dir/lbq.cpp.i
+.PHONY : lbq.cpp.i
+
+lbq.s: lbq.cpp.s
+
+.PHONY : lbq.s
+
+# target to generate assembly for a file
+lbq.cpp.s:
+	$(MAKE) -f CMakeFiles/saddlepts.dir/build.make CMakeFiles/saddlepts.dir/lbq.cpp.s
+.PHONY : lbq.cpp.s
+
 saddlepts.o: saddlepts.cpp.o
 
 .PHONY : saddlepts.o
@@ -276,6 +303,9 @@ help:
 	@echo "... fast_score.o"
 	@echo "... fast_score.i"
 	@echo "... fast_score.s"
+	@echo "... lbq.o"
+	@echo "... lbq.i"
+	@echo "... lbq.s"
 	@echo "... saddlepts.o"
 	@echo "... saddlepts.i"
 	@echo "... saddlepts.s"

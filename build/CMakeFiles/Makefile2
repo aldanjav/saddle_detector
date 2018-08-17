@@ -54,10 +54,10 @@ RM = /usr/local/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src
+CMAKE_SOURCE_DIR = /home/aldanjav/Work/C_CPP_projects/saddle_detector/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520
+CMAKE_BINARY_DIR = /home/aldanjav/Work/C_CPP_projects/saddle_detector/build
 
 #=============================================================================
 # Target rules for target CMakeFiles/saddlepts.dir
@@ -66,7 +66,7 @@ CMAKE_BINARY_DIR = /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_det
 CMakeFiles/saddlepts.dir/all:
 	$(MAKE) -f CMakeFiles/saddlepts.dir/build.make CMakeFiles/saddlepts.dir/depend
 	$(MAKE) -f CMakeFiles/saddlepts.dir/build.make CMakeFiles/saddlepts.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles --progress-num=1,2,3,4,5,6 "Built target saddlepts"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles --progress-num=1,2,3,4,5,6,7 "Built target saddlepts"
 .PHONY : CMakeFiles/saddlepts.dir/all
 
 # Include target in all.
@@ -76,9 +76,9 @@ all: CMakeFiles/saddlepts.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/saddlepts.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles 6
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles 7
 	$(MAKE) -f CMakeFiles/Makefile2 CMakeFiles/saddlepts.dir/all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles 0
 .PHONY : CMakeFiles/saddlepts.dir/rule
 
 # Convenience name for target.
