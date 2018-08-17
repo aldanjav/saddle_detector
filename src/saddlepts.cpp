@@ -43,22 +43,6 @@ int main( int argc, char** argv )
 	double responseThr, scaleFactor;
 	uchar deltaThr;
 	short ringsType;
-
-//	string source = "/home/aldanjav/mount_point/cmp_datagrid/Work/data/youtube_downloads/hertford_oxford/Clip01/video.mp4";
-//	VideoCapture inputVideo(source);              // Open input
-//	if (!inputVideo.isOpened())
-//	{
-//		cout  << "Could not open the input video: " << source << endl;
-//		return -1;
-//	}
-//
-//	Mat src;
-//	inputVideo >> src;              // read
-//
-//	namedWindow( "Frame", cv::WINDOW_NORMAL);
-//	imshow( "Frame", src );
-
-
 	bool saveDeltas = true;
 	char deltaoutpath[] = "./outputs/deltas.txt";
 	char* ptrdeltapath = deltaoutpath;
@@ -181,8 +165,6 @@ int main( int argc, char** argv )
 	delete opt;
 
 
-	// Loading image
-//	Mat img(Size(320,240),CV_8UC1);
 	Mat img = imread( imgpath , IMREAD_GRAYSCALE );
 	if (img.empty())
 	{
@@ -190,8 +172,6 @@ int main( int argc, char** argv )
 		return -1;
 	}
 
-//	printf("SADDLE detector parameters: \n   nLevels: %d, scaleFactor: %.1f, epsilon: %d, scoreType: %d, responseThr: %.2f, borderGab: %d, doNMS: %d, deltaThr: %d, nFeats: %d, allC1features: %d, strictMaxNMS: %d, subpixelMethod: %d, C1C2gravityCenter: %d, InnerTstMethod: %d \n",
-//			nlevels, scaleFactor, epsilon, scoreType, responseThr, edgeThreshold, doNMS, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType );
 
 	cmp::SORB detector(responseThr, scaleFactor, nlevels, edgeThreshold, epsilon, 2, scoreType, 31,
 						doNMS, descSize, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision,
@@ -214,7 +194,7 @@ int main( int argc, char** argv )
 	if (saveDeltas)
 		deltas_to_txt( kpts, ptrdeltapath );
 
-//	deltas_to_histogram(kpts);
+	deltas_to_histogram(kpts);
 
 	// ------------------------- Test with pyramids ----------------------------- //
 #if false

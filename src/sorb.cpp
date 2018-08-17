@@ -329,7 +329,7 @@ static void initializeOrbPattern( const Point* pattern0, vector<Point>& pattern,
         }
     }
 }
-
+# if FALSE
 static int bit_pattern_31_[256*4] =
 {
     8,-3, 9,5/*mean (0), correlation (0)*/,
@@ -589,7 +589,7 @@ static int bit_pattern_31_[256*4] =
     7,0, 12,-2/*mean (0.127002), correlation (0.537452)*/,
     -1,-6, 0,-11/*mean (0.127148), correlation (0.547401)*/
 };
-
+#endif
 
 static void makeRandomPattern(int patchSize, Point* pattern, int npoints)
 {
