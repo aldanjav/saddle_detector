@@ -1,3 +1,0 @@
-/home/aldanjav/Work/C_CPP_projects/saddle_detector/src/CMakeFiles/rebuild_cache.dir
-/home/aldanjav/Work/C_CPP_projects/saddle_detector/src/CMakeFiles/edit_cache.dir
-/home/aldanjav/Work/C_CPP_projects/saddle_detector/src/CMakeFiles/saddlepts.dir

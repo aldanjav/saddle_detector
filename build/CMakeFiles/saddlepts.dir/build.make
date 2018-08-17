@@ -43,10 +43,10 @@ RM = /usr/local/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src
+CMAKE_SOURCE_DIR = /home/aldanjav/Work/C_CPP_projects/saddle_detector/src
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520
+CMAKE_BINARY_DIR = /home/aldanjav/Work/C_CPP_projects/saddle_detector/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/saddlepts.dir/depend.make
@@ -58,17 +58,17 @@ include CMakeFiles/saddlepts.dir/progress.make
 include CMakeFiles/saddlepts.dir/flags.make
 
 CMakeFiles/saddlepts.dir/saddlepts.cpp.o: CMakeFiles/saddlepts.dir/flags.make
-CMakeFiles/saddlepts.dir/saddlepts.cpp.o: /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/saddlepts.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/saddlepts.dir/saddlepts.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/saddlepts.dir/saddlepts.cpp.o -c /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/saddlepts.cpp
+CMakeFiles/saddlepts.dir/saddlepts.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/saddlepts.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/saddlepts.dir/saddlepts.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/saddlepts.dir/saddlepts.cpp.o -c /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/saddlepts.cpp
 
 CMakeFiles/saddlepts.dir/saddlepts.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/saddlepts.dir/saddlepts.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/saddlepts.cpp > CMakeFiles/saddlepts.dir/saddlepts.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/saddlepts.cpp > CMakeFiles/saddlepts.dir/saddlepts.cpp.i
 
 CMakeFiles/saddlepts.dir/saddlepts.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/saddlepts.dir/saddlepts.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/saddlepts.cpp -o CMakeFiles/saddlepts.dir/saddlepts.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/saddlepts.cpp -o CMakeFiles/saddlepts.dir/saddlepts.cpp.s
 
 CMakeFiles/saddlepts.dir/saddlepts.cpp.o.requires:
 
@@ -82,17 +82,17 @@ CMakeFiles/saddlepts.dir/saddlepts.cpp.o.provides.build: CMakeFiles/saddlepts.di
 
 
 CMakeFiles/saddlepts.dir/anyoption.cpp.o: CMakeFiles/saddlepts.dir/flags.make
-CMakeFiles/saddlepts.dir/anyoption.cpp.o: /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/anyoption.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/saddlepts.dir/anyoption.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/saddlepts.dir/anyoption.cpp.o -c /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/anyoption.cpp
+CMakeFiles/saddlepts.dir/anyoption.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/anyoption.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/saddlepts.dir/anyoption.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/saddlepts.dir/anyoption.cpp.o -c /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/anyoption.cpp
 
 CMakeFiles/saddlepts.dir/anyoption.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/saddlepts.dir/anyoption.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/anyoption.cpp > CMakeFiles/saddlepts.dir/anyoption.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/anyoption.cpp > CMakeFiles/saddlepts.dir/anyoption.cpp.i
 
 CMakeFiles/saddlepts.dir/anyoption.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/saddlepts.dir/anyoption.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/anyoption.cpp -o CMakeFiles/saddlepts.dir/anyoption.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/anyoption.cpp -o CMakeFiles/saddlepts.dir/anyoption.cpp.s
 
 CMakeFiles/saddlepts.dir/anyoption.cpp.o.requires:
 
@@ -105,18 +105,42 @@ CMakeFiles/saddlepts.dir/anyoption.cpp.o.provides: CMakeFiles/saddlepts.dir/anyo
 CMakeFiles/saddlepts.dir/anyoption.cpp.o.provides.build: CMakeFiles/saddlepts.dir/anyoption.cpp.o
 
 
+CMakeFiles/saddlepts.dir/lbq.cpp.o: CMakeFiles/saddlepts.dir/flags.make
+CMakeFiles/saddlepts.dir/lbq.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/saddlepts.dir/lbq.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/saddlepts.dir/lbq.cpp.o -c /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.cpp
+
+CMakeFiles/saddlepts.dir/lbq.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/saddlepts.dir/lbq.cpp.i"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.cpp > CMakeFiles/saddlepts.dir/lbq.cpp.i
+
+CMakeFiles/saddlepts.dir/lbq.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/saddlepts.dir/lbq.cpp.s"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.cpp -o CMakeFiles/saddlepts.dir/lbq.cpp.s
+
+CMakeFiles/saddlepts.dir/lbq.cpp.o.requires:
+
+.PHONY : CMakeFiles/saddlepts.dir/lbq.cpp.o.requires
+
+CMakeFiles/saddlepts.dir/lbq.cpp.o.provides: CMakeFiles/saddlepts.dir/lbq.cpp.o.requires
+	$(MAKE) -f CMakeFiles/saddlepts.dir/build.make CMakeFiles/saddlepts.dir/lbq.cpp.o.provides.build
+.PHONY : CMakeFiles/saddlepts.dir/lbq.cpp.o.provides
+
+CMakeFiles/saddlepts.dir/lbq.cpp.o.provides.build: CMakeFiles/saddlepts.dir/lbq.cpp.o
+
+
 CMakeFiles/saddlepts.dir/sorb.cpp.o: CMakeFiles/saddlepts.dir/flags.make
-CMakeFiles/saddlepts.dir/sorb.cpp.o: /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/sorb.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/saddlepts.dir/sorb.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/saddlepts.dir/sorb.cpp.o -c /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/sorb.cpp
+CMakeFiles/saddlepts.dir/sorb.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/saddlepts.dir/sorb.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/saddlepts.dir/sorb.cpp.o -c /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.cpp
 
 CMakeFiles/saddlepts.dir/sorb.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/saddlepts.dir/sorb.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/sorb.cpp > CMakeFiles/saddlepts.dir/sorb.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.cpp > CMakeFiles/saddlepts.dir/sorb.cpp.i
 
 CMakeFiles/saddlepts.dir/sorb.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/saddlepts.dir/sorb.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/sorb.cpp -o CMakeFiles/saddlepts.dir/sorb.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.cpp -o CMakeFiles/saddlepts.dir/sorb.cpp.s
 
 CMakeFiles/saddlepts.dir/sorb.cpp.o.requires:
 
@@ -130,17 +154,17 @@ CMakeFiles/saddlepts.dir/sorb.cpp.o.provides.build: CMakeFiles/saddlepts.dir/sor
 
 
 CMakeFiles/saddlepts.dir/fast.cpp.o: CMakeFiles/saddlepts.dir/flags.make
-CMakeFiles/saddlepts.dir/fast.cpp.o: /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/fast.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/saddlepts.dir/fast.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/saddlepts.dir/fast.cpp.o -c /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/fast.cpp
+CMakeFiles/saddlepts.dir/fast.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/saddlepts.dir/fast.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/saddlepts.dir/fast.cpp.o -c /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast.cpp
 
 CMakeFiles/saddlepts.dir/fast.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/saddlepts.dir/fast.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/fast.cpp > CMakeFiles/saddlepts.dir/fast.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast.cpp > CMakeFiles/saddlepts.dir/fast.cpp.i
 
 CMakeFiles/saddlepts.dir/fast.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/saddlepts.dir/fast.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/fast.cpp -o CMakeFiles/saddlepts.dir/fast.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast.cpp -o CMakeFiles/saddlepts.dir/fast.cpp.s
 
 CMakeFiles/saddlepts.dir/fast.cpp.o.requires:
 
@@ -154,17 +178,17 @@ CMakeFiles/saddlepts.dir/fast.cpp.o.provides.build: CMakeFiles/saddlepts.dir/fas
 
 
 CMakeFiles/saddlepts.dir/fast_score.cpp.o: CMakeFiles/saddlepts.dir/flags.make
-CMakeFiles/saddlepts.dir/fast_score.cpp.o: /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/fast_score.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/saddlepts.dir/fast_score.cpp.o"
-	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/saddlepts.dir/fast_score.cpp.o -c /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/fast_score.cpp
+CMakeFiles/saddlepts.dir/fast_score.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast_score.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/saddlepts.dir/fast_score.cpp.o"
+	/usr/bin/c++   $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/saddlepts.dir/fast_score.cpp.o -c /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast_score.cpp
 
 CMakeFiles/saddlepts.dir/fast_score.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/saddlepts.dir/fast_score.cpp.i"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/fast_score.cpp > CMakeFiles/saddlepts.dir/fast_score.cpp.i
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast_score.cpp > CMakeFiles/saddlepts.dir/fast_score.cpp.i
 
 CMakeFiles/saddlepts.dir/fast_score.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/saddlepts.dir/fast_score.cpp.s"
-	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/fast_score.cpp -o CMakeFiles/saddlepts.dir/fast_score.cpp.s
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast_score.cpp -o CMakeFiles/saddlepts.dir/fast_score.cpp.s
 
 CMakeFiles/saddlepts.dir/fast_score.cpp.o.requires:
 
@@ -181,6 +205,7 @@ CMakeFiles/saddlepts.dir/fast_score.cpp.o.provides.build: CMakeFiles/saddlepts.d
 saddlepts_OBJECTS = \
 "CMakeFiles/saddlepts.dir/saddlepts.cpp.o" \
 "CMakeFiles/saddlepts.dir/anyoption.cpp.o" \
+"CMakeFiles/saddlepts.dir/lbq.cpp.o" \
 "CMakeFiles/saddlepts.dir/sorb.cpp.o" \
 "CMakeFiles/saddlepts.dir/fast.cpp.o" \
 "CMakeFiles/saddlepts.dir/fast_score.cpp.o"
@@ -190,6 +215,7 @@ saddlepts_EXTERNAL_OBJECTS =
 
 saddlepts: CMakeFiles/saddlepts.dir/saddlepts.cpp.o
 saddlepts: CMakeFiles/saddlepts.dir/anyoption.cpp.o
+saddlepts: CMakeFiles/saddlepts.dir/lbq.cpp.o
 saddlepts: CMakeFiles/saddlepts.dir/sorb.cpp.o
 saddlepts: CMakeFiles/saddlepts.dir/fast.cpp.o
 saddlepts: CMakeFiles/saddlepts.dir/fast_score.cpp.o
@@ -214,7 +240,7 @@ saddlepts: /home/aldanjav/lib/opencv-2.4.13/install_T520_gcc5.4/lib/libopencv_im
 saddlepts: /home/aldanjav/lib/opencv-2.4.13/install_T520_gcc5.4/lib/libopencv_flann.so.2.4.13
 saddlepts: /home/aldanjav/lib/opencv-2.4.13/install_T520_gcc5.4/lib/libopencv_core.so.2.4.13
 saddlepts: CMakeFiles/saddlepts.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable saddlepts"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable saddlepts"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/saddlepts.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -224,6 +250,7 @@ CMakeFiles/saddlepts.dir/build: saddlepts
 
 CMakeFiles/saddlepts.dir/requires: CMakeFiles/saddlepts.dir/saddlepts.cpp.o.requires
 CMakeFiles/saddlepts.dir/requires: CMakeFiles/saddlepts.dir/anyoption.cpp.o.requires
+CMakeFiles/saddlepts.dir/requires: CMakeFiles/saddlepts.dir/lbq.cpp.o.requires
 CMakeFiles/saddlepts.dir/requires: CMakeFiles/saddlepts.dir/sorb.cpp.o.requires
 CMakeFiles/saddlepts.dir/requires: CMakeFiles/saddlepts.dir/fast.cpp.o.requires
 CMakeFiles/saddlepts.dir/requires: CMakeFiles/saddlepts.dir/fast_score.cpp.o.requires
@@ -235,6 +262,6 @@ CMakeFiles/saddlepts.dir/clean:
 .PHONY : CMakeFiles/saddlepts.dir/clean
 
 CMakeFiles/saddlepts.dir/depend:
-	cd /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520 && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520 /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520 /home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles/saddlepts.dir/DependInfo.cmake --color=$(COLOR)
+	cd /home/aldanjav/Work/C_CPP_projects/saddle_detector/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/aldanjav/Work/C_CPP_projects/saddle_detector/src /home/aldanjav/Work/C_CPP_projects/saddle_detector/src /home/aldanjav/Work/C_CPP_projects/saddle_detector/build /home/aldanjav/Work/C_CPP_projects/saddle_detector/build /home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles/saddlepts.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/saddlepts.dir/depend
 

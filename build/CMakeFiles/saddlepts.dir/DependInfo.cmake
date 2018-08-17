@@ -4,11 +4,12 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/anyoption.cpp" "/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles/saddlepts.dir/anyoption.cpp.o"
-  "/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/fast.cpp" "/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles/saddlepts.dir/fast.cpp.o"
-  "/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/fast_score.cpp" "/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles/saddlepts.dir/fast_score.cpp.o"
-  "/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/saddlepts.cpp" "/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles/saddlepts.dir/saddlepts.cpp.o"
-  "/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/src/sorb.cpp" "/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles/saddlepts.dir/sorb.cpp.o"
+  "/home/aldanjav/Work/C_CPP_projects/saddle_detector/src/anyoption.cpp" "/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles/saddlepts.dir/anyoption.cpp.o"
+  "/home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast.cpp" "/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles/saddlepts.dir/fast.cpp.o"
+  "/home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast_score.cpp" "/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles/saddlepts.dir/fast_score.cpp.o"
+  "/home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.cpp" "/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles/saddlepts.dir/lbq.cpp.o"
+  "/home/aldanjav/Work/C_CPP_projects/saddle_detector/src/saddlepts.cpp" "/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles/saddlepts.dir/saddlepts.cpp.o"
+  "/home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.cpp" "/home/aldanjav/Work/C_CPP_projects/saddle_detector/build/CMakeFiles/saddlepts.dir/sorb.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")
 
