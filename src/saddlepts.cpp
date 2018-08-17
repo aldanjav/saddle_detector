@@ -171,7 +171,7 @@ int main( int argc, char** argv )
 
 	delete opt;
 
-	// Loading image
+
 	Mat img = imread( imgpath , IMREAD_GRAYSCALE );
 	if (img.empty())
 	{
@@ -179,8 +179,6 @@ int main( int argc, char** argv )
 		return -1;
 	}
 
-//	printf("SADDLE detector parameters: \n   nLevels: %d, scaleFactor: %.1f, epsilon: %d, scoreType: %d, responseThr: %.2f, borderGab: %d, doNMS: %d, deltaThr: %d, nFeats: %d, allC1features: %d, strictMaxNMS: %d, subpixelMethod: %d, C1C2gravityCenter: %d, InnerTstMethod: %d \n",
-//			nlevels, scaleFactor, epsilon, scoreType, responseThr, edgeThreshold, doNMS, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType );
 
 	cmp::SORB detector(responseThr, scaleFactor, nlevels, edgeThreshold, epsilon, 2, scoreType, 31,
 						doNMS, descSize, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision,
@@ -203,7 +201,7 @@ int main( int argc, char** argv )
 	if (saveDeltas)
 		deltas_to_txt( kpts, ptrdeltapath );
 
-//	deltas_to_histogram(kpts);
+	deltas_to_histogram(kpts);
 
 	// ------------------------- Test with pyramids ----------------------------- //
 #if false
