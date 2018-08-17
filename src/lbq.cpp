@@ -11,7 +11,7 @@ void Binpat::BitPatterns::set_pattern_id(const int pat_id)
 
 int* Binpat::BitPatterns::get_pattern()
 {
-
+	cout << "rBRIEF ";
 	switch(pat_id_)
 	{
     	case Binpat::ORB_GV:
@@ -276,6 +276,7 @@ int* Binpat::BitPatterns::get_pattern()
 			    -13,12, -2,-13/*mean (0.032950), correlation (0.548207)*/,
 			    -13,-9,-8, -1/*mean (0.032950), correlation (0.548207)*/ 
 			};
+            bit_pattern_ = &bq[0];
             break;
         }
         case Binpat::ORB_ORIENTED: 
@@ -540,6 +541,7 @@ int* Binpat::BitPatterns::get_pattern()
 			    -13,-8, 6,6/*mean (0.364300), correlation (0.393034)*/,
 			    -7,3,6, -10/*mean (0.364300), correlation (0.393034)*/ 
 			};
+            bit_pattern_ = &bq[0];
             break;
         }
    		case Binpat::Saddle_GV:
@@ -804,6 +806,7 @@ int* Binpat::BitPatterns::get_pattern()
 			    6,-4, 12,0/*mean (0.025070), correlation (0.490793)*/,
 			    -13,4,-8, 11/*mean (0.025070), correlation (0.490793)*/ 
 			};
+            bit_pattern_ = &bq[0];
             break;
         }
    		case Binpat::Saddle_ORIENTED:
@@ -1068,6 +1071,7 @@ int* Binpat::BitPatterns::get_pattern()
 			    -5,3, 6,-7/*mean (0.291753), correlation (0.398302)*/,
 			    -9,-1,3, -6/*mean (0.291753), correlation (0.398302)*/ 
 			};
+            bit_pattern_ = &bq[0];
             break;
         }
         case Binpat::SURF_GV:
@@ -1332,6 +1336,7 @@ int* Binpat::BitPatterns::get_pattern()
 			    2,-11, 11,1/*mean (0.011373), correlation (0.688980)*/,
 			    5,-11,9, 5/*mean (0.011373), correlation (0.688980)*/ 
 			};
+            bit_pattern_ = &bq[0];
             break;
         }
         case Binpat::SURF_ORIENTED: 
@@ -1596,6 +1601,7 @@ int* Binpat::BitPatterns::get_pattern()
 			    -10,2, 8,-13/*mean (0.314450), correlation (0.598110)*/,
 			    -8,-5,8, -4/*mean (0.314450), correlation (0.598110)*/ 
 			};
+			bit_pattern_ = &bq[0];
             break;
         }
         case Binpat::OCV: 

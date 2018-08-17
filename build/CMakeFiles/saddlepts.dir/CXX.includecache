@@ -117,6 +117,10 @@ nms.cpp
 /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/nms.cpp
 sorb.h
 /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.h
+lbq.h
+/home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.h
+fast.hpp
+/home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast.hpp
 
 /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.cpp
 iterator
@@ -143,6 +147,8 @@ lbq.h
 /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.h
 opencv2/features2d/features2d.hpp
 -
+lbq.h
+/home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.h
 
 /home/aldanjav/lib/opencv-2.4.13/install_T520_gcc5.4/include/opencv/cv.h
 opencv2/core/core_c.h

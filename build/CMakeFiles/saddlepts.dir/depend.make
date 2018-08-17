@@ -7,6 +7,7 @@ CMakeFiles/saddlepts.dir/anyoption.cpp.o: /home/aldanjav/Work/C_CPP_projects/sad
 CMakeFiles/saddlepts.dir/fast.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast.cpp
 CMakeFiles/saddlepts.dir/fast.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast.hpp
 CMakeFiles/saddlepts.dir/fast.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast_score.hpp
+CMakeFiles/saddlepts.dir/fast.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.h
 CMakeFiles/saddlepts.dir/fast.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.h
 CMakeFiles/saddlepts.dir/fast.cpp.o: /home/aldanjav/lib/opencv-2.4.13/install_T520_gcc5.4/include/opencv2/calib3d/calib3d.hpp
 CMakeFiles/saddlepts.dir/fast.cpp.o: /home/aldanjav/lib/opencv-2.4.13/install_T520_gcc5.4/include/opencv2/contrib/contrib.hpp
@@ -40,6 +41,7 @@ CMakeFiles/saddlepts.dir/fast.cpp.o: /home/aldanjav/lib/opencv-2.4.13/install_T5
 
 CMakeFiles/saddlepts.dir/fast_score.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast_score.cpp
 CMakeFiles/saddlepts.dir/fast_score.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast_score.hpp
+CMakeFiles/saddlepts.dir/fast_score.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.h
 CMakeFiles/saddlepts.dir/fast_score.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.h
 CMakeFiles/saddlepts.dir/fast_score.cpp.o: /home/aldanjav/lib/opencv-2.4.13/install_T520_gcc5.4/include/opencv2/core/core.hpp
 CMakeFiles/saddlepts.dir/fast_score.cpp.o: /home/aldanjav/lib/opencv-2.4.13/install_T520_gcc5.4/include/opencv2/core/mat.hpp
@@ -55,6 +57,8 @@ CMakeFiles/saddlepts.dir/lbq.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_de
 CMakeFiles/saddlepts.dir/lbq.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.h
 
 CMakeFiles/saddlepts.dir/saddlepts.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/anyoption.h
+CMakeFiles/saddlepts.dir/saddlepts.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/fast.hpp
+CMakeFiles/saddlepts.dir/saddlepts.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/lbq.h
 CMakeFiles/saddlepts.dir/saddlepts.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/nms.cpp
 CMakeFiles/saddlepts.dir/saddlepts.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/saddlepts.cpp
 CMakeFiles/saddlepts.dir/saddlepts.cpp.o: /home/aldanjav/Work/C_CPP_projects/saddle_detector/src/sorb.h

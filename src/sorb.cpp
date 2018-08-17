@@ -43,7 +43,6 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui_c.h>
-
 #include "sorb.h"
 #include "lbq.h"
 
@@ -103,50 +102,6 @@ HarrisResponses(const Mat& img, vector<SadKeyPoint>& pts, int blockSize, float h
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Function that computes the Hessian responses in a
- * single pixel using the neighborhood 9
- */
-#if 0
-static void
-HessianResponses(const Mat& img, vector<KeyPoint>& pts, int blockSize )
-{
-    CV_Assert( img.type() == CV_8UC1 && blockSize*blockSize <= 2048 );
-
-    size_t ptidx, ptsize = pts.size();
-
-    Mat img_blur;
-    float sigmaX = 4.0;
-    GaussianBlur(img, img_blur, Size(0,0), sigmaX, 0, BORDER_DEFAULT);
-
-    const uchar* ptr00 = img.ptr<uchar>();
-    int step = (int)(img.step/img.elemSize1());
-
-    AutoBuffer<int> ofsbuf(blockSize*blockSize);
-    int* ofs = ofsbuf;
-    for( int i = 0; i < blockSize; i++ )
-        for( int j = 0; j < blockSize; j++ )
-            ofs[i*blockSize + j] = (int)(i*step + j);
-
-    for( ptidx = 0; ptidx < ptsize; ptidx++ )
-    {
-        int x0 = cvRound(pts[ptidx].pt.x);
-        int y0 = cvRound(pts[ptidx].pt.y);
-
-        const uchar* ptr0 = ptr00 + y0*step + x0;
-
-        int Ixx = ptr0[1] + ptr0[-1] - 2*ptr0[0];
-        int Iyy = ptr0[step] + ptr0[-step] - 2*ptr0[0];
-		int Ixy = ptr0[1] + ptr0[-1] + ptr0[step] + ptr0[-step] - 4*ptr0[0];
-
-		// Multiplied by -1 to invert the sign of the hessian response
-		pts[ptidx].response = ((float)Ixx * Iyy - (float)Ixy * Ixy) * -1.f;
-
-    }
-}
-#endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static float IC_Angle(const Mat& image, const int half_k, Point2f pt,
@@ -360,13 +315,14 @@ static inline double getScaleDouble(int level, int firstLevel, double scaleFacto
 SORB::SORB(double _responseThr, float _scaleFactor, int _nlevels, int _edgeThreshold,
          int _epsilon, int _WTA_K, int _scoreType, int _patchSize, int _doNMS, int _descSize, uchar _deltaThr, int _nfeatures,
 		 bool _allC1feats , bool _strictMaximum, int _subPixPrecision , bool _gravityCenter, int _innerTstType, int _minArcLength,
-		 int _maxArcLength, short _ringsType ) :
+		 int _maxArcLength, short _ringsType, int _binPattern ) :
 		 responseThr(_responseThr), scaleFactor(_scaleFactor), nlevels(_nlevels),
 		 edgeThreshold(_edgeThreshold), epsilon(_epsilon), WTA_K(_WTA_K),
 		 scoreType(_scoreType), patchSize(_patchSize), doNMS(_doNMS),
 		 descSize(_descSize), deltaThr(_deltaThr), nfeatures(_nfeatures),
 		 allC1feats(_allC1feats), strictMaximum(_strictMaximum), subPixPrecision(_subPixPrecision), gravityCenter(_gravityCenter),
-		 innerTstType(_innerTstType), minArcLength(_minArcLength), maxArcLength(_maxArcLength), ringsType(_ringsType)
+		 innerTstType(_innerTstType), minArcLength(_minArcLength), maxArcLength(_maxArcLength), ringsType(_ringsType), 
+         binPattern(_binPattern)
 {}
 
 int SORB::descriptorSize() const
@@ -759,7 +715,9 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
         // Detect SADDLE features
         FastFeatureDetector2 fd( epsilon, doNMS, ringsType, level,
                                  responseThr, deltaThr, scoreType,
-								 allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
+								 allC1feats, strictMaximum, subPixPrecision,
+                                 gravityCenter, innerTstType, minArcLength,
+                                 maxArcLength );
         fd.detect2(imagePyramid[level], keypoints, respPyramid[level], maskPyramid[level]);
 
         
@@ -1040,7 +998,7 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
 
         const int npoints = 512;
         Point patternbuf[npoints];
-        Binpat::BitPatterns learn_bin_patterns(Binpat::Saddle_ORIENTED);
+        Binpat::BitPatterns learn_bin_patterns(binPattern);
         const Point* pattern0 = (const Point*)learn_bin_patterns.get_pattern();
 
         if( patchSize != 31 )
