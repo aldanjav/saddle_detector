@@ -1,3 +1,0 @@
-/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles/rebuild_cache.dir
-/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles/saddlepts.dir
-/home/aldanjav/mnt/dg/lib/saddle_detector_from_git/saddle_detector/build_t520/CMakeFiles/edit_cache.dir

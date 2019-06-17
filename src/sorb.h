@@ -172,7 +172,7 @@ public:
      * gridRows            Grid rows count.
      * gridCols            Grid column count.
      */
-    CV_WRAP GridAdaptedFeatureDetector( const Ptr<cmp::FeatureDetector>& detector=0,
+    CV_WRAP GridAdaptedFeatureDetector( const Ptr<cmp::FeatureDetector>& detector,
                                         int maxTotalKeypoints=1000,
                                         int gridRows=4, int gridCols=4 );
 
