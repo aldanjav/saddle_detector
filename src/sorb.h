@@ -60,15 +60,7 @@ public:
     	(*this)(image, mask, keypoints, descriptors);
     };
 
-    double getPyramidTime();
-    double getDetectTime();
-    double getDescribeTime();
-    double getInnerTime();
-    double getOutterTime();
 
-    int getNumInner();
-    int getNumInnerFul();
-    int getNumOutterFul();
 
 
 protected:

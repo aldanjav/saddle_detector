@@ -43,23 +43,6 @@ int main( int argc, char** argv )
 	double responseThr, scaleFactor;
 	uchar deltaThr;
 	short ringsType;
-
-//	string source = "/home/aldanjav/mount_point/cmp_datagrid/Work/data/youtube_downloads/hertford_oxford/Clip01/video.mp4";
-//	VideoCapture inputVideo(source);              // Open input
-//	if (!inputVideo.isOpened())
-//	{
-//		cout  << "Could not open the input video: " << source << endl;
-//		return -1;
-//	}
-//
-//	Mat src;
-//	inputVideo >> src;              // read
-//
-//	namedWindow( "Frame", cv::WINDOW_NORMAL);
-//	imshow( "Frame", src );
-
-
-	bool saveDeltas = true;
 	char deltaoutpath[] = "./outputs/deltas.txt";
 	char* ptrdeltapath = deltaoutpath;
 
@@ -182,7 +165,6 @@ int main( int argc, char** argv )
 
 
 	// Loading image
-//	Mat img(Size(320,240),CV_8UC1);
 	Mat img = imread( imgpath , IMREAD_GRAYSCALE );
 	if (img.empty())
 	{
@@ -190,8 +172,6 @@ int main( int argc, char** argv )
 		return -1;
 	}
 
-//	printf("SADDLE detector parameters: \n   nLevels: %d, scaleFactor: %.1f, epsilon: %d, scoreType: %d, responseThr: %.2f, borderGab: %d, doNMS: %d, deltaThr: %d, nFeats: %d, allC1features: %d, strictMaxNMS: %d, subpixelMethod: %d, C1C2gravityCenter: %d, InnerTstMethod: %d \n",
-//			nlevels, scaleFactor, epsilon, scoreType, responseThr, edgeThreshold, doNMS, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType );
 
 	cmp::SORB detector(responseThr, scaleFactor, nlevels, edgeThreshold, epsilon, 2, scoreType, 31,
 						doNMS, descSize, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision,
@@ -211,33 +191,6 @@ int main( int argc, char** argv )
 		if (!txt_from_feats( kpts, dcts, outpath))
 			return -1;
 
-	if (saveDeltas)
-		deltas_to_txt( kpts, ptrdeltapath );
-
-//	deltas_to_histogram(kpts);
-
-	// ------------------------- Test with pyramids ----------------------------- //
-#if false
-	vector<Mat> pyrAdjacent(nlevels), pyrOrigin(nlevels);
-	image_pyramid_building(img, pyrAdjacent, pyrOrigin, nlevels, 0, scaleFactor, edgeThreshold, 31 );
-
-	for (int i=0; i<nlevels; i++)
-	{
-		ostringstream ss;
-		ss << i;
-		String mytitle = ("Scale " + ss.str() );
-
-		Mat dif, normdif;
-		substract_images( pyrAdjacent[i], pyrOrigin[i], dif );
-		normalize(dif, normdif, 0, 255, NORM_MINMAX);
-
-		namedWindow(mytitle, cv::WINDOW_NORMAL);
-		imshow( mytitle, normdif );
-	}
-#endif
-	// -------------------------------------------------------------------------- //
-
-
 	if (showVis)
 	{
 		int levelVis = 6, n=0;
@@ -245,10 +198,9 @@ int main( int argc, char** argv )
 		vector<cv::KeyPoint> kptsShow;
 		kptsShow.resize(kpts.size());
 		for( size_t i = 0; i < kpts.size(); i++ )
-			if (kpts[i].octave >= 0)//levelVis
+			if (kpts[i].octave >= 0)
 			{
 				kptsShow[i] = kpts[i];
-//				printf("%02d: %.3f, %.3f\n", n, kpts[i].pt.x, kpts[i].pt.y);
 				n++;
 			}
 		drawKeypoints(img, kptsShow, img_feats, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
@@ -368,31 +320,6 @@ int txt_from_feats(vector<cmp::SadKeyPoint> kpts, Mat dcts, char *outpath)
 	return 1;
 }
 
-int deltas_to_txt(vector<cmp::SadKeyPoint> kpts, char *outpath)
-{
-
-	FILE * ftfile;
-	ftfile = fopen (outpath, "w+");
-	if (!ftfile)
-	{
-		cout << "Could not create the file: " << outpath << endl;
-		return -1;
-   	}
-
-	// Header and number of features
-	int num_feats = kpts.size(), iDesc = 0;
-
-	fprintf(ftfile, "%d\n", num_feats);
-
-	for (vector<cmp::SadKeyPoint>::iterator kp = kpts.begin(), kpEnd = kpts.end(); kp != kpEnd; ++kp, iDesc++)
-	{
-		fprintf(ftfile, "%d\n", kp->delta );
-	}
-
-	fclose(ftfile);
-	return 1;
-}
-
 
 float getScale(int level, int firstLevel, double scaleFactor)
 {
@@ -494,9 +421,4 @@ void deltas_to_histogram(vector<cmp::SadKeyPoint> kpts)
 						 Point( bin_w*(i), hist_h - cvRound(delta_hist.at<float>(i)) ),
 						 Scalar( 255, 0, 0), 2, 8, 0  );
 	}
-
-	/// Display
-//	namedWindow("calcHist Demo", CV_WINDOW_AUTOSIZE );
-//	imshow("calcHist Demo", histImage );
-
 }

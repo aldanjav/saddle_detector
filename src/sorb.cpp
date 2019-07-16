@@ -34,7 +34,6 @@
 
 /** Authors: Ethan Rublee, Vincent Rabaud, Gary Bradski */
 
-//#include "precomp.hpp"
 #include <iterator>
 #include "fast_score.hpp"
 #include "fast.hpp"
@@ -101,50 +100,6 @@ HarrisResponses(const Mat& img, vector<SadKeyPoint>& pts, int blockSize, float h
     }
 }
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Function that computes the Hessian responses in a
- * single pixel using the neighborhood 9
- */
-#if 0
-static void
-HessianResponses(const Mat& img, vector<KeyPoint>& pts, int blockSize )
-{
-    CV_Assert( img.type() == CV_8UC1 && blockSize*blockSize <= 2048 );
-
-    size_t ptidx, ptsize = pts.size();
-
-    Mat img_blur;
-    float sigmaX = 4.0;
-    GaussianBlur(img, img_blur, Size(0,0), sigmaX, 0, BORDER_DEFAULT);
-
-    const uchar* ptr00 = img.ptr<uchar>();
-    int step = (int)(img.step/img.elemSize1());
-
-    AutoBuffer<int> ofsbuf(blockSize*blockSize);
-    int* ofs = ofsbuf;
-    for( int i = 0; i < blockSize; i++ )
-        for( int j = 0; j < blockSize; j++ )
-            ofs[i*blockSize + j] = (int)(i*step + j);
-
-    for( ptidx = 0; ptidx < ptsize; ptidx++ )
-    {
-        int x0 = cvRound(pts[ptidx].pt.x);
-        int y0 = cvRound(pts[ptidx].pt.y);
-
-        const uchar* ptr0 = ptr00 + y0*step + x0;
-
-        int Ixx = ptr0[1] + ptr0[-1] - 2*ptr0[0];
-        int Iyy = ptr0[step] + ptr0[-step] - 2*ptr0[0];
-		int Ixy = ptr0[1] + ptr0[-1] + ptr0[step] + ptr0[-step] - 4*ptr0[0];
-
-		// Multiplied by -1 to invert the sign of the hessian response
-		pts[ptidx].response = ((float)Ixx * Iyy - (float)Ixy * Ixy) * -1.f;
-
-    }
-}
-#endif
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 static float IC_Angle(const Mat& image, const int half_k, Point2f pt,
@@ -691,7 +646,6 @@ static void nmsVectorwiseDown(vector<SadKeyPoint>& kpquery, Mat& response, float
 			score <= p3[xc-1] || score <= p3[xc] || score <= p3[xc+1] )
     	{
     		kpquery.erase(kpquery.begin() + iPt );
-//    		iPt--;
     	}
     }
 }
@@ -730,10 +684,8 @@ static void nmsVectorwiseUp(vector<SadKeyPoint>& kpcurr, vector<SadKeyPoint>& kp
 			score <= p3[xc-1] || score <= p3[xc] || score <= p3[xc+1] )
 		{
 			kpcurr.erase( kpcurr.begin() + iPt );
-//			iPt--;
 		}
 	}
-//    std::cout << "Kept feature ratio UP test: " << 100* (int)kpcurr.size() / numpts << "%" << std::endl;
 }
 
 /** Compute the NMS along the image pyramid
@@ -743,12 +695,6 @@ static void nmsPyramid(vector<Mat>& respPyramid, vector<vector<SadKeyPoint> >& a
 {
     // Process each keypoint
 	int nlevels = (int)allKeypoints.size();
-//	vector<KeyPoint> & kptsCurr = allKeypoints[0];
-//	vector<KeyPoint> & kptsDown = allKeypoints[1];
-//
-//    // For the first level
-//    if ( nlevels>1 && (int)kptsCurr.size() && (int)kptsDown.size() )
-//    	nmsVectorwiseDown(kptsCurr, respPyramid[1], scaleFactor);
 
     // Intermediate levels
 	for (int level = 1; level < nlevels-1; ++level)
@@ -756,10 +702,6 @@ static void nmsPyramid(vector<Mat>& respPyramid, vector<vector<SadKeyPoint> >& a
 		vector<SadKeyPoint> & kptsCurr = allKeypoints[level];
 		vector<SadKeyPoint> & kptsDown = allKeypoints[level+1];
 		vector<SadKeyPoint> & kptsUp   = allKeypoints[level-1];
-
-//		namedWindow("Responses", cv::WINDOW_NORMAL);
-//		imshow( "Responses", respPyramid[level] );
-//		waitKey(0);
         
         if ((int)kptsCurr.size())
         {
@@ -855,29 +797,6 @@ static void computeFeatResponse(vector<vector<SadKeyPoint> >& allKeypoints, int 
  * The variable "firstLevel" is not anymore the index of the first level, now is
  * the threshold for significant brighter and darker so called epsilon.
  */
-double innerTime, outterTime;
-int numInners, numInnersFul, numOuttersFul;
-
-int SORB::getNumInner()
-{
-	return numInners;
-}
-int SORB::getNumInnerFul()
-{
-	return numInnersFul;
-}
-int SORB::getNumOutterFul()
-{
-	return numOuttersFul;
-}
-double SORB::getInnerTime()
-{
-	return innerTime;
-}
-double SORB::getOutterTime()
-{
-	return outterTime;
-}
 
 struct KeypointResponseGreater
 {
@@ -975,7 +894,6 @@ static void computeKeyPoints(const vector<Mat>& imagePyramid,
         nfeaturesPerLevel[level] = cvRound(ndesiredFeaturesPerScale);
         sumFeatures += nfeaturesPerLevel[level];
         ndesiredFeaturesPerScale *= factor;
-   //     std::cout << level << " " << factor << " " << nfeaturesPerLevel[level] << std::endl;
     }
     nfeaturesPerLevel[nlevels-1] = std::max(nfeatures - sumFeatures, 0);
 
@@ -1005,7 +923,6 @@ static void computeKeyPoints(const vector<Mat>& imagePyramid,
     for (int level = nlevels - 1; level >= 0; level--)
     {
         int featuresNum = nfeaturesPerLevel[level] + num_for_take_more;
-//        printf("Level: %d, nFeatExpected: %d\n", level, featuresNum );
         allKeypoints[level].reserve(featuresNum*2);
 
         float sf = getScale(level, 0, scaleFactor);
@@ -1038,19 +955,10 @@ static void computeKeyPoints(const vector<Mat>& imagePyramid,
              keypointEnd = keypoints.end(); keypoint != keypointEnd; ++keypoint)
         {
             keypoint->octave = level;
-//            keypoint->size = patchSize*sf;
             keypoint->size *= sf;
         }
         computeOrientation(imagePyramid[level], keypoints, halfPatchSize, umax);
 
-        // Counting patterns
-//      numInners = fd.getNumInner();
-//		numInnersFul  = fd.getNumInnerFul();
-//		numOuttersFul = fd.getNumOutterFul();
-//		innerTime = 1000. * fd.getQuickTestTime()/numInners;
-//		outterTime = 1000. * fd.getFullTestTime()/numInnersFul;
-
-//        printf("Level: %d, nFeatExported: %d\n", level, (int)keypoints.size() );
     }
 
     // Compute Non Maximum Suppression along the pyramid
@@ -1093,22 +1001,6 @@ static void computeDescriptors(const Mat& image, vector<SadKeyPoint>& keypoints,
  * and it is fixed inside this function
  */
 
-double pyramidTime = 0;
-double detectTime = 0;
-double describeTime = 0;
-
-double SORB::getPyramidTime()
-{
-	return pyramidTime;
-}
-double SORB::getDetectTime()
-{
-	return detectTime;
-}
-double SORB::getDescribeTime()
-{
-	return describeTime;
-}
 
 void substract_images( Mat iMatlab )
 {
@@ -1151,7 +1043,6 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
     int border = std::max(edgeThreshold, std::max(halfPatchSize, HARRIS_BLOCK_SIZE/2))+1;
 
     Mat image = _image.getMat(), mask = _mask.getMat();
-//    substract_images( image ); // Compare images !!!!!!!!!!!!!
 
     if( image.type() != CV_8UC1 )
         cvtColor(_image, image, CV_BGR2GRAY);
@@ -1166,8 +1057,7 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
         levelsNum++;
     }
 
-    double st = cv::getTickCount();
-	float sigma = 1.5;
+    float sigma = 1.5;
 
     // Pre-compute the scale pyramids
     vector<Mat> imagePyramid(levelsNum), maskPyramid(levelsNum), respPyramid(levelsNum);
@@ -1182,11 +1072,7 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
         respPyramid[level] = Mat::zeros(sz, CV_64F);
         errorResize[level] = image.cols*scale - cvRound(image.cols*scale);
 
-#if false
-        resize(image, imagePyramid[level], sz, 0, 0, INTER_LINEAR);
-		copyMakeBorder(imagePyramid[level], imagePyramid[level], border, border, border, border, BORDER_REFLECT_101+BORDER_ISOLATED);
-		imagePyramid[level] = imagePyramid[level](Rect(border, border, sz.width, sz.height));
-#else
+
         if( !mask.empty() )
         {
             masktemp = Mat(wholeSize, mask.type());
@@ -1198,18 +1084,12 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
         {
             if( level < firstLevel )
             {
-//				Mat blurredImg;
-//				cv::GaussianBlur(image, blurredImg, Size(0,0), sigma, 0);
-//				resize(blurredImg, imagePyramid[level], sz, 0, 0, INTER_LINEAR);
                 if (!mask.empty())
             	resize(image, imagePyramid[level], sz, 0, 0, INTER_LINEAR);
                     resize(mask, maskPyramid[level], sz, 0, 0, INTER_LINEAR);
             }
             else
             {
-//				Mat blurredImg;
-//				cv::GaussianBlur(imagePyramid[level-1], blurredImg, Size(0,0), sigma, 0);
-//				resize(blurredImg, imagePyramid[level], sz, 0, 0, INTER_LINEAR);
                 resize(imagePyramid[level-1], imagePyramid[level], sz, 0, 0, INTER_LINEAR);
                 if (!mask.empty())
                 {
@@ -1232,13 +1112,10 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
                 copyMakeBorder(mask, masktemp, border, border, border, border,
                                BORDER_CONSTANT+BORDER_ISOLATED);
         }
-#endif
     }
 
-    pyramidTime += cv::getTickCount() - st;
-
+    
     // Pre-compute the keypoints (we keep the best over all scales, so this has to be done beforehand
-    st = cv::getTickCount();
     vector < vector<SadKeyPoint> > allKeypoints;
     if( do_keypoints )
     {
@@ -1251,9 +1128,7 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
     }
     else
     {
-        // Remove keypoints very close to the border
-        //KeyPointsFilter::runByImageBorder(_keypoints, image.size(), edgeThreshold);
-
+        
         // Cluster the input keypoints depending on the level they were computed at
         allKeypoints.resize(levelsNum);
         for (vector<SadKeyPoint>::iterator keypoint = _keypoints.begin(),
@@ -1267,19 +1142,16 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
                 continue;
 
             vector<SadKeyPoint> & keypoints = allKeypoints[level];
-//            float scale = 1/getScale(level, firstLevel, scaleFactor);
             double scale = 1.0/getScaleDouble(level, firstLevel, scaleFactor);
             for (vector<SadKeyPoint>::iterator keypoint = keypoints.begin(),
                  keypointEnd = keypoints.end(); keypoint != keypointEnd; ++keypoint)
                 keypoint->pt *= scale;
         }
     }
-    detectTime += cv::getTickCount() - st;
 
 
     Mat descriptors;
     vector<Point> pattern;
-    st = cv::getTickCount();
     if( do_descriptors )
     {
         int nkeypoints = 0;
@@ -1336,7 +1208,6 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
             // Preprocess the resized image
             Mat& workingMat = imagePyramid[level];
 
-            //boxFilter(working_mat, working_mat, working_mat.depth(), Size(5,5), Point(-1,-1), true, BORDER_REFLECT_101);
             GaussianBlur(workingMat, workingMat, Size(7, 7), 2, 2, BORDER_REFLECT_101);
             computeDescriptors(workingMat, keypoints, desc, pattern, descSize, WTA_K);
         }
@@ -1344,23 +1215,16 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
         // Copy to the output data
         if (level != firstLevel)
         {
-//            float scale = getScale(level, firstLevel, scaleFactor);
             double scale = getScaleDouble(level, firstLevel, scaleFactor);
             for (vector<SadKeyPoint>::iterator keypoint = keypoints.begin(),
                  keypointEnd = keypoints.end(); keypoint != keypointEnd; ++keypoint) {
                 keypoint->pt *= scale;
-//                keypoint->pt.x = (keypoint->pt.x + errorResize[level])*scale;
-//                keypoint->pt.y = (keypoint->pt.y + errorResize[level])*scale;
               }
         }
         // And add the keypoints to the output
         _keypoints.insert(_keypoints.end(), keypoints.begin(), keypoints.end());
     }
-    describeTime += cv::getTickCount() - st;
 
-    // Plot the coordinate of the points detected
-//    for (int i=0; i<(int)_keypoints.size() ; i++)
-//		std::cout << "(" << _keypoints[i].pt.x << "," << _keypoints[i].pt.y << ")" << std::endl;
 }
 
 void SORB::detectImpl( const Mat& image, vector<SadKeyPoint>& keypoints, const Mat& mask ) const
