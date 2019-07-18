@@ -57,7 +57,7 @@ namespace cmp
   inline bool inner_test(int pixel_inner[25], int pixel_mid[25], int pixel_outer[25], const uchar* ptr, double& A, double& B, double& C, double& D, uchar& N, uchar opc);
   inline bool inner_sym_test(int pixel_inner[25], const uchar* ptr, double& A, double& B, double& C, double& D, uchar& N );
   inline void blob_test(int pixel_mid[25], int pixel_outer[25], const uchar* ptr, uchar& N);
-
+ inline void subpixel_precision(int i, int j, const double* curr, const double* prev, const double* pprev, float& x, float& y, float& scoreSc, unsigned char interp_mode);
 
   template<int patternSize>
   void FAST_t(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold, bool nonmax_suppression)
@@ -753,6 +753,43 @@ namespace cmp
 
 }
 
+  inline void subpixel_precision(int j, int i, const double* curr, const double* prev, const double* pprev, float& x, float& y, float& scoreSc, unsigned char interp_mode)
+  {
+
+    switch(interp_mode)
+    {
+      case 0:
+        // No interpolation
+        x = (float)(j + 0.5);
+        y = (float)(i - 0.5);
+        break;
+
+      case 1:
+      {
+        // Bilinear
+        float sumresp = prev[j] + prev[j + 1] + prev[j-1] + pprev[j] + pprev[j + 1] + pprev[j-1] + curr[j] + curr[j + 1] + curr[j-1];
+        x = (j-1)*(pprev[j-1] + prev[j-1] + curr[j-1] ) + (j)*(pprev[j] + prev[j] + curr[j] ) + (j+1)*(pprev[j+1] + prev[j+1] + curr[j+1]);
+        y = (i-1)*(prev[j-1] + prev[j] + prev[j+1]) + (i)*(curr[j-1] + curr[j] + curr[j+1]) + (i-2)*(pprev[j-1] + pprev[j] + pprev[j+1]);
+        x /= sumresp;
+        y /= sumresp;
+        break;
+      }
+
+      case 2:
+      {
+        // Quadratic
+        double offset[2];
+        scoreSc = (float)FitQuadratic( offset, pprev, prev, curr, j);
+        x = (float)    j + offset[1];
+        y = (float)(i-1) + offset[0];
+        break;
+      }
+
+      default:
+        std::cerr << "Unknown sub-pixel precision estimation" << std::endl;
+    }
+  }
+
   void FASTsaddle_shinner(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                           int threshold, int nonmax_suppression, float scale, double responsethr, uchar deltaThr, int scoreType,
   						bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
@@ -1050,8 +1087,9 @@ namespace cmp
       threshold2 = scEps*(double)threshold;
     }
 
-    // ----- My try of unification (Scores and Coordinates positions) ----- //
-    AutoBuffer<double> _bufScCp(img.cols*3*(sizeof(double) + sizeof(int) + sizeof(double) + sizeof(uchar)) + 12 );
+    // Allocating memory for all the buffer, each sizeof corresponds to one buffer
+    AutoBuffer<double> _bufScCp(img.cols*3*(2*sizeof(double) + 2*sizeof(int) + sizeof(uchar)) + 12 );
+
     // Set the pointers for SCORES
     double* bufSc[3];
     bufSc[0] = _bufScCp;
@@ -1075,6 +1113,18 @@ namespace cmp
     bufDl[1] = bufDl[0] + img.cols;
     bufDl[2] = bufDl[1] + img.cols;
 
+    // Memory allocation for the BLOB locations
+    int* bufBlobPos[3];
+    bufBlobPos[0] = (int*)alignPtr(bufDl[2] + img.cols, sizeof(int)) + 1;
+    bufBlobPos[1] = bufBlobPos[0] + img.cols + 1;
+    bufBlobPos[2] = bufBlobPos[1] + img.cols + 1;
+
+    double* bufBlobSc[3];
+    bufBlobSc[0] = (double*)alignPtr(bufBlobPos[2] + img.cols, sizeof(double)) + 1;
+    bufBlobSc[1] = bufBlobSc[0] + img.cols;
+    bufBlobSc[2] = bufBlobSc[1] + img.cols;
+    memset(bufBlobSc[0], 0, img.cols*3*sizeof(double));
+
     int idx;
     uchar p_regs, count_elem;
     uchar *labels, *begins, *lengths;
@@ -1088,12 +1138,15 @@ namespace cmp
     {
       const uchar* ptr = img.ptr<uchar>(i) + 3;
       double* curr = bufSc[(i - 3)%3];
+      double* currBlobSc = bufBlobSc[(i - 3)%3];
       double* currV = bufV[(i - 3)%3];
       uchar* currDl = bufDl[(i - 3)%3];
       int* cornerpos = bufCp[(i - 3)%3];
+      int* blobpos = bufBlobPos[(i - 3)%3];
 
-      memset(curr, 0, img.cols*sizeof(double) );
-      int ncorners = 0;
+      memset(curr, 0, img.cols*sizeof(double));
+      memset(currBlobSc, 0, img.cols*sizeof(double));
+      int ncorners = 0, nblobs = 0;
 
       if( i < img.rows - 3 )
       {
@@ -1110,8 +1163,8 @@ namespace cmp
             blob_test(pixel_mid, pixel, ptr, blob_type);
             if (blob_type)
             {
-              cornerpos[ncorners++] = j;
-              curr[j] = cmpFeatureScore(ptr, pixel, lbl, v, 0, SORB::HESS_SCORE);
+              blobpos[nblobs++] = j;
+              currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, v, 0, SORB::HESS_SCORE);
             }
             continue;
           }
@@ -1246,9 +1299,7 @@ namespace cmp
         }
       }
       cornerpos[-1] = ncorners;
-
-      if( (i == 3) || gravityCenter )
-        continue;
+      blobpos[-1] = nblobs;
 
       const double* prev = bufSc[(i - 4 + 3)%3];
       const double* pprev = bufSc[(i - 5 + 3)%3];
@@ -1280,28 +1331,9 @@ namespace cmp
         if( !(nonmax_suppression>0) || nmsFlag )
         {
           const uchar* ptr1 =  img.ptr<uchar>(i - 1) + j;
-
-        	if (subPixPrecision == 0)
-        		keypoints.push_back(SadKeyPoint((float)j, (float)(i-1), 7.f, -1, (float)scoreSc, 1.f ));
-        	else if (subPixPrecision == 1)
-        	{
-        		float sumresp = prev[j] + prev[j + 1] + prev[j-1] + pprev[j] + pprev[j + 1] + pprev[j-1] + curr[j] + curr[j + 1] + curr[j-1];
-  					float thetaX = (j-1)*(pprev[j-1] + prev[j-1] + curr[j-1] ) + (j)*(pprev[j] + prev[j] + curr[j] ) + (j+1)*(pprev[j+1] + prev[j+1] + curr[j+1] );
-  					float thetaY = (i-1)*(prev[j-1] + prev[j] + prev[j+1]) + (i)*(curr[j-1] + curr[j] + curr[j+1]) + (i-2)*(pprev[j-1] + pprev[j] + pprev[j+1]) ;
-  					thetaX = thetaX/sumresp;
-  					thetaY = thetaY/sumresp;
-  					keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 7.f, -1, (float)scoreSc, 1.f ));
-        	}
-        	else if (subPixPrecision == 2)
-        	{
-        		double offset[2];
-  					scoreSc = (float)FitQuadratic( offset, pprev, prev, curr, j);
-  					float thetaX = (float)j + offset[1];
-  					float thetaY = (float)(i-1) + offset[0];
-  					keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 7.f, -1, (float)scoreSc, 1.f ));
-        	}
-        	else
-        		std::cerr << "Unknown sub-pixel precision estimation" << std::endl;
+          float thetaX, thetaY;
+          subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
+          keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
 
           pr[j] = scoreSc;
           keypoints.back().intensityCenter = v;
@@ -1337,28 +1369,6 @@ namespace cmp
       }
     } // Here the Y axis sliding window loop finishes
 
-    if (gravityCenter)
-    {
-      vector<vector<Point> > contours;
-		  vector<Vec4i> hierarchy;
-
-    	findContours( binImg, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE );
-
-		  for (int i=0; i<(int)contours.size(); i++)
-		  {
-        double thetaX=0.0, thetaY=0.0;
-			  int nPix = (int)contours[i].size();
-
-			  for (int j=0; j<nPix; j++)
-			  {
-				  thetaX += contours[i][j].x;
-				  thetaY += contours[i][j].y;
-			  }
-  			thetaX /= nPix;
-  			thetaY /= nPix;
-  			keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 7.f, -1, (float)0.0, 1.f ));
-		  }
-    }
   }
 
   /*--------------- My FAST detector for SADDLE with inner pattern with simpler implementation  (End) -------------------*/

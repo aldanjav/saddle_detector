@@ -233,7 +233,7 @@ int main( int argc, char** argv )
 				n++;
 			}
 		drawKeypoints(img, kptsShow, img_feats, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-		imwrite( "output_features.jpg", img_feats );
+		imwrite( "../outcomes/output_features.jpg", img_feats );
 		namedWindow("Saddle features", cv::WINDOW_NORMAL);
 		imshow( "Saddle features", img_feats );
 
