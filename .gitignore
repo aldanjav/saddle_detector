@@ -4,3 +4,11 @@
 /build_lascar
 /build_lcgpu
 All_Souls_01.jpg
+/src/CMakeFiles
+/src/CMakeCache.txt
+.cproject
+.project
+.settings/
+/build_t520
+/build
+/build/CMakeFiles

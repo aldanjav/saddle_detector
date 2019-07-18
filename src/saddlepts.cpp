@@ -21,13 +21,14 @@
 #include "anyoption.h"
 #include "nms.cpp"
 #include "sorb.h"
+#include "lbq.h"
+#include "fast.hpp"
 
 
 using namespace cv;
 void parse_opt( int argc, char* argv[], AnyOption * opt );
 void readme();
 int txt_from_feats(vector<cmp::SadKeyPoint> kpts, Mat dcts, char *outpath);
-int deltas_to_txt(vector<cmp::SadKeyPoint> kpts, char *outpath);
 void deltas_to_histogram(vector<cmp::SadKeyPoint> kpts);
 float getScale(int level, int firstLevel, double scaleFactor);
 void image_pyramid_building(Mat image, vector<Mat>& pyrAdjacent, vector<Mat>& pyrOrigin, int levelsNum, int firstLevel, double scaleFactor, int edgeThreshold, int patchSize );
@@ -38,11 +39,12 @@ int main( int argc, char** argv )
 {
 	AnyOption *opt = new AnyOption();
 	char *imgpath, *outpath;
-	int epsilon, nlevels, edgeThreshold, doNMS, scoreType, descSize, nfeatures, subPixPrecision, innerTstType, minArcLength, maxArcLength;
+	int epsilon, nlevels, edgeThreshold, doNMS, scoreType, descSize, nfeatures, subPixPrecision, innerTstType, minArcLength, maxArcLength, binPattern;
 	bool showVis, savefile, allC1feats, strictMaximum, gravityCenter;
 	double responseThr, scaleFactor;
 	uchar deltaThr;
 	short ringsType;
+	bool saveDeltas = true;
 	char deltaoutpath[] = "./outputs/deltas.txt";
 	char* ptrdeltapath = deltaoutpath;
 
@@ -161,6 +163,11 @@ int main( int argc, char** argv )
 	else
 		ringsType = 4; //TYPE_SADDLE_INNER_PATTERN
 
+	if( opt->getValue( 'b' ) || opt->getValue( "binpattern" ) )
+		binPattern = atoi(opt->getValue( 'b' ));
+	else
+		binPattern = Binpat::OCV;
+
 	delete opt;
 
 
@@ -172,10 +179,9 @@ int main( int argc, char** argv )
 		return -1;
 	}
 
-
 	cmp::SORB detector(responseThr, scaleFactor, nlevels, edgeThreshold, epsilon, 2, scoreType, 31,
 						doNMS, descSize, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision,
-						gravityCenter, innerTstType, minArcLength, maxArcLength, ringsType );
+						gravityCenter, innerTstType, minArcLength, maxArcLength, ringsType, binPattern );
 
 	vector<cmp::SadKeyPoint> kpts;
 	Mat dcts, mask;
@@ -186,10 +192,33 @@ int main( int argc, char** argv )
 	int num_kpts = (int)kpts.size();
 	printf("\nTotal number of features %d\n\n", num_kpts);
 
-
 	if (savefile)
 		if (!txt_from_feats( kpts, dcts, outpath))
 			return -1;
+
+	deltas_to_histogram(kpts);
+
+	// ------------------------- Test with pyramids ----------------------------- //
+#if false
+	vector<Mat> pyrAdjacent(nlevels), pyrOrigin(nlevels);
+	image_pyramid_building(img, pyrAdjacent, pyrOrigin, nlevels, 0, scaleFactor, edgeThreshold, 31 );
+
+	for (int i=0; i<nlevels; i++)
+	{
+		ostringstream ss;
+		ss << i;
+		String mytitle = ("Scale " + ss.str() );
+
+		Mat dif, normdif;
+		substract_images( pyrAdjacent[i], pyrOrigin[i], dif );
+		normalize(dif, normdif, 0, 255, NORM_MINMAX);
+
+		namedWindow(mytitle, cv::WINDOW_NORMAL);
+		imshow( mytitle, normdif );
+	}
+#endif
+	// -------------------------------------------------------------------------- //
+
 
 	if (showVis)
 	{
@@ -204,6 +233,7 @@ int main( int argc, char** argv )
 				n++;
 			}
 		drawKeypoints(img, kptsShow, img_feats, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+		imwrite( "output_features.jpg", img_feats );
 		namedWindow("Saddle features", cv::WINDOW_NORMAL);
 		imshow( "Saddle features", img_feats );
 
@@ -227,7 +257,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->addUsage( " -y  --scoretype  	Feature response function for ranking and NMS. (0)zeros, (1) delta, (2) sum of abs, (3) avg of abs, (4) norm, (5) Hessian, (6) minus Harris, and (7) Geo. mean delta (Default 1) " );
 	opt->addUsage( " -g  --gab  		Gab in the border of the image for computing feats and descriptors (Default 3) " );
 	opt->addUsage( " -s  --scalefac		Scale factor from one level to the next one (Default 1.3) " );
-	opt->addUsage( " -n  --nms  		Option for non maximum suppression (0) without, (1) levelwise only, (2) 3D nms (Default 2) " );
+	opt->addUsage( " -n  --nms  		Option for non maximum suppression (0) without, (1) levelwise only, (2) 3D nms (Default 1) " );
 	opt->addUsage( " -f  --feats  		Maximum number of features (if NMS=0 then all detections will be passed out) " );
 	opt->addUsage( " -d  --delta  		Threshold for minimum delta allowed in the regions (default 0, the response function selected in )" );
 	opt->addUsage( " -w  --word  		Length of the descriptor in bytes, i.e. number of dimension of BRIEF descriptor " );
@@ -236,6 +266,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->addUsage( " -q  --minarc		Minimum arc length for the outer circle test (suggested from 2 to 3)." );
 	opt->addUsage( " -u  --maxarc		Maximum arc length for the outer circle test (suggested from 5 to 8)." );
 	opt->addUsage( " -j  --ringstype  	Type of rings configuration for the inner and outer tests. (3) TYPE_SADDLE_CENTRAL_PIXEL, (4) TYPE_SADDLE_INNER_PATTERN, (5) TYPE_SHADDLE. (Default 4)" );
+	opt->addUsage( " -b  --binpattern  	Binary pattern for fBRIEF descriptor. (0) ORB_GV, (1) ORB_ORIENTED, (2) Saddle_GV, (3) Saddle_ORIENTED, (4) SURF_GV, (5) SURF_ORIENTED, (6) OCV. (Default 6)" );
 	opt->addUsage( " -v  --visu  		Flag for visualizing the image features " );
 	opt->addUsage( " -c  --c1feat		Flag to pass all features that fulfill inner circle condition. Feature score is contrast (delta)" );
 	opt->addUsage( " -m  --maxstrict  	Flag keeping response extremas only, without it the tides are allowed and passed all." );
@@ -261,6 +292,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->setOption(  "minarc", 	'q' );
 	opt->setOption(  "maxarc", 	'u' );
 	opt->setOption(  "ringstype", 'j' );
+	opt->setOption(  "binpattern", 'b' );
 	opt->setFlag(    "visu", 	'v' );
 	opt->setFlag(    "c1feat", 	'c' );
 	opt->setFlag(    "maxstrict", 	'm' );

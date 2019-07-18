@@ -11,5 +11,5 @@ FIND_PACKAGE( OpenCV REQUIRED )
 #ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 message("OCV includes: ${OpenCV_INCLUDE_DIRS}")
-add_executable( saddlepts saddlepts.cpp anyoption.cpp sorb.cpp fast.cpp fast_score.cpp )
+add_executable( saddlepts saddlepts.cpp anyoption.cpp lbq.cpp sorb.cpp fast.cpp fast_score.cpp )
 TARGET_LINK_LIBRARIES( saddlepts ${OpenCV_LIBS} )
