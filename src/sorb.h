@@ -127,14 +127,17 @@ float _response=0, int _octave=0, int _class_id=-1, double intensityCenter=0, uc
 //	outLabels.reserve(16);
 }
 
-CV_WRAP SadKeyPoint(float x, float y, float _size, float _angle=-1,
-float _response=0, int _octave=0, int _class_id=-1, double intensityCenter=0, uchar delta=0): cv::KeyPoint(x, y, _size, _angle, _response, _octave, _class_id), intensityCenter(intensityCenter), delta(delta) {}
+CV_WRAP SadKeyPoint(float x, float y, float _size, float _angle=-1, float _response=0, int _octave=0,
+                    int _class_id=-1, double intensityCenter=0, uchar delta=0):
+                    cv::KeyPoint(x, y, _size, _angle, _response, _octave, _class_id),
+                    intensityCenter(intensityCenter), delta(delta) {}
 
 double intensityCenter;
 std::vector<uchar> outLabels;
 uchar labels[16];
 uchar intensityPixels[16];
 uchar delta;
+uchar regionType;
 
 };
 

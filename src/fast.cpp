@@ -1121,7 +1121,8 @@ namespace cmp
     }
 
     // Allocating memory for all the buffer, each sizeof corresponds to one buffer
-    AutoBuffer<double> _bufScCp(img.cols*3*(2*sizeof(double) + 2*sizeof(int) + sizeof(uchar)) + 12 );
+    // AutoBuffer<double> _bufScCp(img.cols*3*(2*sizeof(double) + 2*sizeof(int) + 2*sizeof(uchar)) + 12 );
+    AutoBuffer<double> _bufScCp(img.cols*3*(2*sizeof(double) + 2*sizeof(int) + 2*sizeof(uchar)) + 12 );
 
     // Set the pointers for SCORES
     double* bufSc[3];
@@ -1145,7 +1146,7 @@ namespace cmp
     bufDl[0] = (uchar*)alignPtr(bufV[2] + img.cols, sizeof(uchar));
     bufDl[1] = bufDl[0] + img.cols;
     bufDl[2] = bufDl[1] + img.cols;
-
+#if false
     // Memory allocation for the BLOB locations
     int* bufBlobPos[3];
     bufBlobPos[0] = (int*)alignPtr(bufDl[2] + img.cols, sizeof(int)) + 1;
@@ -1158,10 +1159,17 @@ namespace cmp
     bufBlobSc[2] = bufBlobSc[1] + img.cols;
     memset(bufBlobSc[0], 0, img.cols*3*sizeof(double));
 
+    uchar* bufBlobTy[3];
+    bufBlobTy[0] = (uchar*)alignPtr(bufBlobSc[2] + img.cols, sizeof(uchar));
+    bufBlobTy[1] = bufBlobTy[0] + img.cols;
+    bufBlobTy[2] = bufBlobTy[1] + img.cols;
+#endif
     int idx;
     uchar p_regs, count_elem;
     uchar *labels, *begins, *lengths;
     int* lbl;
+    bool print_row = true, flag_detect = true, flag_store = true;
+
 
     labels  = new uchar[9];
     begins  = new uchar[9];
@@ -1171,15 +1179,19 @@ namespace cmp
     {
       const uchar* ptr = img.ptr<uchar>(i) + 3;
       double* curr = bufSc[(i - 3)%3];
-      double* currBlobSc = bufBlobSc[(i - 3)%3];
+      // double* currBlobSc = bufBlobSc[(i - 3)%3];
       double* currV = bufV[(i - 3)%3];
       uchar* currDl = bufDl[(i - 3)%3];
+      // uchar* currBlobTy = bufBlobTy[(i - 3)%3];
       int* cornerpos = bufCp[(i - 3)%3];
-      int* blobpos = bufBlobPos[(i - 3)%3];
+      // int* blobpos = bufBlobPos[(i - 3)%3];
 
       memset(curr, 0, img.cols*sizeof(double));
-      memset(currBlobSc, 0, img.cols*sizeof(double));
+      // memset(currBlobSc, 0, img.cols*sizeof(double));
       int ncorners = 0, nblobs = 0;
+      print_row = false;
+      flag_detect = true;
+      flag_store = true;
 
       if( i < img.rows - 3 )
       {
@@ -1196,10 +1208,18 @@ namespace cmp
             blob_test(pixel_mid, pixel, ptr, blob_type);
             if (blob_type)
             {
-              blobpos[nblobs++] = j;
-              currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, v, 0, SORB::HESS_SCORE);
+              // if (flag_detect)
+              // {
+              //   printf("Detection stage:\n");
+              //   flag_detect = false;
+              // }
+              // blobpos[nblobs++] = j;
+              // currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, 0.0, 0, SORB::HESS_SCORE);
+              // currBlobTy[j] = blob_type;
+              // printf("pointer: %d, score: %3.2f\n", &currBlobSc[j], currBlobSc[j]);
+              // print_row = true;
             }
-            continue;
+            // continue;
           }
 
           delta = std::max( A-B, C-D );
@@ -1318,6 +1338,11 @@ namespace cmp
             continue;
 
           // Include the feature in the set
+          if (flag_detect)
+          {
+            printf("Detection stage:\n");
+            flag_detect = false;
+          }
           cornerpos[ncorners++] = j;
           currV[j] = v;
           currDl[j] = delta;
@@ -1325,6 +1350,8 @@ namespace cmp
           // Compute the feature response
           int* lbl = templateLarge;
           curr[j] = cmpFeatureScore(ptr, pixel, lbl, v, delta, scoreType);
+          printf("pointer: %d, score: %3.2f\n", &curr[j], curr[j]);
+          print_row = true;
 
           // Save the point in the binary image
           uchar* ptrBinary = binImg.ptr<uchar>(i);
@@ -1332,16 +1359,20 @@ namespace cmp
         }
       }
       cornerpos[-1] = ncorners;
-      blobpos[-1] = nblobs;
+      // blobpos[-1] = nblobs;
 
-      /*   Collecting the CORNERS   */
+      /*   Collecting the SADDLES   */
       const double*  prev = bufSc[(i - 4 + 3)%3];
       const double* pprev = bufSc[(i - 5 + 3)%3];
       const double* prevV = bufV [(i - 4 + 3)%3];
       const uchar* prevDl = bufDl[(i - 4 + 3)%3];
+      // const uchar* prevBlobType = bufBlobTy[(i - 4 + 3)%3];
 
       double* pr = _resp.ptr<double>(i - 1);
       bool nmsFlag;
+      float scoreSc;
+      double v;
+      unsigned char delta, blobType;
 
       cornerpos = bufCp[(i - 4 + 3)%3];
       ncorners = cornerpos[-1];
@@ -1350,9 +1381,9 @@ namespace cmp
       for( k = 0; k < ncorners; k++ )
 	    {
         j = cornerpos[k];
-        float scoreSc = prev[j];
-        double v = prevV[j];
-        uchar delta = prevDl[j];
+        scoreSc = prev[j];
+        v = prevV[j];
+        delta = prevDl[j];
 
         // Compute the NMS
         if (strictMaximum)
@@ -1364,33 +1395,38 @@ namespace cmp
         	          scoreSc >= pprev[j-1] && scoreSc >= pprev[j] && scoreSc >= pprev[j+1] &&
         	          scoreSc >= curr[j-1] && scoreSc >= curr[j] && scoreSc >= curr[j+1];
 
-        if( !(nonmax_suppression>0) || nmsFlag )
+        if(!(nonmax_suppression>0) || nmsFlag)
         {
           float thetaX, thetaY;
-          double upperThr, lowerThr;
 
           subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
           keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
           keypoints.back().intensityCenter = v;
           keypoints.back().delta = delta;
+          keypoints.back().regionType = 0;
           add_labelling_array(img, j, i, keypoints, v, threshold, pixel);
           pr[j] = scoreSc;
+          if (flag_store)
+          {
+            printf("Storing stage:\n");
+            flag_store = false;
+          }
+          printf("pointer: %d, score: %3.2f\n", &prev[j], prev[j]);
+          print_row = true;
         }
       }
-
+#if false
       /*   Collecting the BLOBS   */
       prev  = bufBlobSc[(i - 4 + 3)%3];
       pprev = bufBlobSc[(i - 5 + 3)%3];
-
       blobpos  = bufBlobPos[(i - 4 + 3)%3];
       nblobs = blobpos[-1];
 
       for( k = 0; k < nblobs; k++ )
       {
         j = blobpos[k];
-        float scoreSc = prev[j]; // HERE YOU MUST CONTINUE!!!!
-        double v = prevV[j];
-        uchar delta = prevDl[j];
+        scoreSc = prev[j];
+        blobType = prevBlobType[j];
 
         // Compute the NMS
         if (strictMaximum)
@@ -1402,21 +1438,29 @@ namespace cmp
                     scoreSc >= pprev[j-1] && scoreSc >= pprev[j] && scoreSc >= pprev[j+1] &&
                     scoreSc >= curr[j-1] && scoreSc >= curr[j] && scoreSc >= curr[j+1];
 
-        if( !(nonmax_suppression>0) || nmsFlag )
+        if(!(nonmax_suppression>0) || nmsFlag)
         {
           float thetaX, thetaY;
-          double upperThr, lowerThr;
-
+          
           subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
           keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
-          keypoints.back().intensityCenter = v;
-          keypoints.back().delta = delta;
-          add_labelling_array(img, j, i, keypoints, v, threshold, pixel);
+          keypoints.back().regionType = blobType;
+          // if (flag_store)
+          // {
+          //   printf("Storing stage:\n");
+          //   flag_store = false;
+          // }
+          // printf("pointer: %d, score: %3.2f\n", &prev[j], prev[j]);
+          // print_row = true;
           pr[j] = scoreSc;
         }
       }
+#endif
+      if (print_row)
+        printf("End row\n\n");
 
     } // Here the Y axis sliding window loop finishes
+    printf("End level\n");
   }
 
   /*--------------- My FAST detector for SADDLE with inner pattern with simpler implementation  (End) -------------------*/
