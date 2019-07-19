@@ -57,7 +57,9 @@ namespace cmp
   inline bool inner_test(int pixel_inner[25], int pixel_mid[25], int pixel_outer[25], const uchar* ptr, double& A, double& B, double& C, double& D, uchar& N, uchar opc);
   inline bool inner_sym_test(int pixel_inner[25], const uchar* ptr, double& A, double& B, double& C, double& D, uchar& N );
   inline void blob_test(int pixel_mid[25], int pixel_outer[25], const uchar* ptr, uchar& N);
- inline void subpixel_precision(int i, int j, const double* curr, const double* prev, const double* pprev, float& x, float& y, float& scoreSc, unsigned char interp_mode);
+  inline void subpixel_precision(int i, int j, const double* curr, const double* prev, const double* pprev, float& x, float& y, float& scoreSc, unsigned char interp_mode);
+  inline void add_labelling_array(Mat img, int j, int i, std::vector<SadKeyPoint>& kpts, double v, int threshold, int pixel[25]);
+
 
   template<int patternSize>
   void FAST_t(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold, bool nonmax_suppression)
@@ -790,6 +792,37 @@ namespace cmp
     }
   }
 
+  inline void add_labelling_array(Mat img, int j, int i, std::vector<SadKeyPoint>& kpts, double v, int threshold, int pixel[25])
+  {
+    const uchar* ptr;
+    double upperThr, lowerThr;
+    kpts.back().outLabels.assign(16,0);
+    ptr =  img.ptr<uchar>(i - 1) + j;
+
+    for(unsigned l = 0; l < 16; l++)
+    {
+      kpts.back().intensityPixels[l] = ptr[pixel[l]];
+      upperThr = v + (double)threshold;
+      lowerThr = v - (double)threshold;
+
+      if (ptr[pixel[l]] > upperThr)
+      {
+        kpts.back().outLabels.at(l) = 2;
+        kpts.back().labels[l] = 2;
+      }
+      else if (ptr[pixel[l]] < lowerThr)
+      {
+        kpts.back().outLabels.at(l) = 1;
+        kpts.back().labels[l] = 1;
+      }
+      else
+      {
+        kpts.back().outLabels.at(l) = 0;
+        kpts.back().labels[l] = 0;
+      }
+    }
+  }
+
   void FASTsaddle_shinner(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                           int threshold, int nonmax_suppression, float scale, double responsethr, uchar deltaThr, int scoreType,
   						bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
@@ -1301,15 +1334,18 @@ namespace cmp
       cornerpos[-1] = ncorners;
       blobpos[-1] = nblobs;
 
-      const double* prev = bufSc[(i - 4 + 3)%3];
+      /*   Collecting the CORNERS   */
+      const double*  prev = bufSc[(i - 4 + 3)%3];
       const double* pprev = bufSc[(i - 5 + 3)%3];
-      const double* prevV = bufV[(i - 4 + 3)%3];
+      const double* prevV = bufV [(i - 4 + 3)%3];
       const uchar* prevDl = bufDl[(i - 4 + 3)%3];
 
-      double* pr = _resp.ptr<double>(i-1);
+      double* pr = _resp.ptr<double>(i - 1);
+      bool nmsFlag;
+
       cornerpos = bufCp[(i - 4 + 3)%3];
       ncorners = cornerpos[-1];
-      bool nmsFlag;
+      
 
       for( k = 0; k < ncorners; k++ )
 	    {
@@ -1330,45 +1366,57 @@ namespace cmp
 
         if( !(nonmax_suppression>0) || nmsFlag )
         {
-          const uchar* ptr1 =  img.ptr<uchar>(i - 1) + j;
           float thetaX, thetaY;
+          double upperThr, lowerThr;
+
           subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
           keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
-
-          pr[j] = scoreSc;
           keypoints.back().intensityCenter = v;
           keypoints.back().delta = delta;
-
-          // const uchar* ptr1 =  img.ptr<uchar>(i - 1) + j;
-          ptr1 =  img.ptr<uchar>(i - 1) + j;
-          keypoints.back().outLabels.assign(16,0);
-
-          for(unsigned l = 0; l < 16; l++)
-          {
-          	keypoints.back().intensityPixels[l] = ptr1[pixel[l]];
-            double upperThr = v + (double)threshold;
-            double lowerThr = v - (double)threshold;
-
-            if (ptr1[pixel[l]] > upperThr)
-            {
-            	keypoints.back().outLabels.at(l) = 2;
-            	keypoints.back().labels[l] = 2;
-            }
-            else if (ptr1[pixel[l]] < lowerThr)
-            {
-            	keypoints.back().outLabels.at(l) = 1;
-            	keypoints.back().labels[l] = 1;
-            }
-            else
-            {
-            	keypoints.back().outLabels.at(l) = 0;
-            	keypoints.back().labels[l] = 0;
-            }
-          }
+          add_labelling_array(img, j, i, keypoints, v, threshold, pixel);
+          pr[j] = scoreSc;
         }
       }
-    } // Here the Y axis sliding window loop finishes
 
+      /*   Collecting the BLOBS   */
+      prev  = bufBlobSc[(i - 4 + 3)%3];
+      pprev = bufBlobSc[(i - 5 + 3)%3];
+
+      blobpos  = bufBlobPos[(i - 4 + 3)%3];
+      nblobs = blobpos[-1];
+
+      for( k = 0; k < nblobs; k++ )
+      {
+        j = blobpos[k];
+        float scoreSc = prev[j]; // HERE YOU MUST CONTINUE!!!!
+        double v = prevV[j];
+        uchar delta = prevDl[j];
+
+        // Compute the NMS
+        if (strictMaximum)
+          nmsFlag = scoreSc > responsethr && scoreSc > prev[j+1] && scoreSc > prev[j-1] &&
+                    scoreSc > pprev[j-1] && scoreSc > pprev[j] && scoreSc > pprev[j+1] &&
+                    scoreSc > curr[j-1] && scoreSc > curr[j] && scoreSc > curr[j+1];
+        else
+          nmsFlag = scoreSc >= responsethr && scoreSc >= prev[j+1] && scoreSc >= prev[j-1] &&
+                    scoreSc >= pprev[j-1] && scoreSc >= pprev[j] && scoreSc >= pprev[j+1] &&
+                    scoreSc >= curr[j-1] && scoreSc >= curr[j] && scoreSc >= curr[j+1];
+
+        if( !(nonmax_suppression>0) || nmsFlag )
+        {
+          float thetaX, thetaY;
+          double upperThr, lowerThr;
+
+          subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
+          keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
+          keypoints.back().intensityCenter = v;
+          keypoints.back().delta = delta;
+          add_labelling_array(img, j, i, keypoints, v, threshold, pixel);
+          pr[j] = scoreSc;
+        }
+      }
+
+    } // Here the Y axis sliding window loop finishes
   }
 
   /*--------------- My FAST detector for SADDLE with inner pattern with simpler implementation  (End) -------------------*/
