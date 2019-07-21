@@ -689,7 +689,30 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
         if (level == 0) {
             featuresNum = nfeatures - taken_sum;
           }
+        // Inside a function ====================================================
+        int nSaddle = 0, nBlobs = 0;
+        for (vector<SadKeyPoint>::iterator keypoint = keypoints.begin(),
+             keypointEnd = keypoints.end(); keypoint != keypointEnd; ++keypoint)
+        {
+            switch (keypoint->regionType)
+            {
+                case 0:
+                    nSaddle += 1;
+                    break;
+                case 1:
+                case 2:
+                    nBlobs += 1;
+                    break;
+                default:
+                    std::cerr << "Unknown region type (0,1,2)" << std::endl;
+            }
+
+        }
+        printf("Saddle: %3.2f , Blobs: %3.2f , total: %d \n", (float)nSaddle/keypoints.size(), (float)nBlobs/keypoints.size(), keypoints.size());
+        // printf("Saddle: %d , Blobs: %d , total: %d \n", nSaddle, nBlobs, keypoints.size());
+
         retainBest(keypoints, featuresNum);
+        // Inside a function ====================================================
 
         taken_sum += (int)keypoints.size();
         needed_sum += nfeaturesPerLevel[level];
