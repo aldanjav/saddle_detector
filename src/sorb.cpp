@@ -52,7 +52,7 @@ namespace cmp
 
 const float HARRIS_K = 0.04f;
 const int DESCRIPTOR_SIZE = 32;
-const bool VERBOSE = false;
+const bool VERBOSE = true;
 
 /**
  * Function that computes the Harris responses in a
@@ -611,6 +611,61 @@ static void runByImageBorder( vector<SadKeyPoint>& keypoints, Size imageSize, in
     }
 }
 
+inline void mergeSaddlesAndBlobs(std::vector< SadKeyPoint > &  keypoints, int nFeatures)
+{
+    vector<SadKeyPoint> saddleKeypoints, blobKeypoints; 
+
+    saddleKeypoints.reserve(nFeatures*2);
+    blobKeypoints.reserve(nFeatures*2);
+    saddleKeypoints.clear();
+    blobKeypoints.clear();
+
+    for (vector<SadKeyPoint>::iterator keypoint = keypoints.begin(),
+         keypointEnd = keypoints.end(); keypoint != keypointEnd; ++keypoint)
+    {
+        switch (keypoint->regionType)
+        {
+            case 0:
+                saddleKeypoints.push_back(*keypoint);
+                break;
+            case 1:
+            case 2:
+                blobKeypoints.push_back(*keypoint);
+                break;
+            default:
+                std::cerr << "Unknown region type (0,1,2)" << std::endl;
+        }
+
+    }
+    printf("Saddle: %3.2f , Blobs: %3.2f , Total: %d \n",
+            (float)saddleKeypoints.size()/keypoints.size(),
+            (float)blobKeypoints.size()/keypoints.size(),
+            keypoints.size());
+    float alpha = saddleKeypoints.size()/keypoints.size();
+    // if (alpha<0.0 || alpha>1.0)
+    //     alpha = 0.5;
+    int saddleNum = (int)round(nFeatures*alpha);
+    int blobNum = (int)round(nFeatures*(1-alpha));
+
+    if (saddleKeypoints.size()<saddleNum)
+        blobNum += saddleNum - saddleKeypoints.size();
+
+    if (blobKeypoints.size()<blobNum)
+        saddleNum += blobNum - blobKeypoints.size();
+    
+    retainBest(saddleKeypoints, saddleNum);
+    retainBest(blobKeypoints, blobNum);
+    keypoints.clear();
+    
+    for (vector<SadKeyPoint>::iterator keypoint = saddleKeypoints.begin(),
+         keypointEnd = saddleKeypoints.end(); keypoint != keypointEnd; ++keypoint)
+        keypoints.push_back(*keypoint);
+
+    for (vector<SadKeyPoint>::iterator keypoint = blobKeypoints.begin(),
+         keypointEnd = blobKeypoints.end(); keypoint != keypointEnd; ++keypoint)
+        keypoints.push_back(*keypoint);
+}
+
 void computeKeyPoints(const vector<Mat>& imagePyramid,
                              const vector<Mat>& maskPyramid,
 							 vector<Mat>& respPyramid,
@@ -689,30 +744,8 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
         if (level == 0) {
             featuresNum = nfeatures - taken_sum;
           }
-        // Inside a function ====================================================
-        int nSaddle = 0, nBlobs = 0;
-        for (vector<SadKeyPoint>::iterator keypoint = keypoints.begin(),
-             keypointEnd = keypoints.end(); keypoint != keypointEnd; ++keypoint)
-        {
-            switch (keypoint->regionType)
-            {
-                case 0:
-                    nSaddle += 1;
-                    break;
-                case 1:
-                case 2:
-                    nBlobs += 1;
-                    break;
-                default:
-                    std::cerr << "Unknown region type (0,1,2)" << std::endl;
-            }
-
-        }
-        printf("Saddle: %3.2f , Blobs: %3.2f , total: %d \n", (float)nSaddle/keypoints.size(), (float)nBlobs/keypoints.size(), keypoints.size());
-        // printf("Saddle: %d , Blobs: %d , total: %d \n", nSaddle, nBlobs, keypoints.size());
-
-        retainBest(keypoints, featuresNum);
-        // Inside a function ====================================================
+        
+        mergeSaddlesAndBlobs(keypoints, featuresNum);
 
         taken_sum += (int)keypoints.size();
         needed_sum += nfeaturesPerLevel[level];
