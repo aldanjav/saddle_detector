@@ -623,7 +623,7 @@ inline void mergeSaddlesAndBlobs(std::vector< SadKeyPoint > &  keypoints, int nF
     for (vector<SadKeyPoint>::iterator keypoint = keypoints.begin(),
          keypointEnd = keypoints.end(); keypoint != keypointEnd; ++keypoint)
     {
-        switch (keypoint->regionType)
+        switch (keypoint->class_id)
         {
             case 0:
                 saddleKeypoints.push_back(*keypoint);
@@ -637,13 +637,7 @@ inline void mergeSaddlesAndBlobs(std::vector< SadKeyPoint > &  keypoints, int nF
         }
 
     }
-    printf("Saddle: %3.2f , Blobs: %3.2f , Total: %d \n",
-            (float)saddleKeypoints.size()/keypoints.size(),
-            (float)blobKeypoints.size()/keypoints.size(),
-            keypoints.size());
-    float alpha = saddleKeypoints.size()/keypoints.size();
-    // if (alpha<0.0 || alpha>1.0)
-    //     alpha = 0.5;
+    float alpha = (float)saddleKeypoints.size()/keypoints.size();
     int saddleNum = (int)round(nFeatures*alpha);
     int blobNum = (int)round(nFeatures*(1-alpha));
 
@@ -652,9 +646,10 @@ inline void mergeSaddlesAndBlobs(std::vector< SadKeyPoint > &  keypoints, int nF
 
     if (blobKeypoints.size()<blobNum)
         saddleNum += blobNum - blobKeypoints.size();
-    
+
     retainBest(saddleKeypoints, saddleNum);
     retainBest(blobKeypoints, blobNum);
+    
     keypoints.clear();
     
     for (vector<SadKeyPoint>::iterator keypoint = saddleKeypoints.begin(),

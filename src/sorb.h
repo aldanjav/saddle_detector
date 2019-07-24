@@ -137,7 +137,7 @@ std::vector<uchar> outLabels;
 uchar labels[16];
 uchar intensityPixels[16];
 uchar delta;
-uchar regionType;
+// uchar regionType;
 
 };
 

@@ -1413,7 +1413,7 @@ namespace cmp
           keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
           keypoints.back().intensityCenter = v;
           keypoints.back().delta = delta;
-          keypoints.back().regionType = 0;
+          keypoints.back().class_id = 0;
           add_labelling_array(img, j, i, keypoints, v, threshold, pixel);
           pr[j] = scoreSc;
           // if (flag_store)
@@ -1455,7 +1455,7 @@ namespace cmp
           
           subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
           keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
-          keypoints.back().regionType = blobType;
+          keypoints.back().class_id = blobType;
           // if (flag_store)
           // {
           //   printf("Storing stage: %d points\n", nblobs);
