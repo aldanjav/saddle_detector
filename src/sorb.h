@@ -25,7 +25,7 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
                              double responseThr, int epsilon, float scaleFactor,
                              int edgeThreshold, int patchSize, int scoreType, int doNMS, uchar deltaThr, int nfeatures,
                              bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
-                             int minArcLength, int maxArcLength, short ringsType );
+                             int minArcLength, int maxArcLength, short ringsType, float alpha );
 
 class CV_EXPORTS_W FeatureDetector{
 public:
@@ -59,7 +59,8 @@ public:
                 int epsilon = 1, int WTA_K=2, int scoreType=SUMOFABS_SCORE, int patchSize=31, int doNMS=2,
                 int descSize=K_BYTES, uchar deltaThr=0, int nfeatures = 5000, bool allC1feats = false,
                 bool strictMaximum = false, int subPixPrecision = 0, bool gravityCenter = false,
-                int innerTstType = 0, int minArcLength = 2, int maxArcLength = 8, short ringsType = 4, int binPattern = Binpat::OCV );
+                int innerTstType = 0, int minArcLength = 2, int maxArcLength = 8, short ringsType = 4,
+                int binPattern = Binpat::OCV, float alpha = 0.5 );
 
     // returns the descriptor size in bytes
     int descriptorSize() const;
@@ -110,6 +111,7 @@ protected:
     CV_PROP_RW int maxArcLength;
     CV_PROP_RW short ringsType;
     CV_PROP_RW int binPattern;
+    CV_PROP_RW float alpha;
 
 };
 
@@ -137,7 +139,6 @@ std::vector<uchar> outLabels;
 uchar labels[16];
 uchar intensityPixels[16];
 uchar delta;
-// uchar regionType;
 
 };
 

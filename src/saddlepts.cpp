@@ -47,6 +47,7 @@ int main( int argc, char** argv )
 	bool saveDeltas = true;
 	char deltaoutpath[] = "./outputs/deltas.txt";
 	char* ptrdeltapath = deltaoutpath;
+	float alpha;
 
 	parse_opt( argc, argv, opt );
 
@@ -168,6 +169,18 @@ int main( int argc, char** argv )
 	else
 		binPattern = Binpat::OCV;
 
+	if( opt->getValue( 'a' ) != NULL  || opt->getValue( "alpha" ) != NULL  )
+	{
+		alpha = atof(opt->getValue( 'a' ));
+		printf("Reading value from terminal: %3.2f\n", alpha);
+	}
+	else
+	{
+		alpha = 0.5f;
+		printf("Taking default: %3.2f\n", alpha);
+	}
+	
+
 	delete opt;
 
 
@@ -181,7 +194,7 @@ int main( int argc, char** argv )
 
 	cmp::SORB detector(responseThr, scaleFactor, nlevels, edgeThreshold, epsilon, 2, scoreType, 31,
 						doNMS, descSize, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision,
-						gravityCenter, innerTstType, minArcLength, maxArcLength, ringsType, binPattern );
+						gravityCenter, innerTstType, minArcLength, maxArcLength, ringsType, binPattern, alpha );
 
 	vector<cmp::SadKeyPoint> kpts;
 	Mat dcts, mask;
@@ -257,6 +270,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->addUsage( " -y  --scoretype  	Feature response function for ranking and NMS. (0)zeros, (1) delta, (2) sum of abs, (3) avg of abs, (4) norm, (5) Hessian, (6) minus Harris, and (7) Geo. mean delta (Default 1) " );
 	opt->addUsage( " -g  --gab  		Gab in the border of the image for computing feats and descriptors (Default 3) " );
 	opt->addUsage( " -s  --scalefac		Scale factor from one level to the next one (Default 1.3) " );
+	opt->addUsage( " -a  --alpha		Alpha value is the weighting factor of the number of Saddle points as complement of the blob points. [0.0,1.0] (Default 0.5)" );
 	opt->addUsage( " -n  --nms  		Option for non maximum suppression (0) without, (1) levelwise only, (2) 3D nms (Default 1) " );
 	opt->addUsage( " -f  --feats  		Maximum number of features (if NMS=0 then all detections will be passed out) " );
 	opt->addUsage( " -d  --delta  		Threshold for minimum delta allowed in the regions (default 0, the response function selected in )" );
@@ -283,6 +297,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->setOption(  "scoretype",  'y' );
 	opt->setOption(  "gab", 	'g' );
 	opt->setOption(  "scalefac",'s' );
+	opt->setOption(  "alpha", 'a' );
 	opt->setOption(  "nms", 	'n' );
 	opt->setOption(  "feats", 	'f' );
 	opt->setOption(  "delta", 	'd' );

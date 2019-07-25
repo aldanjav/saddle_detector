@@ -314,14 +314,14 @@ static inline double getScaleDouble(int level, int firstLevel, double scaleFacto
 SORB::SORB(double _responseThr, float _scaleFactor, int _nlevels, int _edgeThreshold,
          int _epsilon, int _WTA_K, int _scoreType, int _patchSize, int _doNMS, int _descSize, uchar _deltaThr, int _nfeatures,
 		 bool _allC1feats , bool _strictMaximum, int _subPixPrecision , bool _gravityCenter, int _innerTstType, int _minArcLength,
-		 int _maxArcLength, short _ringsType, int _binPattern ) :
+		 int _maxArcLength, short _ringsType, int _binPattern, float _alpha ) :
 		 responseThr(_responseThr), scaleFactor(_scaleFactor), nlevels(_nlevels),
 		 edgeThreshold(_edgeThreshold), epsilon(_epsilon), WTA_K(_WTA_K),
 		 scoreType(_scoreType), patchSize(_patchSize), doNMS(_doNMS),
 		 descSize(_descSize), deltaThr(_deltaThr), nfeatures(_nfeatures),
 		 allC1feats(_allC1feats), strictMaximum(_strictMaximum), subPixPrecision(_subPixPrecision), gravityCenter(_gravityCenter),
 		 innerTstType(_innerTstType), minArcLength(_minArcLength), maxArcLength(_maxArcLength), ringsType(_ringsType), 
-         binPattern(_binPattern)
+         binPattern(_binPattern), alpha(_alpha)
 {}
 
 int SORB::descriptorSize() const
@@ -611,7 +611,7 @@ static void runByImageBorder( vector<SadKeyPoint>& keypoints, Size imageSize, in
     }
 }
 
-inline void mergeSaddlesAndBlobs(std::vector< SadKeyPoint > &  keypoints, int nFeatures)
+inline void mergeSaddlesAndBlobs(std::vector< SadKeyPoint > &  keypoints, int nFeatures, float alpha)
 {
     vector<SadKeyPoint> saddleKeypoints, blobKeypoints; 
 
@@ -637,7 +637,7 @@ inline void mergeSaddlesAndBlobs(std::vector< SadKeyPoint > &  keypoints, int nF
         }
 
     }
-    float alpha = (float)saddleKeypoints.size()/keypoints.size();
+    // float alpha = (float)saddleKeypoints.size()/keypoints.size();
     int saddleNum = (int)round(nFeatures*alpha);
     int blobNum = (int)round(nFeatures*(1-alpha));
 
@@ -668,13 +668,13 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
                              double responseThr, int epsilon, float scaleFactor,
                              int edgeThreshold, int patchSize, int scoreType, int doNMS, uchar deltaThr, int nfeatures,
 							 bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
-							 int minArcLength, int maxArcLength, short ringsType )
+							 int minArcLength, int maxArcLength, short ringsType, float alpha )
 {
 
 	int nlevels = (int)imagePyramid.size();
-#if VERBOSE
-    printf("\nSADDLE detector parameters: \n   nLevels: %d, scaleFactor: %.1f, epsilon: %d, responseThr: %.2f, borderGab: %d, doNMS: %d\n   deltaThr: %d, nFeats: %d, allC1features: %d, strictMaxNMS: %d, subpixelMethod: %d\n   C1C2gravityCenter: %d, InnerTstMethod: %d, ScoreType: %d, minArc: %d, maxArc: %d, ringsType: %d\n",
-				nlevels, scaleFactor, epsilon, responseThr, edgeThreshold, doNMS, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, scoreType, minArcLength, maxArcLength, ringsType );
+#if true
+    printf("\nSADDLE detector parameters: \n   nLevels: %d, scaleFactor: %.1f, epsilon: %d, responseThr: %.2f, borderGab: %d, doNMS: %d\n   deltaThr: %d, nFeats: %d, allC1features: %d, strictMaxNMS: %d, subpixelMethod: %d\n   C1C2gravityCenter: %d, InnerTstMethod: %d, ScoreType: %d, minArc: %d, maxArc: %d\n   ringsType: %d, alpha: %3.2f\n",
+				nlevels, scaleFactor, epsilon, responseThr, edgeThreshold, doNMS, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, scoreType, minArcLength, maxArcLength, ringsType, alpha );
 #endif
     vector<int> nfeaturesPerLevel(nlevels);
 
@@ -740,7 +740,7 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
             featuresNum = nfeatures - taken_sum;
           }
         
-        mergeSaddlesAndBlobs(keypoints, featuresNum);
+        mergeSaddlesAndBlobs(keypoints, featuresNum, alpha);
 
         taken_sum += (int)keypoints.size();
         needed_sum += nfeaturesPerLevel[level];
@@ -855,7 +855,7 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
         levelsNum++;
     }
 
-    float sigma = 1.5;
+    // float sigma = 1.5;
 
     // Pre-compute the scale pyramids
     vector<Mat> imagePyramid(levelsNum), maskPyramid(levelsNum), respPyramid(levelsNum);
@@ -927,13 +927,13 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
     // Pre-compute the keypoints (we keep the best over all scales, so this has to be done beforehand
     vector < vector<SadKeyPoint> > allKeypoints;
     if( do_keypoints )
-    {
+    {   
         // Get keypoints, those will be far enough from the border that no check will be required for the descriptor
         computeKeyPoints(imagePyramid, maskPyramid, respPyramid, allKeypoints,
                          responseThr, epsilon, scaleFactor, edgeThreshold,
 						 patchSize, scoreType, doNMS, deltaThr, nfeatures,
 						 allC1feats, strictMaximum, subPixPrecision, gravityCenter,
-						 innerTstType, minArcLength, maxArcLength, ringsType);
+						 innerTstType, minArcLength, maxArcLength, ringsType, alpha);
     }
     else
     {
