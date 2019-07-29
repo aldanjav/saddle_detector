@@ -108,6 +108,7 @@ static float IC_Angle(const Mat& image, const int half_k, Point2f pt,
                       const vector<int> & u_max)
 {
     int m_01 = 0, m_10 = 0;
+    // float mag_centroid;
 
     const uchar* center = &image.at<uchar> (cvRound(pt.y), cvRound(pt.x));
 
@@ -130,7 +131,8 @@ static float IC_Angle(const Mat& image, const int half_k, Point2f pt,
         }
         m_01 += v * v_sum;
     }
-
+    // mag_centroid = sqrt((float)m_01*(float)m_01+(float)m_10*(float)m_10);
+    // printf("%.3f\n", mag_centroid);
     return fastAtan2((float)m_01, (float)m_10);
 }
 
@@ -746,14 +748,6 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
         }
         computeOrientation(imagePyramid[level], keypoints, halfPatchSize, umax);
 
-        // Counting patterns
-//      numInners = fd.getNumInner();
-//		numInnersFul  = fd.getNumInnerFul();
-//		numOuttersFul = fd.getNumOutterFul();
-//		innerTime = 1000. * fd.getQuickTestTime()/numInners;
-//		outterTime = 1000. * fd.getFullTestTime()/numInnersFul;
-
-//        printf("Level: %d, nFeatExported: %d\n", level, (int)keypoints.size() );
     }
 
     // Compute Non Maximum Suppression along the pyramid
@@ -901,22 +895,16 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
         {
             if( level < firstLevel )
             {
-//				Mat blurredImg;
-//				cv::GaussianBlur(image, blurredImg, Size(0,0), sigma, 0);
-//				resize(blurredImg, imagePyramid[level], sz, 0, 0, INTER_AREA);
                 if (!mask.empty())
-            	resize(image, imagePyramid[level], sz, 0, 0, INTER_AREA);
-                    resize(mask, maskPyramid[level], sz, 0, 0, INTER_AREA);
+            	resize(image, imagePyramid[level], sz, 0, 0, INTER_LINEAR);
+                    resize(mask, maskPyramid[level], sz, 0, 0, INTER_LINEAR);
             }
             else
             {
-//				Mat blurredImg;
-//				cv::GaussianBlur(imagePyramid[level-1], blurredImg, Size(0,0), sigma, 0);
-//				resize(blurredImg, imagePyramid[level], sz, 0, 0, INTER_AREA);
-                resize(imagePyramid[level-1], imagePyramid[level], sz, 0, 0, INTER_AREA);
+                resize(imagePyramid[level-1], imagePyramid[level], sz, 0, 0, INTER_LINEAR);
                 if (!mask.empty())
                 {
-                    resize(maskPyramid[level-1], maskPyramid[level], sz, 0, 0, INTER_AREA);
+                    resize(maskPyramid[level-1], maskPyramid[level], sz, 0, 0, INTER_LINEAR);
                     threshold(maskPyramid[level], maskPyramid[level], 254, 0, THRESH_TOZERO);
                 }
             }
