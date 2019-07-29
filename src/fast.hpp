@@ -38,6 +38,7 @@ public:
     AlgorithmInfo* info() const;
 
 protected:
+    virtual void detectImpl ( const Mat& image, vector<SadKeyPoint>& keypoints, const Mat& mask=Mat() ) const = 0;
     virtual void detectImpl2( const Mat& image, vector<SadKeyPoint>& keypoints, Mat& resp, const Mat& mask=Mat() ) const = 0;
 
     int threshold;
@@ -58,7 +59,7 @@ public:
 
 
 protected:
-    virtual void detectImpl ( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask=Mat() ) const;
+    virtual void detectImpl ( const Mat& image, vector<SadKeyPoint>& keypoints, const Mat& mask=Mat() ) const;
     virtual void detectImpl2( const Mat& image, vector<SadKeyPoint>& keypoints, Mat& resp, const Mat& mask=Mat() ) const;
 
     short type;

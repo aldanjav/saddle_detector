@@ -76,9 +76,8 @@ namespace cmp
 
 
   template<int patternSize>
-  void FAST_t(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold, bool nonmax_suppression)
+  void FAST_t(InputArray _img, std::vector<SadKeyPoint>& keypoints, int threshold, bool nonmax_suppression)
   {
-    printf("ORB for FAST points\n");
     Mat img = _img.getMat();
     const int K = patternSize/2, N = patternSize + K + 1;
 #if CV_SSE2
@@ -280,7 +279,7 @@ namespace cmp
                  score > pprev[j-1] && score > pprev[j] && score > pprev[j+1] &&
                  score > curr[j-1] && score > curr[j] && score > curr[j+1]) )
               {
-                keypoints.push_back(KeyPoint((float)j, (float)(i-1), 7.f, -1, (float)score));
+                keypoints.push_back(cmp::SadKeyPoint((float)j, (float)(i-1), 7.f, -1, (float)score));
               }
           }
       }
@@ -2340,8 +2339,8 @@ namespace cmp
 
   /*--------------- My FAST detector for SADDLE with inner pattern with simpler implementation  (End) -------------------*/
 
-
-  void FASTX(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold, int nonmax_suppression, int type)
+  
+  void FASTX(InputArray _img, std::vector<SadKeyPoint>& keypoints, int threshold, int nonmax_suppression, int type)
   {
     switch(type) {
       case FastFeatureDetector::TYPE_5_8:
@@ -2392,7 +2391,7 @@ namespace cmp
       }
   }
 
-  void FAST(InputArray _img, std::vector<KeyPoint>& keypoints, int threshold, int nonmax_suppression)
+  void FAST(InputArray _img, std::vector<SadKeyPoint>& keypoints, int threshold, int nonmax_suppression)
   {
     cmp::FASTX(_img, keypoints, threshold, nonmax_suppression, FastFeatureDetector::TYPE_9_16);
   }
@@ -2414,7 +2413,7 @@ namespace cmp
 
     CV_Assert( resp.empty() || mask.empty() || (mask.type() == CV_8UC1 && mask.size() == image.size()) );
 
-    //	detectImpl( image, keypoints, mask );
+    // detectImpl( image, keypoints, mask );
     detectImpl2( image, keypoints, resp, mask);
   }
 
@@ -2443,13 +2442,13 @@ namespace cmp
   FastFeatureDetector2::FastFeatureDetector2( int _threshold, int _nonmaxSuppression, int _type, float _scale, double _responsethr, uchar _deltaThr, int _scoreType, bool _allC1feats, bool _strictMaximum, int _subPixPrecision, bool _gravityCenter, int _innerTstType, int _minArcLength, int _maxArcLength )
     : FastFeatureDetector(_threshold, _nonmaxSuppression), type((short)_type), scale((float)_scale), responsethr((double)_responsethr), deltaThr((uchar)_deltaThr), scoreType((int)_scoreType), allC1feats((bool)_allC1feats), strictMaximum((bool)_strictMaximum), subPixPrecision((int)_subPixPrecision), gravityCenter((bool)_gravityCenter), innerTstType((int) _innerTstType), minArcLength((int)_minArcLength), maxArcLength((int)_maxArcLength)
   {}
-
-  void FastFeatureDetector2::detectImpl( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask ) const
+  // I changed here (FastFeatureDetector2, KeyPoint)
+  void FastFeatureDetector2::detectImpl( const Mat& image, vector<SadKeyPoint>& keypoints, const Mat& mask ) const
   {
     Mat grayImage = image;
     if( image.type() != CV_8U ) cvtColor( image, grayImage, CV_BGR2GRAY );
-    FASTX( grayImage, keypoints, threshold, nonmaxSuppression, type );
-    KeyPointsFilter::runByPixelsMask( keypoints, mask );
+    cmp::FASTX( grayImage, keypoints, threshold, nonmaxSuppression, type );
+    // KeyPointsFilter::runByPixelsMask( keypoints, mask );
   }
 
   void FastFeatureDetector2::detectImpl2( const Mat& image, vector<SadKeyPoint>& keypoints,
