@@ -21,7 +21,15 @@ public:
 
     enum
     { // Define it in old class to simplify migration to 2.5
-      TYPE_5_8 = 0, TYPE_7_12 = 1, TYPE_9_16 = 2, TYPE_SADDLE_CENTRAL_PIXEL = 3, TYPE_SADDLE_INNER_PATTERN = 4, TYPE_SHADDLE = 5
+      TYPE_5_8 = 0,
+      TYPE_7_12 = 1,
+      TYPE_9_16 = 2,
+      TYPE_SADDLE_CENTRAL_PIXEL = 3,
+      TYPE_SADDLE_INNER_PATTERN = 4,
+      TYPE_SHADDLE = 5,
+      TYPE_SADDLE_CONDITIONED = 6,
+      TYPE_BLOB_CONDITIONED = 7,
+      TYPE_SADDLE_BLOB = 8
     };
 
     CV_WRAP void detect2( const Mat& image, CV_OUT vector<SadKeyPoint>& keypoints, Mat & resp, const Mat& mask=Mat() ) const;
@@ -30,6 +38,7 @@ public:
    // AlgorithmInfo* info() const;
 
 protected:
+    virtual void detectImpl ( const Mat& image, vector<SadKeyPoint>& keypoints, const Mat& mask=Mat() ) const = 0;
     virtual void detectImpl2( const Mat& image, vector<SadKeyPoint>& keypoints, Mat& resp, const Mat& mask=Mat() ) const = 0;
 
     int threshold;
@@ -48,16 +57,9 @@ public:
     CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double responsethr, uchar deltaThr, int scoreType, bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength );
    // cv::AlgorithmInfo* info() const;
 
-//    double getQuickTestTime();
-//    double getFullTestTime();
-//    double getNMS2dTime();
-
-//    int getNumInner();
-//    int getNumInnerFul();
-//    int getNumOutterFul();
 
 protected:
-    virtual void detectImpl ( const Mat& image, vector<KeyPoint>& keypoints, const Mat& mask=Mat() ) const;
+    virtual void detectImpl ( const Mat& image, vector<SadKeyPoint>& keypoints, const Mat& mask=Mat() ) const;
     virtual void detectImpl2( const Mat& image, vector<SadKeyPoint>& keypoints, Mat& resp, const Mat& mask=Mat() ) const;
 
     short type;

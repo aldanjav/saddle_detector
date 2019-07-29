@@ -2,6 +2,7 @@
 /debug
 /build_fu
 /build_lascar
+/build_lcgpu
 All_Souls_01.jpg
 /src/CMakeFiles
 /src/CMakeCache.txt
@@ -9,3 +10,8 @@ All_Souls_01.jpg
 .project
 .settings/
 /build_t520
+/build
+/build/CMakeFiles
+.DS_Store
+._.DS_Store
+outcomes

@@ -397,8 +397,6 @@ double saddleScore(const uchar* ptr, const int pixel[])
 	double Ixy = (double)ptr[pixel[0]] + (double)ptr[pixel[2]] + (double)ptr[pixel[4]] + (double)ptr[pixel[6]] +
 				 0.5*((double)ptr[pixel[1]] + (double)ptr[pixel[3]] + (double)ptr[pixel[5]] + (double)ptr[pixel[7]]) -
 				 6.0*(double)ptr[0];
-	// Multiplied by -1 to invert the sign of the Hessian response
-//	return (Ixx * Iyy - Ixy * Ixy) * (Ixx * Iyy - Ixy * Ixy);
 	return (Ixx * Iyy - Ixy * Ixy) * -1.0;
 }
 
@@ -407,7 +405,6 @@ double saddleScore2(const uchar* ptr, const int pixel[], double norm2)
 	double Lxx = -(double)ptr[pixel[6]] + 2.0*(double)ptr[0] -(double)ptr[pixel[2]];
 	double Lyy = -(double)ptr[pixel[4]] + 2.0*(double)ptr[0] - (double)ptr[pixel[0]];
 	double Lxy = ((double)ptr[pixel[5]] - (double)ptr[pixel[7]] - (double)ptr[pixel[3]] + (double)ptr[pixel[1]])/4.0;
-//	return (Lxx * Lyy - Lxy * Lxy) * (Lxx * Lyy - Lxy * Lxy) * norm2 * norm2;
 	return (Lxx * Lyy - Lxy * Lxy) * -1.0 * norm2;
 }
 
@@ -421,20 +418,17 @@ double cmpFeatureScore(const uchar* ptr, const int pixel[], const int* labels, d
 	{
 		case SORB::ZERO_SCORE:
 		{
-//			printf("ZERO_SCORE\n");
 			return 0.0;
 			break;
 		}
 
 		case SORB::DELTA_SCORE:
 		{
-//			printf("DELTA_SCORE\n");
 			return (double)delta;
 			break;
 		}
 		case SORB::SUMOFABS_SCORE:
 		{
-//			printf("SUMOFABS_SCORE\n");
 			for (int iElem=0; iElem<16; iElem++)
 			{
 				if (labels[iElem] != 0)
@@ -443,15 +437,12 @@ double cmpFeatureScore(const uchar* ptr, const int pixel[], const int* labels, d
 			return greenredsum;
 			break;
 		}
-// /Add one relative one
 		case SORB::NORM_SCORE:
 		{
-//			printf("NORM_SCORE\n");
 			for (int iElem=0; iElem<16; iElem++)
 			{
 				if (labels[iElem] != 0)
 				{
-					//greenredsum += abs((double)ptr[pixel[iElem]] - v);
 					sum_sum += (double)ptr[pixel[iElem]];
 					count++;
 				}
@@ -462,7 +453,6 @@ double cmpFeatureScore(const uchar* ptr, const int pixel[], const int* labels, d
 		}
 		case SORB::AVGOFABS_SCORE:
 		{
-//			printf("AVGOFABS_SCORE");
 			int greenrednum = 0;
 
 			for (int iElem=0; iElem<16; iElem++)
@@ -478,7 +468,6 @@ double cmpFeatureScore(const uchar* ptr, const int pixel[], const int* labels, d
 		}
 		case SORB::HESS_SCORE:
 		{
-//			printf("HESS_SCORE\n");
 			double Lxx = -(double)ptr[pixel[6]] + 2.0*(double)ptr[0] -(double)ptr[pixel[2]];
 			double Lyy = -(double)ptr[pixel[4]] + 2.0*(double)ptr[0] - (double)ptr[pixel[0]];
 			double Lxy = ((double)ptr[pixel[5]] - (double)ptr[pixel[7]] - (double)ptr[pixel[3]] + (double)ptr[pixel[1]])/4.0;
@@ -487,7 +476,6 @@ double cmpFeatureScore(const uchar* ptr, const int pixel[], const int* labels, d
 		}
 		case SORB::HARRIS_SCORE:
 		{
-//			printf("HARRIS_SCORE\n");
 			double harris_k = 0.04;
 			double scale = 4*255;
 			scale = 1.f/scale;
@@ -529,47 +517,6 @@ double cmpFeatureScore(const uchar* ptr, const int pixel[], const int* labels, d
 			break;
 	}
 }
-
-#if 0
-static void
-HessianResponses(const Mat& img, vector<KeyPoint>& pts, int blockSize )
-{
-    CV_Assert( img.type() == CV_8UC1 && blockSize*blockSize <= 2048 );
-
-    size_t ptidx, ptsize = pts.size();
-
-    Mat img_blur;
-    float sigmaX = 4.0;
-    GaussianBlur(img, img_blur, Size(0,0), sigmaX, 0, BORDER_DEFAULT);
-
-    const uchar* ptr00 = img.ptr<uchar>();
-    int step = (int)(img.step/img.elemSize1());
-
-    AutoBuffer<int> ofsbuf(blockSize*blockSize);
-    int* ofs = ofsbuf;
-    for( int i = 0; i < blockSize; i++ )
-        for( int j = 0; j < blockSize; j++ )
-            ofs[i*blockSize + j] = (int)(i*step + j);
-
-    for( ptidx = 0; ptidx < ptsize; ptidx++ )
-    {
-        int x0 = cvRound(pts[ptidx].pt.x);
-        int y0 = cvRound(pts[ptidx].pt.y);
-
-        const uchar* ptr0 = ptr00 + y0*step + x0;
-
-        int Ixx = ptr0[1] + ptr0[-1] - 2*ptr0[0];
-        int Iyy = ptr0[step] + ptr0[-step] - 2*ptr0[0];
-		int Ixy = ptr0[1] + ptr0[-1] + ptr0[step] + ptr0[-step] - 4*ptr0[0];
-
-		// Multiplied by -1 to invert the sign of the hessian response
-		pts[ptidx].response = ((float)Ixx * Iyy - (float)Ixy * Ixy) * -1.f;
-
-    }
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-#endif
 
 void print_m128i_epi8(__m128i var)
 {

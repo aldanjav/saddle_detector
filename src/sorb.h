@@ -9,6 +9,7 @@
 #define SRC_SORB_H_
 
 #include <opencv2/features2d/features2d.hpp>
+#include "lbq.h"
 
 using namespace cv;
 
@@ -24,7 +25,7 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
                              double responseThr, int epsilon, float scaleFactor,
                              int edgeThreshold, int patchSize, int scoreType, int doNMS, uchar deltaThr, int nfeatures,
                              bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
-                             int minArcLength, int maxArcLength, short ringsType );
+                             int minArcLength, int maxArcLength, short ringsType, float alpha );
 
 class CV_EXPORTS_W FeatureDetector{
 public:
@@ -44,11 +45,22 @@ class CV_EXPORTS_W SORB : public cmp::FeatureDetector
 public:
 
     // the size of the signature in bytes
-    enum { K_BYTES = 32, ZERO_SCORE = 0, DELTA_SCORE = 1, SUMOFABS_SCORE = 2, AVGOFABS_SCORE = 3, NORM_SCORE = 4, HESS_SCORE = 5, HARRIS_SCORE = 6, GM_DELTA_SCORE = 7 };
+    enum { K_BYTES = 32,
+           ZERO_SCORE = 0,
+           DELTA_SCORE = 1,
+           SUMOFABS_SCORE = 2,
+           AVGOFABS_SCORE = 3,
+           NORM_SCORE = 4,
+           HESS_SCORE = 5,
+           HARRIS_SCORE = 6,
+           GM_DELTA_SCORE = 7 };
 
     CV_WRAP explicit SORB(double responseThr = 0.0, float scaleFactor = 1.2f, int nlevels = 8, int edgeThreshold = 31,
-                int epsilon = 1, int WTA_K=2, int scoreType=SUMOFABS_SCORE, int patchSize=31, int doNMS=2, int descSize=K_BYTES, uchar deltaThr=0, int nfeatures = 5000,
-				bool allC1feats = false , bool strictMaximum = false, int subPixPrecision = 0, bool gravityCenter = false, int innerTstType = 0, int minArcLength = 2, int maxArcLength = 8, short ringsType = 4);
+                int epsilon = 1, int WTA_K=2, int scoreType=SUMOFABS_SCORE, int patchSize=31, int doNMS=2,
+                int descSize=K_BYTES, uchar deltaThr=0, int nfeatures = 5000, bool allC1feats = false,
+                bool strictMaximum = false, int subPixPrecision = 0, bool gravityCenter = false,
+                int innerTstType = 0, int minArcLength = 2, int maxArcLength = 8, short ringsType = 4,
+                int binPattern = Binpat::OCV, float alpha = 0.5 );
 
     // returns the descriptor size in bytes
     int descriptorSize() const;
@@ -70,15 +82,7 @@ public:
     	(*this)(image, mask, keypoints, descriptors);
     };
 
-    double getPyramidTime();
-    double getDetectTime();
-    double getDescribeTime();
-    double getInnerTime();
-    double getOutterTime();
 
-    int getNumInner();
-    int getNumInnerFul();
-    int getNumOutterFul();
 
 
 protected:
@@ -106,6 +110,8 @@ protected:
     CV_PROP_RW int minArcLength;
     CV_PROP_RW int maxArcLength;
     CV_PROP_RW short ringsType;
+    CV_PROP_RW int binPattern;
+    CV_PROP_RW float alpha;
 
 };
 
@@ -123,8 +129,10 @@ float _response=0, int _octave=0, int _class_id=-1, double intensityCenter=0, uc
 //	outLabels.reserve(16);
 }
 
-CV_WRAP SadKeyPoint(float x, float y, float _size, float _angle=-1,
-float _response=0, int _octave=0, int _class_id=-1, double intensityCenter=0, uchar delta=0): cv::KeyPoint(x, y, _size, _angle, _response, _octave, _class_id), intensityCenter(intensityCenter), delta(delta) {}
+CV_WRAP SadKeyPoint(float x, float y, float _size, float _angle=-1, float _response=0, int _octave=0,
+                    int _class_id=-1, double intensityCenter=0, uchar delta=0):
+                    cv::KeyPoint(x, y, _size, _angle, _response, _octave, _class_id),
+                    intensityCenter(intensityCenter), delta(delta) {}
 
 double intensityCenter;
 std::vector<uchar> outLabels;
