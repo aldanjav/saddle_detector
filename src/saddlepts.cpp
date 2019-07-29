@@ -29,7 +29,6 @@ using namespace cv;
 void parse_opt( int argc, char* argv[], AnyOption * opt );
 void readme();
 int txt_from_feats(vector<cmp::SadKeyPoint> kpts, Mat dcts, char *outpath);
-int deltas_to_txt(vector<cmp::SadKeyPoint> kpts, char *outpath);
 void deltas_to_histogram(vector<cmp::SadKeyPoint> kpts);
 float getScale(int level, int firstLevel, double scaleFactor);
 void image_pyramid_building(Mat image, vector<Mat>& pyrAdjacent, vector<Mat>& pyrOrigin, int levelsNum, int firstLevel, double scaleFactor, int edgeThreshold, int patchSize );
@@ -172,13 +171,13 @@ int main( int argc, char** argv )
 	delete opt;
 
 
+	// Loading image
 	Mat img = imread( imgpath , IMREAD_GRAYSCALE );
 	if (img.empty())
 	{
 		readme();
 		return -1;
 	}
-
 
 	cmp::SORB detector(responseThr, scaleFactor, nlevels, edgeThreshold, epsilon, 2, scoreType, 31,
 						doNMS, descSize, deltaThr, nfeatures, allC1feats, strictMaximum, subPixPrecision,
@@ -193,13 +192,9 @@ int main( int argc, char** argv )
 	int num_kpts = (int)kpts.size();
 	printf("\nTotal number of features %d\n\n", num_kpts);
 
-
 	if (savefile)
 		if (!txt_from_feats( kpts, dcts, outpath))
 			return -1;
-
-	if (saveDeltas)
-		deltas_to_txt( kpts, ptrdeltapath );
 
 	deltas_to_histogram(kpts);
 
@@ -232,13 +227,13 @@ int main( int argc, char** argv )
 		vector<cv::KeyPoint> kptsShow;
 		kptsShow.resize(kpts.size());
 		for( size_t i = 0; i < kpts.size(); i++ )
-			if (kpts[i].octave >= 0)//levelVis
+			if (kpts[i].octave >= 0)
 			{
 				kptsShow[i] = kpts[i];
-//				printf("%02d: %.3f, %.3f\n", n, kpts[i].pt.x, kpts[i].pt.y);
 				n++;
 			}
 		drawKeypoints(img, kptsShow, img_feats, Scalar::all(-1), DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+		imwrite( "output_features.jpg", img_feats );
 		namedWindow("Saddle features", cv::WINDOW_NORMAL);
 		imshow( "Saddle features", img_feats );
 
@@ -262,7 +257,7 @@ void parse_opt( int argc, char* argv[], AnyOption * opt )
 	opt->addUsage( " -y  --scoretype  	Feature response function for ranking and NMS. (0)zeros, (1) delta, (2) sum of abs, (3) avg of abs, (4) norm, (5) Hessian, (6) minus Harris, and (7) Geo. mean delta (Default 1) " );
 	opt->addUsage( " -g  --gab  		Gab in the border of the image for computing feats and descriptors (Default 3) " );
 	opt->addUsage( " -s  --scalefac		Scale factor from one level to the next one (Default 1.3) " );
-	opt->addUsage( " -n  --nms  		Option for non maximum suppression (0) without, (1) levelwise only, (2) 3D nms (Default 2) " );
+	opt->addUsage( " -n  --nms  		Option for non maximum suppression (0) without, (1) levelwise only, (2) 3D nms (Default 1) " );
 	opt->addUsage( " -f  --feats  		Maximum number of features (if NMS=0 then all detections will be passed out) " );
 	opt->addUsage( " -d  --delta  		Threshold for minimum delta allowed in the regions (default 0, the response function selected in )" );
 	opt->addUsage( " -w  --word  		Length of the descriptor in bytes, i.e. number of dimension of BRIEF descriptor " );
@@ -351,31 +346,6 @@ int txt_from_feats(vector<cmp::SadKeyPoint> kpts, Mat dcts, char *outpath)
 		for (int iCol=0; iCol<dcts.cols; iCol++ )
 			fprintf(ftfile, "%d ", p[iCol]);
 		fprintf(ftfile, "\n");
-	}
-
-	fclose(ftfile);
-	return 1;
-}
-
-int deltas_to_txt(vector<cmp::SadKeyPoint> kpts, char *outpath)
-{
-
-	FILE * ftfile;
-	ftfile = fopen (outpath, "w+");
-	if (!ftfile)
-	{
-		cout << "Could not create the file: " << outpath << endl;
-		return -1;
-   	}
-
-	// Header and number of features
-	int num_feats = kpts.size(), iDesc = 0;
-
-	fprintf(ftfile, "%d\n", num_feats);
-
-	for (vector<cmp::SadKeyPoint>::iterator kp = kpts.begin(), kpEnd = kpts.end(); kp != kpEnd; ++kp, iDesc++)
-	{
-		fprintf(ftfile, "%d\n", kp->delta );
 	}
 
 	fclose(ftfile);
@@ -483,9 +453,4 @@ void deltas_to_histogram(vector<cmp::SadKeyPoint> kpts)
 						 Point( bin_w*(i), hist_h - cvRound(delta_hist.at<float>(i)) ),
 						 Scalar( 255, 0, 0), 2, 8, 0  );
 	}
-
-	/// Display
-//	namedWindow("calcHist Demo", CV_WINDOW_AUTOSIZE );
-//	imshow("calcHist Demo", histImage );
-
 }

@@ -56,6 +56,7 @@ namespace cmp
   double FitQuadratic(double offset[2], const double* resp_up, const double* resp_cent, const double* resp_down, int c);
   inline bool inner_test(int pixel_inner[25], int pixel_mid[25], int pixel_outer[25], const uchar* ptr, double& A, double& B, double& C, double& D, uchar& N, uchar opc);
   inline bool inner_sym_test(int pixel_inner[25], const uchar* ptr, double& A, double& B, double& C, double& D, uchar& N );
+  inline void blob_test(int pixel_mid[25], int pixel_outer[25], const uchar* ptr, uchar& N);
 
 
   template<int patternSize>
@@ -269,17 +270,10 @@ namespace cmp
   }
 
 
-  /*--------------------- My FAST detector for SADDLE 2.0 points (Begin) ----------------------------*/
   template<int patternSize>
   void FASTsaddle_central(InputArray _img, std::vector<SadKeyPoint>& keypoints, int threshold, bool nonmax_suppression)
   {
-    //	printf("ORB for SADDLE points\n");
     Mat img = _img.getMat();
-
-    //	float sigma = 3.0;
-    //	Mat img;
-    //	GaussianBlur(_img, img, Size(0,0), sigma, 0);
-
     int i, j, k, pixel[25];
     makeOffsets(pixel, (int)img.step, patternSize);
 
@@ -384,7 +378,6 @@ namespace cmp
                         break;
                       default:
                         *p_redgreen++ = labels[m];
-                        //                			if ( (lengths[m]<3) || (lengths[m]>5) )
                         if ( (lengths[m]<2) || (lengths[m]>8) )
                           discard=1;
                       }
@@ -428,11 +421,8 @@ namespace cmp
           }
       }
   }
-  /*---------------------- My FAST detector for SADDLE 2.0 points (End) -----------------------------*/
-  /*---------------------- My FAST detector for SADDLE with inner pattern points (End) -----------------------------*/
+  
 
-//  int nInnerT = 0, nInnerX = 0, nInnerB = 0, nOuter = 0;
-// ,int& rej2,int& rej3,int& rej4,int& accp
   inline bool inner_test(int pixel_inner[25], int pixel_mid[25], int pixel_outer[25], const uchar* ptr, double& A, double& B, double& C, double& D, uchar& N, uchar opc)
   {
 
@@ -681,87 +671,6 @@ namespace cmp
 	  	  }
 	  		  break;
 
-	  	  case 5:
-#if false
-	  		  // Test for counting comparisons
-	  		  if ( (std::signbit(ptr[pixel_inner[4]] - ptr[pixel_inner[2]]) == std::signbit(ptr[pixel_inner[0]] - ptr[pixel_inner[6]])) && (ptr[pixel_inner[4]] != ptr[pixel_inner[2]]) && (ptr[pixel_inner[0]] != ptr[pixel_inner[6]]) )
-//	  	 	  if ( std::signbit(ptr[pixel_inner[4]] - ptr[pixel_inner[2]]) == std::signbit(ptr[pixel_inner[0]] - ptr[pixel_inner[6]]) )
-	  		  {
-	  			  // Passed with 2 comparisions
-	  			  if ( (std::signbit(ptr[pixel_inner[4]] - ptr[pixel_inner[2]]) == std::signbit(ptr[pixel_inner[4]] - ptr[pixel_inner[6]])) && (ptr[pixel_inner[4]] != ptr[pixel_inner[2]]) && (ptr[pixel_inner[4]] != ptr[pixel_inner[6]]) )
-//	  			  if ( std::signbit(ptr[pixel_inner[4]] - ptr[pixel_inner[2]]) == std::signbit(ptr[pixel_inner[4]] - ptr[pixel_inner[6]]) )
-	  			  {
-	  				  // Passed with 1 more comparison (3 total)
-	  				  if ( (std::signbit(ptr[pixel_inner[0]] - ptr[pixel_inner[2]]) == std::signbit(ptr[pixel_inner[0]] - ptr[pixel_inner[6]])) && (ptr[pixel_inner[0]] != ptr[pixel_inner[2]]) && (ptr[pixel_inner[0]] != ptr[pixel_inner[6]])  )
-//	  				  if ( std::signbit(ptr[pixel_inner[0]] - ptr[pixel_inner[2]]) == std::signbit(ptr[pixel_inner[0]] - ptr[pixel_inner[6]]))
-	  				  {
-	  					  // Accepted with 1 more comparison (4 total)
-	  					  accp++;
-	  					  N += 2;
-	  				  }
-	  				  else
-	  				  {
-	  					  // Rejected after 4 comparisons
-	  					  rej4++;
-	  					  N = 0;
-	  				  }
-
-	  			  }
-	  			  else
-	  			  {
-	  				  // Rejected with P up to 25%
-	  				  rej3++;
-	  				  N = 0;
-	  			  }
-
-	  		  }
-	  		  else
-	  		  {
-	  			  // Rejected with 50%
-	  			  rej2++;
-	  			  N = 0;
-	  		  }
-#elif false
-	  		// Test for counting comparisons
-	  		  if ( (std::signbit(ptr[pixel_inner[5]] - ptr[pixel_inner[3]]) == std::signbit(ptr[pixel_inner[1]] - ptr[pixel_inner[7]])) && (ptr[pixel_inner[5]] != ptr[pixel_inner[3]]) && (ptr[pixel_inner[1]] != ptr[pixel_inner[7]]) )
-//			  if ( std::signbit(ptr[pixel_inner[5]] - ptr[pixel_inner[3]]) == std::signbit(ptr[pixel_inner[1]] - ptr[pixel_inner[7]]))
-			  {
-				  // Passed with 2 comparisions
-	  			  if ( (std::signbit(ptr[pixel_inner[5]] - ptr[pixel_inner[3]]) == std::signbit(ptr[pixel_inner[5]] - ptr[pixel_inner[7]])) && (ptr[pixel_inner[5]] != ptr[pixel_inner[3]]) && (ptr[pixel_inner[5]] != ptr[pixel_inner[7]]) )
-//				  if (std::signbit(ptr[pixel_inner[5]] - ptr[pixel_inner[3]]) == std::signbit(ptr[pixel_inner[5]] - ptr[pixel_inner[7]]))
-				  {
-					  // Passed with 1 more comparison (3 total)
-	  				  if ( (std::signbit(ptr[pixel_inner[1]] - ptr[pixel_inner[3]]) == std::signbit(ptr[pixel_inner[1]] - ptr[pixel_inner[7]])) && (ptr[pixel_inner[1]] != ptr[pixel_inner[3]]) && (ptr[pixel_inner[1]] != ptr[pixel_inner[7]])  )
-//					  if ( std::signbit(ptr[pixel_inner[1]] - ptr[pixel_inner[3]]) == std::signbit(ptr[pixel_inner[1]] - ptr[pixel_inner[7]]))
-					  {
-						  // Accepted with 1 more comparison (4 total)
-						  accp++;
-						  N += 2;
-					  }
-					  else
-					  {
-						  // Rejected after 4 comparisons
-						  rej4++;
-						  N = 0;
-					  }
-
-				  }
-				  else
-				  {
-					  // Rejected with P up to 25%
-					  rej3++;
-					  N = 0;
-				  }
-
-			  }
-			  else
-			  {
-				  // Rejected with 50%
-				  rej2++;
-				  N = 0;
-			  }
-#endif
-	  	  break;
 	  }
 
 
@@ -823,27 +732,34 @@ namespace cmp
 
   }
 
-  /*--------- My FAST detector for SADDLE with inner pattern with simpler implementation (Begin) ---------InputArray _resp,----------*/
+  inline void blob_test(int pixel_mid[25], int pixel_outer[25], const uchar* ptr, uchar& N)
+  {
+    N = 0;
+    if ((ptr[pixel_outer[0]]  > ptr[pixel_mid[0]]) &&
+       ( ptr[pixel_outer[4]]  > ptr[pixel_mid[3]]) &&
+       ( ptr[pixel_outer[8]]  > ptr[pixel_mid[6]]) &&
+       ( ptr[pixel_outer[12]] > ptr[pixel_mid[9]]) )
+    {
+      N = 1;
+    }
+      else  if ((ptr[pixel_outer[0 ]] < ptr[pixel_mid[0]]) &&
+               ( ptr[pixel_outer[4 ]] < ptr[pixel_mid[3]]) &&
+               ( ptr[pixel_outer[8 ]] < ptr[pixel_mid[6]]) &&
+               ( ptr[pixel_outer[12]] < ptr[pixel_mid[9]]))
+    {
+      N = 2;
+    }
+
+}
+
   void FASTsaddle_shinner(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                           int threshold, int nonmax_suppression, float scale, double responsethr, uchar deltaThr, int scoreType,
   						bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
   {
-//	  printf("     --- Using Shifted Inner Circle --- \n");
 
 	  const Mat img = _img.getMat();
 	  int i, j, k, idx, pixel_inner[25], pixel_outer[25];
 	  double threshold2, scEps = 2.0;
-
-	  // -----------------  Save images of scales ------------------------- //
-#if false
-	  ostringstream ss;
-	  ss << scale;
-	  String imgpath = (("./imscale_" + ss.str() ) + ".ppm");
-	  imwrite( imgpath, img );
-#endif
-	  // ------------------------------------------------------------------ //
-
-
 	  makeShiftedOffsets(pixel_inner, (int)img.step, 8);
 	  makeShiftedOffsets(pixel_outer, (int)img.step, 20);
 	  keypoints.clear();
@@ -853,12 +769,12 @@ namespace cmp
 	  if (threshold == 0)
 	  {
 		  threshold = (int)(deltaThr/2);
-	      threshold2 = scEps*(double)threshold;
+	    threshold2 = scEps*(double)threshold;
 	  }
 	  else if (threshold > 0)
 	  {
 		  threshold = std::min(std::max(threshold, 0), 255);
-	      threshold2 = scEps*(double)threshold;
+	    threshold2 = scEps*(double)threshold;
 	  }
 
 
@@ -924,7 +840,7 @@ namespace cmp
 					continue;
 
 				  uchar delta = std::max( A-B, C-D );
-#if true
+
 				  if (N == 4)
 				  {
 					if ((A >= D) && (B <= C))
@@ -1029,7 +945,6 @@ namespace cmp
 
 				  if ( discard || (red_green_labels[0] != red_green_labels[2] ) )  // Swapping color constrain
 					continue;
-#endif
 
 				  // Include the point in the feature set
 				  cornerpos[ncorners++] = j;
@@ -1080,7 +995,6 @@ namespace cmp
 					  float thetaY = (i-1)*(prev[j-1] + prev[j] + prev[j+1]) + (i)*(curr[j-1] + curr[j] + curr[j+1]) + (i-2)*(pprev[j-1] + pprev[j] + pprev[j+1]) ;
 					  thetaX = thetaX/sumresp;
 					  thetaY = thetaY/sumresp;
-//					  keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 8.f, -1, (float)scoreSc, 1.f ));
 					  keypoints.push_back(SadKeyPoint((float)thetaX+0.5, (float)thetaY+0.5, 8.f, -1, (float)scoreSc, 1.f ));
 				  }
 				  else if (subPixPrecision == 2)
@@ -1089,7 +1003,6 @@ namespace cmp
 					  scoreSc = (float)FitQuadratic( offset, pprev, prev, curr, j);
 					  float thetaX = (float)j + offset[1];
 					  float thetaY = (float)(i-1) + offset[0];
-//					  keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 8.f, -1, (float)scoreSc, 1.f ));
 					  keypoints.push_back(SadKeyPoint((float)(thetaX+0.5), (float)(thetaY+0.5), 8.f, -1, (float)scoreSc, 1.f ));
 				  }
 				  else
@@ -1108,22 +1021,13 @@ namespace cmp
                         int threshold, int nonmax_suppression, float scale, double responsethr, uchar deltaThr, int scoreType,
 						bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
   {
-        
-     double scEps = 2.0, threshold2;
-     double st;
-     const Mat img = _img.getMat();
+ 
+    double scEps = 2.0, threshold2;
+    double st;
+    const Mat img = _img.getMat();
 
-     Mat binImg; // Mask of all pixels that fulfill the 1st and 2nd condition
-     binImg = Mat::zeros(img.rows, img.cols, CV_8UC1);
-
-     // -----------------  Save images of scales ------------------------- //
-#if false
-     ostringstream ss;
-     ss << scale;
-     String imgpath = (("./imscale_" + ss.str() ) + ".ppm");
-     imwrite( imgpath, img );
-#endif
-     // ------------------------------------------------------------------ //
+    Mat binImg; // Mask of all pixels that fulfill the 1st and 2nd condition
+    binImg = Mat::zeros(img.rows, img.cols, CV_8UC1);
 
     int i, j, k, pixel[25], pixel_inner[25], pixel_mid[25];
     int rej2=0, rej3=0, rej4=0, accp=0;
@@ -1134,20 +1038,19 @@ namespace cmp
     keypoints.clear();
 
     // Relating delta and epsilon (there is no adaptation)
-    if (threshold == 0)
-      {
-        threshold = (int)(deltaThr/2);
-        threshold2 = scEps*(double)threshold;
-      }
+    if (threshold == 0)  
+    {
+      threshold = (int)(deltaThr/2);
+      threshold2 = scEps*(double)threshold;
+    }
     else if (threshold > 0)
-      {
-        threshold = std::min(std::max(threshold, 0), 255);
-        threshold2 = scEps*(double)threshold;
-      }
-
+    {
+      threshold = std::min(std::max(threshold, 0), 255);
+      threshold2 = scEps*(double)threshold;
+    }
 
     // ----- My try of unification (Scores and Coordinates positions) ----- //
-    AutoBuffer<double> _bufScCp(img.cols*3*(sizeof(double) + sizeof(int) + sizeof(double) + sizeof(uchar)) + 12 );//12 = 3*4(int size)
+    AutoBuffer<double> _bufScCp(img.cols*3*(sizeof(double) + sizeof(int) + sizeof(double) + sizeof(uchar)) + 12 );
     // Set the pointers for SCORES
     double* bufSc[3];
     bufSc[0] = _bufScCp;
@@ -1174,6 +1077,7 @@ namespace cmp
     int idx;
     uchar p_regs, count_elem;
     uchar *labels, *begins, *lengths;
+    int* lbl;
 
     labels  = new uchar[9];
     begins  = new uchar[9];
@@ -1181,315 +1085,279 @@ namespace cmp
 
     for(i = 3; i < img.rows-2; i++)
     {
-        const uchar* ptr = img.ptr<uchar>(i) + 3;
+      const uchar* ptr = img.ptr<uchar>(i) + 3;
+      double* curr = bufSc[(i - 3)%3];
+      double* currV = bufV[(i - 3)%3];
+      uchar* currDl = bufDl[(i - 3)%3];
+      int* cornerpos = bufCp[(i - 3)%3];
 
-        double* curr = bufSc[(i - 3)%3];
-        double* currV = bufV[(i - 3)%3];
-        uchar* currDl = bufDl[(i - 3)%3];
-        int* cornerpos = bufCp[(i - 3)%3];
+      memset(curr, 0, img.cols*sizeof(double) );
+      int ncorners = 0;
 
-        memset(curr, 0, img.cols*sizeof(double) );
-        int ncorners = 0;
+      if( i < img.rows - 3 )
+      {
+        j = 3;
 
-        if( i < img.rows - 3 )
-        {
-            j = 3;
+        for( ; j < img.cols - 3; j++, ptr++)
+        {        
+          double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
+          uchar N = 0, blob_type, delta;
+          inner_test(pixel_inner, pixel_mid, pixel, ptr, A, B, C, D, N, innerTstType);
 
-            for( ; j < img.cols - 3; j++, ptr++)
-            {        
-                double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
-                uchar N = 0;
-                // 0:inner,1:ExtOnly,2:ExtSum,3:ExtAvg,4:sqrt2 // , rej2, rej3, rej4, accp
-                inner_test(pixel_inner, pixel_mid, pixel, ptr, A, B, C, D, N, innerTstType);
-
-                if (!N)
-                  continue;
-                uchar delta = std::max( A-B, C-D );
-
-                if (N == 4)
-                {
-//                	nInnerB++;
-                	if ((A >= D) && (B <= C))
-                		v = std::min(A,C) + std::max (B,D);
-                	else
-                		continue;
-                }
-                else
-                {
-//                	if (A>0.0 || B>0.0)
-//                		nInnerT++;
-//                	else
-//                		nInnerX++;
-                	v = std::max( A+B, C+D );
-                }
-
-                v *= 0.5;
-
-                if (allC1feats)
-                {
-					cornerpos[ncorners++] = j;
-					currV[j] = v;
-					currDl[j] = delta;
-					curr[j] = delta;
-					continue;
-                }
-
-                if (delta < deltaThr)
-                  continue;
-
-                double upperThr, lowerThr, upperThr2, lowerThr2;
-
-                if (threshold > 0)
-                  {
-                    upperThr = v + (double)threshold;
-                    lowerThr = v - (double)threshold;
-                    upperThr2 = v + threshold2;
-                    lowerThr2 = v - threshold2;
-                  }
-                else
-                  {
-                    upperThr = v + (double)(0.5*delta);
-                    lowerThr = v - (double)(0.5*delta);
-                    upperThr2 = v + (scEps*0.5*(double)delta);
-                    lowerThr2 = v - (scEps*0.5*(double)delta);
-                  }
-
-                int templateLarge[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-                for (k = 0; k < 16; k++)
-                  {
-                    if ( (double)ptr[pixel[k]] > upperThr ) // GREEN
-                      templateLarge[k] = 2;
-                    else if ( (double)ptr[pixel[k]] < lowerThr ) // RED
-                      templateLarge[k] = 1;
-
-                    // FIRST brighter or darker
-                    if (((templateLarge[k]==1) && (templateLarge[k-1]==2) && (ptr[pixel[k]] > lowerThr2)) ||
-                        ((templateLarge[k]==2) && (templateLarge[k-1]==1) && (ptr[pixel[k]] < upperThr2)))
-                      templateLarge[k] = 0;
-                  }
-
-                // Find the position of the first swap
-                k = 1;
-                while ( (k <= maxArcLength) && (templateLarge[k-1] == templateLarge[k]) )
-                	k++;
-
-                if (k > maxArcLength)
-                	continue;
-
-                // Registers for template checking
-                uchar n_label[] = {0,0,0};
-
-                labels[0] = templateLarge[k];
-                n_label[templateLarge[k]]++;
-                begins[0] = k++;
-                count_elem = 1;
-                p_regs = 0;
-
-                for (uchar pt=k; pt<k+15; pt++ )
-                  {
-                    idx = pt % 16;
-                    if (labels[p_regs] != templateLarge[idx])
-                      {
-                        labels[p_regs+1] = templateLarge[idx];
-                        n_label[labels[p_regs+1]]++;
-                        begins[p_regs+1] = idx;
-                        lengths[ p_regs++] = count_elem;
-                        count_elem = 1;
-                        if (p_regs>7)
-                          break;
-                      }
-                    else
-                      count_elem++;
-                  }
-                lengths[p_regs++] = count_elem;
-
-
-                // ----------------- Constrains ----------------------- //
-
-                // Number of arcs constrains
-                if ((p_regs > 8) || (p_regs < 4)  || (n_label[0] > 4) || (n_label[1] != 2) || (n_label[2] != 2))
-                    continue;
-
-                // Arc length constrains
-                bool discard=0;
-                uchar red_green_labels[4], *p_redgreen;
-                p_redgreen = red_green_labels;
-                for ( int m=0; m<p_regs && !discard; m++ )
-                {
-                	if (labels[m] == 0)
-                	{
-                		discard = (lengths[m]>2);
-                    }
-                	else
-                	{
-                		*p_redgreen++ = labels[m];
-                        discard = ( (lengths[m] < minArcLength) || (lengths[m] > maxArcLength) );
-                    }
-                }
-
-                if ( discard || (red_green_labels[0] != red_green_labels[2] ) )  // Swapping color constrain
-                	continue;
-
-//                nOuter++;
-                // Include the feature in the set
-                cornerpos[ncorners++] = j;
-                currV[j] = v;
-                currDl[j] = delta;
-
-                // Compute the feature response
-			    int* lbl = templateLarge;
-			    curr[j] = cmpFeatureScore(ptr, pixel, lbl, v, delta, scoreType);
-
-                // Save the point in the binary image
-                uchar* ptrBinary = binImg.ptr<uchar>(i);
-                ptrBinary[j] = 255;
-              }
+          if (!N)
+          {
+            blob_test(pixel_mid, pixel, ptr, blob_type);
+            if (blob_type)
+            {
+              cornerpos[ncorners++] = j;
+              curr[j] = cmpFeatureScore(ptr, pixel, lbl, v, 0, SORB::HESS_SCORE);
+            }
+            continue;
           }
 
-        cornerpos[-1] = ncorners;
+          delta = std::max( A-B, C-D );
+          if (N == 4)
+          {
+          	if ((A >= D) && (B <= C))
+          		v = std::min(A,C) + std::max (B,D);
+          	else
+          		continue;
+          }
+          else
+          	v = std::max( A+B, C+D );
+          v *= 0.5;
 
-        if( (i == 3) || gravityCenter )
-          continue;
+          if (allC1feats)
+          {
+  					cornerpos[ncorners++] = j;
+  					currV[j] = v;
+  					currDl[j] = delta;
+  					curr[j] = delta;
+  					continue;
+          }
 
-        const double* prev = bufSc[(i - 4 + 3)%3];
-        const double* pprev = bufSc[(i - 5 + 3)%3];
-        const double* prevV = bufV[(i - 4 + 3)%3];
-        const uchar* prevDl = bufDl[(i - 4 + 3)%3];
+          if (delta < deltaThr)
+            continue;
 
-        double* pr = _resp.ptr<double>(i-1);
-        cornerpos = bufCp[(i - 4 + 3)%3];
-        ncorners = cornerpos[-1];
-        bool nmsFlag;
+          double upperThr, lowerThr, upperThr2, lowerThr2;
 
-        for( k = 0; k < ncorners; k++ )
-		{
-            j = cornerpos[k];
-            float scoreSc = prev[j];
-            double v = prevV[j];
-            uchar delta = prevDl[j];
+          if (threshold > 0)
+          {
+            upperThr = v + (double)threshold;
+            lowerThr = v - (double)threshold;
+            upperThr2 = v + threshold2;
+            lowerThr2 = v - threshold2;
+          }
+          else
+          {
+            upperThr = v + (double)(0.5*delta);
+            lowerThr = v - (double)(0.5*delta);
+            upperThr2 = v + (scEps*0.5*(double)delta);
+            lowerThr2 = v - (scEps*0.5*(double)delta);
+          }
 
-//			const uchar* ptr1 =  img.ptr<uchar>(i - 1) + j;
-//			if ((int)scale == 6)
-//				printf("%02d: x: %03d y: %03d delta: %02d rho: %.3f inner: %03d %03d %03d %03d %03d %03d %03d %03d\n", NN++,j,i-1,delta,v,ptr1[pixel_inner[0]],ptr1[pixel_inner[1]],ptr1[pixel_inner[2]],ptr1[pixel_inner[3]],ptr1[pixel_inner[4]],ptr1[pixel_inner[5]],ptr1[pixel_inner[6]],ptr1[pixel_inner[7]]);
-//				printf("%02d: x: %03d y: %03d delta: %02d rho: %.3f outer: %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d\n", NN++,j,i-1,delta,v,ptr1[pixel[0]],ptr1[pixel[1]],ptr1[pixel[2]],ptr1[pixel[3]],ptr1[pixel[4]],ptr1[pixel[5]],ptr1[pixel[6]],ptr1[pixel[7]],ptr1[pixel[8]],ptr1[pixel[9]],ptr1[pixel[10]],ptr1[pixel[11]],ptr1[pixel[12]],ptr1[pixel[13]],ptr1[pixel[14]],ptr1[pixel[15]]);
+          int templateLarge[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+          for (k = 0; k < 16; k++)
+          {
+            if ( (double)ptr[pixel[k]] > upperThr ) // GREEN
+              templateLarge[k] = 2;
+            else if ( (double)ptr[pixel[k]] < lowerThr ) // RED
+              templateLarge[k] = 1;
 
-            // Compute the NMS
-            if (strictMaximum)
-            	nmsFlag = scoreSc > responsethr && scoreSc > prev[j+1] && scoreSc > prev[j-1] &&
-                          scoreSc > pprev[j-1] && scoreSc > pprev[j] && scoreSc > pprev[j+1] &&
-                          scoreSc > curr[j-1] && scoreSc > curr[j] && scoreSc > curr[j+1];
-            else
-            	nmsFlag = scoreSc >= responsethr && scoreSc >= prev[j+1] && scoreSc >= prev[j-1] &&
-            	          scoreSc >= pprev[j-1] && scoreSc >= pprev[j] && scoreSc >= pprev[j+1] &&
-            	          scoreSc >= curr[j-1] && scoreSc >= curr[j] && scoreSc >= curr[j+1];
+            // FIRST brighter or darker
+            if (((templateLarge[k]==1) && (templateLarge[k-1]==2) && (ptr[pixel[k]] > lowerThr2)) ||
+                ((templateLarge[k]==2) && (templateLarge[k-1]==1) && (ptr[pixel[k]] < upperThr2)))
+              templateLarge[k] = 0;
+          }
 
-            if( !(nonmax_suppression>0) || nmsFlag )
+          // Find the position of the first swap
+          k = 1;
+          while ( (k <= maxArcLength) && (templateLarge[k-1] == templateLarge[k]) )
+          	k++;
+
+          if (k > maxArcLength)
+          	continue;
+
+          // Registers for template checking
+          uchar n_label[] = {0,0,0};
+
+          labels[0] = templateLarge[k];
+          n_label[templateLarge[k]]++;
+          begins[0] = k++;
+          count_elem = 1;
+          p_regs = 0;
+
+          for (uchar pt=k; pt<k+15; pt++ )
+          {
+            idx = pt % 16;
+            if (labels[p_regs] != templateLarge[idx])
             {
-//            	if (++NN == 7)
-//            		printf("Feat num: %d\n", NN);
-            	// Print the features and additional data
-				const uchar* ptr1 =  img.ptr<uchar>(i - 1) + j;
-//				if ((int)scale == 6)
-//					printf("%02d: x: %03d y: %03d delta: %02d rho: %.3f outer: %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d %03d\n", NN++,j,i-1,delta,v,ptr1[pixel[0]],ptr1[pixel[1]],ptr1[pixel[2]],ptr1[pixel[3]],ptr1[pixel[4]],ptr1[pixel[5]],ptr1[pixel[6]],ptr1[pixel[7]],ptr1[pixel[8]],ptr1[pixel[9]],ptr1[pixel[10]],ptr1[pixel[11]],ptr1[pixel[12]],ptr1[pixel[13]],ptr1[pixel[14]],ptr1[pixel[15]]);
+              labels[p_regs+1] = templateLarge[idx];
+              n_label[labels[p_regs+1]]++;
+              begins[p_regs+1] = idx;
+              lengths[ p_regs++] = count_elem;
+              count_elem = 1;
 
-
-            	if (subPixPrecision == 0)
-            		keypoints.push_back(SadKeyPoint((float)j, (float)(i-1), 7.f, -1, (float)scoreSc, 1.f ));
-            	else if (subPixPrecision == 1)
-            	{
-            		float sumresp = prev[j] + prev[j + 1] + prev[j-1] + pprev[j] + pprev[j + 1] + pprev[j-1] + curr[j] + curr[j + 1] + curr[j-1];
-					float thetaX = (j-1)*(pprev[j-1] + prev[j-1] + curr[j-1] ) + (j)*(pprev[j] + prev[j] + curr[j] ) + (j+1)*(pprev[j+1] + prev[j+1] + curr[j+1] );
-					float thetaY = (i-1)*(prev[j-1] + prev[j] + prev[j+1]) + (i)*(curr[j-1] + curr[j] + curr[j+1]) + (i-2)*(pprev[j-1] + pprev[j] + pprev[j+1]) ;
-					thetaX = thetaX/sumresp;
-					thetaY = thetaY/sumresp;
-					keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 7.f, -1, (float)scoreSc, 1.f ));
-            	}
-            	else if (subPixPrecision == 2)
-            	{
-            		double offset[2];
-					scoreSc = (float)FitQuadratic( offset, pprev, prev, curr, j);
-					float thetaX = (float)j + offset[1];
-					float thetaY = (float)(i-1) + offset[0];
-					keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 7.f, -1, (float)scoreSc, 1.f ));
-            	}
-            	else
-            		std::cerr << "Unknown sub-pixel precision estimation" << std::endl;
-
-
-                pr[j] = scoreSc;
-                keypoints.back().intensityCenter = v;
-                keypoints.back().delta = delta;
-
-//                const uchar* ptr1 =  img.ptr<uchar>(i - 1) + j;
-                ptr1 =  img.ptr<uchar>(i - 1) + j;
-                keypoints.back().outLabels.assign(16,0);
-
-                for(unsigned l = 0; l < 16; l++)
-                {
-                	keypoints.back().intensityPixels[l] = ptr1[pixel[l]];
-
-                    double upperThr = v + (double)threshold;
-                    double lowerThr = v - (double)threshold;
-
-                    if (ptr1[pixel[l]] > upperThr)
-                    {
-                    	keypoints.back().outLabels.at(l) = 2;
-                    	keypoints.back().labels[l] = 2;
-                    }
-                    else if (ptr1[pixel[l]] < lowerThr)
-                    {
-                    	keypoints.back().outLabels.at(l) = 1;
-                    	keypoints.back().labels[l] = 1;
-                    }
-                    else
-                    {
-                    	keypoints.back().outLabels.at(l) = 0;
-                    	keypoints.back().labels[l] = 0;
-                    }
-                }
-//                fprintf(ftfile, "%02d %03d %03d %02d %.3f %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d\n",
-//                NN++, j, i-1, delta, v, keypoints.back().labels[0], keypoints.back().labels[1], keypoints.back().labels[2], keypoints.back().labels[3],
-//				  keypoints.back().labels[4], keypoints.back().labels[5], keypoints.back().labels[6], keypoints.back().labels[7], keypoints.back().labels[8],
-//				  keypoints.back().labels[9], keypoints.back().labels[10], keypoints.back().labels[11], keypoints.back().labels[12], keypoints.back().labels[13],
-//				  keypoints.back().labels[14], keypoints.back().labels[15]);
+              if (p_regs>7)
+                break;
             }
+            else
+              count_elem++;
+          }
+          lengths[p_regs++] = count_elem;
+
+          // ----------------- Constrains ----------------------- //
+
+          // Number of arcs constrains
+          if ((p_regs > 8) || (p_regs < 4)  || (n_label[0] > 4) || (n_label[1] != 2) || (n_label[2] != 2))
+            continue;
+
+          // Arc length constrains
+          bool discard=0;
+          uchar red_green_labels[4], *p_redgreen;
+          p_redgreen = red_green_labels;
+          for ( int m=0; m<p_regs && !discard; m++ )
+          {
+            if (labels[m] == 0)
+              discard = (lengths[m]>2);
+            else
+            {
+              *p_redgreen++ = labels[m];
+              discard = ( (lengths[m] < minArcLength) || (lengths[m] > maxArcLength) );
+            }
+          }
+
+          if ( discard || (red_green_labels[0] != red_green_labels[2]))
+            continue;
+
+          // Include the feature in the set
+          cornerpos[ncorners++] = j;
+          currV[j] = v;
+          currDl[j] = delta;
+
+          // Compute the feature response
+          int* lbl = templateLarge;
+          curr[j] = cmpFeatureScore(ptr, pixel, lbl, v, delta, scoreType);
+
+          // Save the point in the binary image
+          uchar* ptrBinary = binImg.ptr<uchar>(i);
+          ptrBinary[j] = 255;
         }
-    }
+      }
+      cornerpos[-1] = ncorners;
+
+      if( (i == 3) || gravityCenter )
+        continue;
+
+      const double* prev = bufSc[(i - 4 + 3)%3];
+      const double* pprev = bufSc[(i - 5 + 3)%3];
+      const double* prevV = bufV[(i - 4 + 3)%3];
+      const uchar* prevDl = bufDl[(i - 4 + 3)%3];
+
+      double* pr = _resp.ptr<double>(i-1);
+      cornerpos = bufCp[(i - 4 + 3)%3];
+      ncorners = cornerpos[-1];
+      bool nmsFlag;
+
+      for( k = 0; k < ncorners; k++ )
+	    {
+        j = cornerpos[k];
+        float scoreSc = prev[j];
+        double v = prevV[j];
+        uchar delta = prevDl[j];
+
+        // Compute the NMS
+        if (strictMaximum)
+        	nmsFlag = scoreSc > responsethr && scoreSc > prev[j+1] && scoreSc > prev[j-1] &&
+                    scoreSc > pprev[j-1] && scoreSc > pprev[j] && scoreSc > pprev[j+1] &&
+                    scoreSc > curr[j-1] && scoreSc > curr[j] && scoreSc > curr[j+1];
+        else
+        	nmsFlag = scoreSc >= responsethr && scoreSc >= prev[j+1] && scoreSc >= prev[j-1] &&
+        	          scoreSc >= pprev[j-1] && scoreSc >= pprev[j] && scoreSc >= pprev[j+1] &&
+        	          scoreSc >= curr[j-1] && scoreSc >= curr[j] && scoreSc >= curr[j+1];
+
+        if( !(nonmax_suppression>0) || nmsFlag )
+        {
+          const uchar* ptr1 =  img.ptr<uchar>(i - 1) + j;
+
+        	if (subPixPrecision == 0)
+        		keypoints.push_back(SadKeyPoint((float)j, (float)(i-1), 7.f, -1, (float)scoreSc, 1.f ));
+        	else if (subPixPrecision == 1)
+        	{
+        		float sumresp = prev[j] + prev[j + 1] + prev[j-1] + pprev[j] + pprev[j + 1] + pprev[j-1] + curr[j] + curr[j + 1] + curr[j-1];
+  					float thetaX = (j-1)*(pprev[j-1] + prev[j-1] + curr[j-1] ) + (j)*(pprev[j] + prev[j] + curr[j] ) + (j+1)*(pprev[j+1] + prev[j+1] + curr[j+1] );
+  					float thetaY = (i-1)*(prev[j-1] + prev[j] + prev[j+1]) + (i)*(curr[j-1] + curr[j] + curr[j+1]) + (i-2)*(pprev[j-1] + pprev[j] + pprev[j+1]) ;
+  					thetaX = thetaX/sumresp;
+  					thetaY = thetaY/sumresp;
+  					keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 7.f, -1, (float)scoreSc, 1.f ));
+        	}
+        	else if (subPixPrecision == 2)
+        	{
+        		double offset[2];
+  					scoreSc = (float)FitQuadratic( offset, pprev, prev, curr, j);
+  					float thetaX = (float)j + offset[1];
+  					float thetaY = (float)(i-1) + offset[0];
+  					keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 7.f, -1, (float)scoreSc, 1.f ));
+        	}
+        	else
+        		std::cerr << "Unknown sub-pixel precision estimation" << std::endl;
+
+          pr[j] = scoreSc;
+          keypoints.back().intensityCenter = v;
+          keypoints.back().delta = delta;
+
+          // const uchar* ptr1 =  img.ptr<uchar>(i - 1) + j;
+          ptr1 =  img.ptr<uchar>(i - 1) + j;
+          keypoints.back().outLabels.assign(16,0);
+
+          for(unsigned l = 0; l < 16; l++)
+          {
+          	keypoints.back().intensityPixels[l] = ptr1[pixel[l]];
+            double upperThr = v + (double)threshold;
+            double lowerThr = v - (double)threshold;
+
+            if (ptr1[pixel[l]] > upperThr)
+            {
+            	keypoints.back().outLabels.at(l) = 2;
+            	keypoints.back().labels[l] = 2;
+            }
+            else if (ptr1[pixel[l]] < lowerThr)
+            {
+            	keypoints.back().outLabels.at(l) = 1;
+            	keypoints.back().labels[l] = 1;
+            }
+            else
+            {
+            	keypoints.back().outLabels.at(l) = 0;
+            	keypoints.back().labels[l] = 0;
+            }
+          }
+        }
+      }
+    } // Here the Y axis sliding window loop finishes
 
     if (gravityCenter)
     {
-//    	namedWindow("Binary image", cv::WINDOW_NORMAL);
-//    	imshow( "Binary image", binImg );
-
-		vector<vector<Point> > contours;
-		vector<Vec4i> hierarchy;
+      vector<vector<Point> > contours;
+		  vector<Vec4i> hierarchy;
 
     	findContours( binImg, contours, hierarchy, CV_RETR_TREE, CV_CHAIN_APPROX_SIMPLE );
 
-		for (int i=0; i<(int)contours.size(); i++)
-		{
-			double thetaX=0.0, thetaY=0.0;
-			int nPix = (int)contours[i].size();
+		  for (int i=0; i<(int)contours.size(); i++)
+		  {
+        double thetaX=0.0, thetaY=0.0;
+			  int nPix = (int)contours[i].size();
 
-			for (int j=0; j<nPix; j++)
-			{
-				thetaX += contours[i][j].x;
-				thetaY += contours[i][j].y;
-			}
-			thetaX /= nPix;
-			thetaY /= nPix;
-			keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 7.f, -1, (float)0.0, 1.f ));
-		}
+			  for (int j=0; j<nPix; j++)
+			  {
+				  thetaX += contours[i][j].x;
+				  thetaY += contours[i][j].y;
+			  }
+  			thetaX /= nPix;
+  			thetaY /= nPix;
+  			keypoints.push_back(SadKeyPoint((float)thetaX, (float)thetaY, 7.f, -1, (float)0.0, 1.f ));
+		  }
     }
-//  fclose(ftfile);
-//  int nPix = img.rows * img.cols;
-//  std::cout << " InnerT = " << (float)nInnerT/nPix << " InnerX = " <<  (float)nInnerX/nPix << " nInnerB = " << (float)nInnerB/nPix << " nOuter = " << (float)nOuter/(nInnerT+nInnerX+nInnerB) << std::endl;
-
-    // Printing the number of comparison done in the inner test
-//    int sumFt;
-//    sumFt = rej2 + rej3 + rej4 + accp;
-//    std::cout << " Rej2 = " << (float)rej2/sumFt << " Rej3 = " <<  (float)rej3/sumFt << " Rej4 = " << (float)rej4/sumFt << " Accp = " << (float)accp/sumFt << std::endl;
-//    std::cout << " Avg. Comp = " << (2*(float)rej2/sumFt) + (3*(float)rej3/sumFt) + (4*(float)(rej4+accp)/sumFt) << std::endl;
   }
 
   /*--------------- My FAST detector for SADDLE with inner pattern with simpler implementation  (End) -------------------*/
@@ -1589,7 +1457,6 @@ namespace cmp
   void FastFeatureDetector2::detectImpl( const Mat& image, vector<SadKeyPoint>& keypoints, const Mat& mask ) const
   {
     Mat grayImage = image;
-//    Mat responseDummy;
     if( image.type() != CV_8U ) cvtColor( image, grayImage, CV_BGR2GRAY );
     cmp::FASTX( grayImage, keypoints, threshold, nonmaxSuppression, type );
     // KeyPointsFilter::runByPixelsMask( keypoints, mask );

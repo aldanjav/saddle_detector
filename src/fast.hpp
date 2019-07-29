@@ -49,13 +49,6 @@ public:
     CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double responsethr, uchar deltaThr, int scoreType, bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength );
     cv::AlgorithmInfo* info() const;
 
-//    double getQuickTestTime();
-//    double getFullTestTime();
-//    double getNMS2dTime();
-
-//    int getNumInner();
-//    int getNumInnerFul();
-//    int getNumOutterFul();
 
 protected:
     virtual void detectImpl ( const Mat& image, vector<SadKeyPoint>& keypoints, const Mat& mask=Mat() ) const;
