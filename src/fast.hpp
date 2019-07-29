@@ -21,7 +21,15 @@ public:
 
     enum
     { // Define it in old class to simplify migration to 2.5
-      TYPE_5_8 = 0, TYPE_7_12 = 1, TYPE_9_16 = 2, TYPE_SADDLE_CENTRAL_PIXEL = 3, TYPE_SADDLE_INNER_PATTERN = 4, TYPE_SHADDLE = 5
+      TYPE_5_8 = 0,
+      TYPE_7_12 = 1,
+      TYPE_9_16 = 2,
+      TYPE_SADDLE_CENTRAL_PIXEL = 3,
+      TYPE_SADDLE_INNER_PATTERN = 4,
+      TYPE_SHADDLE = 5,
+      TYPE_SADDLE_CONDITIONED = 6,
+      TYPE_BLOB_CONDITIONED = 7,
+      TYPE_SADDLE_BLOB = 8
     };
 
     CV_WRAP void detect2( const Mat& image, CV_OUT vector<SadKeyPoint>& keypoints, Mat & resp, const Mat& mask=Mat() ) const;

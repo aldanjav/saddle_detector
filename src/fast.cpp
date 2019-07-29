@@ -51,8 +51,22 @@ namespace cmp
 						bool allC1feats, bool strictMaximum, int subPixPrecision,  bool gravityCenter, int innerTstType,
 						int minArcLength, int maxArcLength );
   void FASTsaddle_shinner(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
-                          int threshold, int nonmax_suppression, float scale, double responsethr, uchar deltaThr, int scoreType,
-    					  bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength );
+                          int threshold, int nonmax_suppression, float scale, double responsethr,
+                          uchar deltaThr, int scoreType, bool allC1feats, bool strictMaximum,
+                          int subPixPrecision, bool gravityCenter, int innerTstType,
+                          int minArcLength, int maxArcLength );
+  void FASTsaddle_conditioned(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
+                              int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
+                              bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
+                              int minArcLength, int maxArcLength );
+  void FASTblob_conditioned(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
+                            int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
+                            bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
+                            int minArcLength, int maxArcLength );
+  void FASTsaddle_blob(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
+                       int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
+                       bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
+                       int minArcLength, int maxArcLength );
   double FitQuadratic(double offset[2], const double* resp_up, const double* resp_cent, const double* resp_down, int c);
   inline bool inner_test(int pixel_inner[25], int pixel_mid[25], int pixel_outer[25], const uchar* ptr, double& A, double& B, double& C, double& D, uchar& N, uchar opc);
   inline bool inner_sym_test(int pixel_inner[25], const uchar* ptr, double& A, double& B, double& C, double& D, uchar& N );
@@ -1089,10 +1103,12 @@ namespace cmp
   }
 
   void FASTsaddle_inner(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
-                        int threshold, int nonmax_suppression, float scale, double responsethr, uchar deltaThr, int scoreType,
-						bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
+                        int threshold, int nonmax_suppression, float scale, double responsethr,
+                        uchar deltaThr, int scoreType, bool allC1feats, bool strictMaximum,
+                        int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength,
+                        int maxArcLength )
   {
- 
+    printf("FASTsaddle_inner\n");
     double scEps = 2.0, threshold2;
     double st;
     const Mat img = _img.getMat();
@@ -1121,8 +1137,7 @@ namespace cmp
     }
 
     // Allocating memory for all the buffer, each sizeof corresponds to one buffer
-    // AutoBuffer<double> _bufScCp(img.cols*3*(2*sizeof(double) + 2*sizeof(int) + 2*sizeof(uchar)) + 12 );
-    AutoBuffer<double> _bufScCp((img.cols+16)*3*(sizeof(double) + sizeof(int)) + 128 );
+    AutoBuffer<double> _bufScCp((img.cols+16)*3*(2*sizeof(double) + sizeof(int) + sizeof(uchar)) + 128 );
 
 
     // Set the pointers for SCORES
@@ -1150,25 +1165,6 @@ namespace cmp
     bufDl[1] = bufDl[0] + img.cols;
     bufDl[2] = bufDl[1] + img.cols;
 
-
-    // Memory allocation for the BLOB locations
-    int* bufBlobPos[3];
-    bufBlobPos[0] = (int*)alignPtr(bufDl[2] + img.cols, sizeof(int)) + 1;
-    bufBlobPos[1] = bufBlobPos[0] + img.cols + 1;
-    bufBlobPos[2] = bufBlobPos[1] + img.cols + 1;
-    memset(bufBlobPos[0], 0, (img.cols + 1)*3*sizeof(int));
-
-    double* bufBlobSc[3];
-    bufBlobSc[0] = (double*)alignPtr(bufBlobPos[2] + img.cols + 1, sizeof(double));
-    bufBlobSc[1] = bufBlobSc[0] + img.cols;
-    bufBlobSc[2] = bufBlobSc[1] + img.cols;
-    memset(bufBlobSc[0], 0, img.cols*3*sizeof(double));
-
-    uchar* bufBlobTy[3];
-    bufBlobTy[0] = (uchar*)alignPtr(bufBlobSc[2] + img.cols, sizeof(uchar));
-    bufBlobTy[1] = bufBlobTy[0] + img.cols;
-    bufBlobTy[2] = bufBlobTy[1] + img.cols;
-
     int idx;
     uchar p_regs, count_elem;
     uchar *labels, *begins, *lengths;
@@ -1182,16 +1178,12 @@ namespace cmp
     {
       const uchar* ptr = img.ptr<uchar>(i) + 3;
       double* curr = bufSc[(i - 3)%3];
-      double* currBlobSc = bufBlobSc[(i - 3)%3];
       double* currV = bufV[(i - 3)%3];
       uchar* currDl = bufDl[(i - 3)%3];
-      uchar* currBlobTy = bufBlobTy[(i - 3)%3];
       int* cornerpos = bufCp[(i - 3)%3];
-      int* blobpos = bufBlobPos[(i - 3)%3];
-
+      
       memset(curr, 0, img.cols*sizeof(double));
-      memset(currBlobSc, 0, img.cols*sizeof(double));
-      int ncorners = 0, nblobs = 0;
+      int ncorners = 0;
       
 
       if( i < img.rows - 3 )
@@ -1205,16 +1197,7 @@ namespace cmp
           inner_test(pixel_inner, pixel_mid, pixel, ptr, A, B, C, D, N, innerTstType);
 
           if (!N)
-          {
-            blob_test(pixel_mid, pixel, ptr, blob_type);
-            if (blob_type)
-            {
-              blobpos[nblobs++] = j;
-              currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, 0.0, 0, SORB::HESS_SCORE);
-              currBlobTy[j] = blob_type;
-            }
             continue;
-          }
 
           delta = std::max( A-B, C-D );
           if (N == 4)
@@ -1346,20 +1329,18 @@ namespace cmp
         }
       }
       cornerpos[-1] = ncorners;
-      blobpos[-1] = nblobs;
 
       /*   Collecting the SADDLES   */
       const double*  prev = bufSc[(i - 4 + 3)%3];
       const double* pprev = bufSc[(i - 5 + 3)%3];
       const double* prevV = bufV [(i - 4 + 3)%3];
       const uchar* prevDl = bufDl[(i - 4 + 3)%3];
-      const uchar* prevBlobType = bufBlobTy[(i - 4 + 3)%3];
 
       double* pr = _resp.ptr<double>(i - 1);
       bool nmsFlag;
       float scoreSc;
       double v;
-      unsigned char delta, blobType;
+      unsigned char delta;
 
       cornerpos = bufCp[(i - 4 + 3)%3];
       ncorners = cornerpos[-1];
@@ -1380,6 +1361,292 @@ namespace cmp
         	nmsFlag = scoreSc >= responsethr && scoreSc >= prev[j+1] && scoreSc >= prev[j-1] &&
         	          scoreSc >= pprev[j-1] && scoreSc >= pprev[j] && scoreSc >= pprev[j+1] &&
         	          scoreSc >= curr[j-1] && scoreSc >= curr[j] && scoreSc >= curr[j+1];
+
+        if(!(nonmax_suppression>0) || nmsFlag)
+        {
+          float thetaX, thetaY;
+
+          subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
+          keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
+          keypoints.back().intensityCenter = v;
+          keypoints.back().delta = delta;
+          keypoints.back().class_id = 0;
+          add_labelling_array(img, j, i, keypoints, v, threshold, pixel);
+          pr[j] = scoreSc;
+        }
+      }
+    } // Here the Y axis sliding window loop finishes    
+  }
+
+  void FASTsaddle_blob(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
+                              int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
+                              bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
+                              int minArcLength, int maxArcLength )
+  {
+    printf("FASTsaddle_blob\n"); 
+    double scEps = 2.0, threshold2;
+    double st;
+    const Mat img = _img.getMat();
+
+    Mat binImg; // Mask of all pixels that fulfill the 1st and 2nd condition
+    binImg = Mat::zeros(img.rows, img.cols, CV_8UC1);
+
+    int i, j, k, pixel[25], pixel_inner[25], pixel_mid[25];
+    int rej2=0, rej3=0, rej4=0, accp=0;
+    makeOffsets(pixel, (int)img.step, 16); //patternSize
+    makeOffsets(pixel_inner, (int)img.step, 8);
+    makeOffsets(pixel_mid, (int)img.step, 12);
+
+    keypoints.clear();
+
+    threshold = std::min(std::max(threshold, 0), 255);
+    threshold2 = scEps*(double)threshold;
+
+    // Allocating memory for all the buffer, each sizeof corresponds to one buffer
+    AutoBuffer<double> _bufScCp((img.cols+16)*3*(3*sizeof(double) + 2*sizeof(int) + 2*sizeof(uchar)) + 128 );
+
+    // Set the pointers for SCORES
+    double* bufSc[3];
+    bufSc[0] = _bufScCp;
+    bufSc[1] = bufSc[0] + img.cols;
+    bufSc[2] = bufSc[1] + img.cols;
+    memset(bufSc[0], 0, img.cols*3*sizeof(double));
+
+    // Set the pointers for COORDINATES POINTS
+    int* bufCp[3];
+    bufCp[0] = (int*)alignPtr(bufSc[2] + img.cols, sizeof(int)) + 1;
+    bufCp[1] = bufCp[0] + img.cols + 1;
+    bufCp[2] = bufCp[1] + img.cols + 1;
+    memset(bufCp[0], 0, (img.cols + 1)*3*sizeof(int));
+
+    double* bufV[3];
+    bufV[0] = (double*)alignPtr(bufCp[2] + img.cols + 1, sizeof(double));
+    bufV[1] = bufV[0] + img.cols;
+    bufV[2] = bufV[1] + img.cols;
+
+    // Save Deltas
+    uchar* bufDl[3];
+    bufDl[0] = (uchar*)alignPtr(bufV[2] + img.cols, sizeof(uchar));
+    bufDl[1] = bufDl[0] + img.cols;
+    bufDl[2] = bufDl[1] + img.cols;
+
+
+    // Memory allocation for the BLOB locations
+    int* bufBlobPos[3];
+    bufBlobPos[0] = (int*)alignPtr(bufDl[2] + img.cols, sizeof(int)) + 1;
+    bufBlobPos[1] = bufBlobPos[0] + img.cols + 1;
+    bufBlobPos[2] = bufBlobPos[1] + img.cols + 1;
+    memset(bufBlobPos[0], 0, (img.cols + 1)*3*sizeof(int));
+
+    double* bufBlobSc[3];
+    bufBlobSc[0] = (double*)alignPtr(bufBlobPos[2] + img.cols + 1, sizeof(double));
+    bufBlobSc[1] = bufBlobSc[0] + img.cols;
+    bufBlobSc[2] = bufBlobSc[1] + img.cols;
+    memset(bufBlobSc[0], 0, img.cols*3*sizeof(double));
+
+    uchar* bufBlobTy[3];
+    bufBlobTy[0] = (uchar*)alignPtr(bufBlobSc[2] + img.cols, sizeof(uchar));
+    bufBlobTy[1] = bufBlobTy[0] + img.cols;
+    bufBlobTy[2] = bufBlobTy[1] + img.cols;
+
+    int idx;
+    uchar p_regs, count_elem;
+    uchar *labels, *begins, *lengths;
+    int* lbl;
+
+    labels  = new uchar[9];
+    begins  = new uchar[9];
+    lengths = new uchar[9];
+
+    for(i = 3; i < img.rows-2; i++)
+    {
+      const uchar* ptr = img.ptr<uchar>(i) + 3;
+      double* curr = bufSc[(i - 3)%3];
+      double* currBlobSc = bufBlobSc[(i - 3)%3];
+      double* currV = bufV[(i - 3)%3];
+      uchar* currDl = bufDl[(i - 3)%3];
+      uchar* currBlobTy = bufBlobTy[(i - 3)%3];
+      int* cornerpos = bufCp[(i - 3)%3];
+      int* blobpos = bufBlobPos[(i - 3)%3];
+
+      memset(curr, 0, img.cols*sizeof(double));
+      memset(currBlobSc, 0, img.cols*sizeof(double));
+      int ncorners = 0, nblobs = 0;
+      
+
+      if( i < img.rows - 3 )
+      {
+        j = 3;
+
+        for( ; j < img.cols - 3; j++, ptr++)
+        {        
+          double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
+          uchar N = 0, blob_type, delta;
+
+          blob_test(pixel_mid, pixel, ptr, blob_type);
+          if (blob_type)
+          {
+            blobpos[nblobs++] = j;
+            currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, 0.0, 0, SORB::HESS_SCORE);
+            currBlobTy[j] = blob_type;
+          }
+
+          inner_test(pixel_inner, pixel_mid, pixel, ptr, A, B, C, D, N, innerTstType);
+          if (!N)
+            continue;
+
+          delta = std::max( A-B, C-D );
+          if (N == 4)
+          {
+            if ((A >= D) && (B <= C))
+              v = std::min(A,C) + std::max (B,D);
+            else
+              continue;
+          }
+          else
+            v = std::max( A+B, C+D );
+          v *= 0.5;
+
+          double upperThr, lowerThr, upperThr2, lowerThr2;
+
+          if (threshold > 0)
+          {
+            upperThr = v + (double)threshold;
+            lowerThr = v - (double)threshold;
+            upperThr2 = v + threshold2;
+            lowerThr2 = v - threshold2;
+          }
+          else
+          {
+            upperThr = v + (double)(0.5*delta);
+            lowerThr = v - (double)(0.5*delta);
+            upperThr2 = v + (scEps*0.5*(double)delta);
+            lowerThr2 = v - (scEps*0.5*(double)delta);
+          }
+
+          int templateLarge[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+          for (k = 0; k < 16; k++)
+          {
+            if ( (double)ptr[pixel[k]] > upperThr ) // GREEN
+              templateLarge[k] = 2;
+            else if ( (double)ptr[pixel[k]] < lowerThr ) // RED
+              templateLarge[k] = 1;
+
+            // FIRST brighter or darker
+            if (((templateLarge[k]==1) && (templateLarge[k-1]==2) && (ptr[pixel[k]] > lowerThr2)) ||
+                ((templateLarge[k]==2) && (templateLarge[k-1]==1) && (ptr[pixel[k]] < upperThr2)))
+              templateLarge[k] = 0;
+          }
+
+          // Find the position of the first swap
+          k = 1;
+          while ( (k <= maxArcLength) && (templateLarge[k-1] == templateLarge[k]) )
+            k++;
+
+          if (k > maxArcLength)
+            continue;
+
+          // Registers for template checking
+          uchar n_label[] = {0,0,0};
+
+          labels[0] = templateLarge[k];
+          n_label[templateLarge[k]]++;
+          begins[0] = k++;
+          count_elem = 1;
+          p_regs = 0;
+
+          for (uchar pt=k; pt<k+15; pt++ )
+          {
+            idx = pt % 16;
+            if (labels[p_regs] != templateLarge[idx])
+            {
+              labels[p_regs+1] = templateLarge[idx];
+              n_label[labels[p_regs+1]]++;
+              begins[p_regs+1] = idx;
+              lengths[ p_regs++] = count_elem;
+              count_elem = 1;
+
+              if (p_regs>7)
+                break;
+            }
+            else
+              count_elem++;
+          }
+          lengths[p_regs++] = count_elem;
+
+          // ----------------- Constrains ----------------------- //
+
+          // Number of arcs constrains
+          if ((p_regs > 8) || (p_regs < 4)  || (n_label[0] > 4) || (n_label[1] != 2) || (n_label[2] != 2))
+            continue;
+
+          // Arc length constrains
+          bool discard=0;
+          uchar red_green_labels[4], *p_redgreen;
+          p_redgreen = red_green_labels;
+          for ( int m=0; m<p_regs && !discard; m++ )
+          {
+            if (labels[m] == 0)
+              discard = (lengths[m]>2);
+            else
+            {
+              *p_redgreen++ = labels[m];
+              discard = ( (lengths[m] < minArcLength) || (lengths[m] > maxArcLength) );
+            }
+          }
+
+          if ( discard || (red_green_labels[0] != red_green_labels[2]))
+            continue;
+
+          // Include the feature in the set
+          cornerpos[ncorners++] = j;
+          currV[j] = v;
+          currDl[j] = delta;
+
+          // Compute the feature response
+          int* lbl = templateLarge;
+          curr[j] = cmpFeatureScore(ptr, pixel, lbl, v, delta, scoreType);
+
+          // Save the point in the binary image
+          uchar* ptrBinary = binImg.ptr<uchar>(i);
+          ptrBinary[j] = 255;
+        }
+      }
+      cornerpos[-1] = ncorners;
+      blobpos[-1] = nblobs;
+
+      /*   Collecting the SADDLES   */
+      const double*  prev = bufSc[(i - 4 + 3)%3];
+      const double* pprev = bufSc[(i - 5 + 3)%3];
+      const double* prevV = bufV [(i - 4 + 3)%3];
+      const uchar* prevDl = bufDl[(i - 4 + 3)%3];
+      const uchar* prevBlobType = bufBlobTy[(i - 4 + 3)%3];
+
+      double* pr = _resp.ptr<double>(i - 1);
+      bool nmsFlag;
+      float scoreSc;
+      double v;
+      unsigned char delta, blobType;
+
+      cornerpos = bufCp[(i - 4 + 3)%3];
+      ncorners = cornerpos[-1];
+
+      for( k = 0; k < ncorners; k++ )
+      {
+        j = cornerpos[k];
+        scoreSc = prev[j];
+        v = prevV[j];
+        delta = prevDl[j];
+
+        // Compute the NMS
+        if (strictMaximum)
+          nmsFlag = scoreSc > responsethr && scoreSc > prev[j+1] && scoreSc > prev[j-1] &&
+                    scoreSc > pprev[j-1] && scoreSc > pprev[j] && scoreSc > pprev[j+1] &&
+                    scoreSc > curr[j-1] && scoreSc > curr[j] && scoreSc > curr[j+1];
+        else
+          nmsFlag = scoreSc >= responsethr && scoreSc >= prev[j+1] && scoreSc >= prev[j-1] &&
+                    scoreSc >= pprev[j-1] && scoreSc >= pprev[j] && scoreSc >= pprev[j+1] &&
+                    scoreSc >= curr[j-1] && scoreSc >= curr[j] && scoreSc >= curr[j+1];
 
         if(!(nonmax_suppression>0) || nmsFlag)
         {
@@ -1430,6 +1697,651 @@ namespace cmp
     } // Here the Y axis sliding window loop finishes    
   }
 
+
+  void FASTblob_conditioned(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
+                              int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
+                              bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
+                              int minArcLength, int maxArcLength )
+  {
+    printf("FASTblob_conditioned\n");
+    double scEps = 2.0, threshold2;
+    double st;
+    const Mat img = _img.getMat();
+
+    Mat binImg; // Mask of all pixels that fulfill the 1st and 2nd condition
+    binImg = Mat::zeros(img.rows, img.cols, CV_8UC1);
+
+    int i, j, k, pixel[25], pixel_inner[25], pixel_mid[25];
+    int rej2=0, rej3=0, rej4=0, accp=0;
+    makeOffsets(pixel, (int)img.step, 16); //patternSize
+    makeOffsets(pixel_inner, (int)img.step, 8);
+    makeOffsets(pixel_mid, (int)img.step, 12);
+
+    keypoints.clear();
+
+    threshold = std::min(std::max(threshold, 0), 255);
+    threshold2 = scEps*(double)threshold;
+
+    // Allocating memory for all the buffer, each sizeof corresponds to one buffer
+    AutoBuffer<double> _bufScCp((img.cols+16)*3*(3*sizeof(double) + 2*sizeof(int) + 2*sizeof(uchar)) + 128 );
+
+
+    // Set the pointers for SCORES
+    double* bufSc[3];
+    bufSc[0] = _bufScCp;
+    bufSc[1] = bufSc[0] + img.cols;
+    bufSc[2] = bufSc[1] + img.cols;
+    memset(bufSc[0], 0, img.cols*3*sizeof(double));
+
+    // Set the pointers for COORDINATES POINTS
+    int* bufCp[3];
+    bufCp[0] = (int*)alignPtr(bufSc[2] + img.cols, sizeof(int)) + 1;
+    bufCp[1] = bufCp[0] + img.cols + 1;
+    bufCp[2] = bufCp[1] + img.cols + 1;
+    memset(bufCp[0], 0, (img.cols + 1)*3*sizeof(int));
+
+    double* bufV[3];
+    bufV[0] = (double*)alignPtr(bufCp[2] + img.cols + 1, sizeof(double));
+    bufV[1] = bufV[0] + img.cols;
+    bufV[2] = bufV[1] + img.cols;
+
+    // Save Deltas
+    uchar* bufDl[3];
+    bufDl[0] = (uchar*)alignPtr(bufV[2] + img.cols, sizeof(uchar));
+    bufDl[1] = bufDl[0] + img.cols;
+    bufDl[2] = bufDl[1] + img.cols;
+
+
+    // Memory allocation for the BLOB locations
+    int* bufBlobPos[3];
+    bufBlobPos[0] = (int*)alignPtr(bufDl[2] + img.cols, sizeof(int)) + 1;
+    bufBlobPos[1] = bufBlobPos[0] + img.cols + 1;
+    bufBlobPos[2] = bufBlobPos[1] + img.cols + 1;
+    memset(bufBlobPos[0], 0, (img.cols + 1)*3*sizeof(int));
+
+    double* bufBlobSc[3];
+    bufBlobSc[0] = (double*)alignPtr(bufBlobPos[2] + img.cols + 1, sizeof(double));
+    bufBlobSc[1] = bufBlobSc[0] + img.cols;
+    bufBlobSc[2] = bufBlobSc[1] + img.cols;
+    memset(bufBlobSc[0], 0, img.cols*3*sizeof(double));
+
+    uchar* bufBlobTy[3];
+    bufBlobTy[0] = (uchar*)alignPtr(bufBlobSc[2] + img.cols, sizeof(uchar));
+    bufBlobTy[1] = bufBlobTy[0] + img.cols;
+    bufBlobTy[2] = bufBlobTy[1] + img.cols;
+
+    int idx;
+    uchar p_regs, count_elem;
+    uchar *labels, *begins, *lengths;
+    int* lbl;
+
+    labels  = new uchar[9];
+    begins  = new uchar[9];
+    lengths = new uchar[9];
+
+    for(i = 3; i < img.rows-2; i++)
+    {
+      const uchar* ptr = img.ptr<uchar>(i) + 3;
+      double* curr = bufSc[(i - 3)%3];
+      double* currBlobSc = bufBlobSc[(i - 3)%3];
+      double* currV = bufV[(i - 3)%3];
+      uchar* currDl = bufDl[(i - 3)%3];
+      uchar* currBlobTy = bufBlobTy[(i - 3)%3];
+      int* cornerpos = bufCp[(i - 3)%3];
+      int* blobpos = bufBlobPos[(i - 3)%3];
+
+      memset(curr, 0, img.cols*sizeof(double));
+      memset(currBlobSc, 0, img.cols*sizeof(double));
+      int ncorners = 0, nblobs = 0;
+      
+
+      if( i < img.rows - 3 )
+      {
+        j = 3;
+
+        for( ; j < img.cols - 3; j++, ptr++)
+        {        
+          double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
+          uchar N = 0, blob_type, delta;
+
+          inner_test(pixel_inner, pixel_mid, pixel, ptr, A, B, C, D, N, innerTstType);
+          if (!N)
+          {
+            blob_test(pixel_mid, pixel, ptr, blob_type);
+            if (blob_type)
+            {
+              blobpos[nblobs++] = j;
+              currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, 0.0, 0, SORB::HESS_SCORE);
+              currBlobTy[j] = blob_type;
+            }
+            continue;
+          }
+
+          delta = std::max( A-B, C-D );
+          if (N == 4)
+          {
+            if ((A >= D) && (B <= C))
+              v = std::min(A,C) + std::max (B,D);
+            else
+              continue;
+          }
+          else
+            v = std::max( A+B, C+D );
+          v *= 0.5;
+
+          double upperThr, lowerThr, upperThr2, lowerThr2;
+
+          if (threshold > 0)
+          {
+            upperThr = v + (double)threshold;
+            lowerThr = v - (double)threshold;
+            upperThr2 = v + threshold2;
+            lowerThr2 = v - threshold2;
+          }
+          else
+          {
+            upperThr = v + (double)(0.5*delta);
+            lowerThr = v - (double)(0.5*delta);
+            upperThr2 = v + (scEps*0.5*(double)delta);
+            lowerThr2 = v - (scEps*0.5*(double)delta);
+          }
+
+          int templateLarge[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+          for (k = 0; k < 16; k++)
+          {
+            if ( (double)ptr[pixel[k]] > upperThr ) // GREEN
+              templateLarge[k] = 2;
+            else if ( (double)ptr[pixel[k]] < lowerThr ) // RED
+              templateLarge[k] = 1;
+
+            // FIRST brighter or darker
+            if (((templateLarge[k]==1) && (templateLarge[k-1]==2) && (ptr[pixel[k]] > lowerThr2)) ||
+                ((templateLarge[k]==2) && (templateLarge[k-1]==1) && (ptr[pixel[k]] < upperThr2)))
+              templateLarge[k] = 0;
+          }
+
+          // Find the position of the first swap
+          k = 1;
+          while ( (k <= maxArcLength) && (templateLarge[k-1] == templateLarge[k]) )
+            k++;
+
+          if (k > maxArcLength)
+            continue;
+
+          // Registers for template checking
+          uchar n_label[] = {0,0,0};
+
+          labels[0] = templateLarge[k];
+          n_label[templateLarge[k]]++;
+          begins[0] = k++;
+          count_elem = 1;
+          p_regs = 0;
+
+          for (uchar pt=k; pt<k+15; pt++ )
+          {
+            idx = pt % 16;
+            if (labels[p_regs] != templateLarge[idx])
+            {
+              labels[p_regs+1] = templateLarge[idx];
+              n_label[labels[p_regs+1]]++;
+              begins[p_regs+1] = idx;
+              lengths[ p_regs++] = count_elem;
+              count_elem = 1;
+
+              if (p_regs>7)
+                break;
+            }
+            else
+              count_elem++;
+          }
+          lengths[p_regs++] = count_elem;
+
+          // ----------------- Constrains ----------------------- //
+
+          // Number of arcs constrains
+          if ((p_regs > 8) || (p_regs < 4)  || (n_label[0] > 4) || (n_label[1] != 2) || (n_label[2] != 2))
+            continue;
+
+          // Arc length constrains
+          bool discard=0;
+          uchar red_green_labels[4], *p_redgreen;
+          p_redgreen = red_green_labels;
+          for ( int m=0; m<p_regs && !discard; m++ )
+          {
+            if (labels[m] == 0)
+              discard = (lengths[m]>2);
+            else
+            {
+              *p_redgreen++ = labels[m];
+              discard = ( (lengths[m] < minArcLength) || (lengths[m] > maxArcLength) );
+            }
+          }
+
+          if ( discard || (red_green_labels[0] != red_green_labels[2]))
+            continue;
+
+          // Include the feature in the set
+          cornerpos[ncorners++] = j;
+          currV[j] = v;
+          currDl[j] = delta;
+
+          // Compute the feature response
+          int* lbl = templateLarge;
+          curr[j] = cmpFeatureScore(ptr, pixel, lbl, v, delta, scoreType);
+
+          // Save the point in the binary image
+          uchar* ptrBinary = binImg.ptr<uchar>(i);
+          ptrBinary[j] = 255;
+        }
+      }
+      cornerpos[-1] = ncorners;
+      blobpos[-1] = nblobs;
+
+      /*   Collecting the SADDLES   */
+      const double*  prev = bufSc[(i - 4 + 3)%3];
+      const double* pprev = bufSc[(i - 5 + 3)%3];
+      const double* prevV = bufV [(i - 4 + 3)%3];
+      const uchar* prevDl = bufDl[(i - 4 + 3)%3];
+      const uchar* prevBlobType = bufBlobTy[(i - 4 + 3)%3];
+
+      double* pr = _resp.ptr<double>(i - 1);
+      bool nmsFlag;
+      float scoreSc;
+      double v;
+      unsigned char delta, blobType;
+
+      cornerpos = bufCp[(i - 4 + 3)%3];
+      ncorners = cornerpos[-1];
+
+      for( k = 0; k < ncorners; k++ )
+      {
+        j = cornerpos[k];
+        scoreSc = prev[j];
+        v = prevV[j];
+        delta = prevDl[j];
+
+        // Compute the NMS
+        if (strictMaximum)
+          nmsFlag = scoreSc > responsethr && scoreSc > prev[j+1] && scoreSc > prev[j-1] &&
+                    scoreSc > pprev[j-1] && scoreSc > pprev[j] && scoreSc > pprev[j+1] &&
+                    scoreSc > curr[j-1] && scoreSc > curr[j] && scoreSc > curr[j+1];
+        else
+          nmsFlag = scoreSc >= responsethr && scoreSc >= prev[j+1] && scoreSc >= prev[j-1] &&
+                    scoreSc >= pprev[j-1] && scoreSc >= pprev[j] && scoreSc >= pprev[j+1] &&
+                    scoreSc >= curr[j-1] && scoreSc >= curr[j] && scoreSc >= curr[j+1];
+
+        if(!(nonmax_suppression>0) || nmsFlag)
+        {
+          float thetaX, thetaY;
+
+          subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
+          keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
+          keypoints.back().intensityCenter = v;
+          keypoints.back().delta = delta;
+          keypoints.back().class_id = 0;
+          add_labelling_array(img, j, i, keypoints, v, threshold, pixel);
+          pr[j] = scoreSc;
+        }
+      }
+
+      /*   Collecting the BLOBS   */
+      prev  = bufBlobSc[(i - 4 + 3)%3];
+      pprev = bufBlobSc[(i - 5 + 3)%3];
+      blobpos  = bufBlobPos[(i - 4 + 3)%3];
+      nblobs = blobpos[-1];
+
+      for( k = 0; k < nblobs; k++ )
+      {
+        j = blobpos[k];
+        scoreSc = prev[j];
+        blobType = prevBlobType[j];
+
+        // Compute the NMS
+        if (strictMaximum)
+          nmsFlag = scoreSc > responsethr && scoreSc > prev[j+1] && scoreSc > prev[j-1] &&
+                    scoreSc > pprev[j-1] && scoreSc > pprev[j] && scoreSc > pprev[j+1] &&
+                    scoreSc > curr[j-1] && scoreSc > curr[j] && scoreSc > curr[j+1];
+        else
+          nmsFlag = scoreSc >= responsethr && scoreSc >= prev[j+1] && scoreSc >= prev[j-1] &&
+                    scoreSc >= pprev[j-1] && scoreSc >= pprev[j] && scoreSc >= pprev[j+1] &&
+                    scoreSc >= curr[j-1] && scoreSc >= curr[j] && scoreSc >= curr[j+1];
+
+        if(!(nonmax_suppression>0) || nmsFlag)
+        {
+          float thetaX, thetaY;
+          
+          subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
+          keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
+          keypoints.back().class_id = blobType;
+          pr[j] = scoreSc;
+        }
+      }
+    } // Here the Y axis sliding window loop finishes    
+  }
+
+
+  void FASTsaddle_conditioned(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
+                              int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
+                              bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
+                              int minArcLength, int maxArcLength )
+  {
+    printf("FASTsaddle_conditioned\n");
+    double scEps = 2.0, threshold2;
+    double st;
+    const Mat img = _img.getMat();
+
+    Mat binImg; // Mask of all pixels that fulfill the 1st and 2nd condition
+    binImg = Mat::zeros(img.rows, img.cols, CV_8UC1);
+
+    int i, j, k, pixel[25], pixel_inner[25], pixel_mid[25];
+    int rej2=0, rej3=0, rej4=0, accp=0;
+    makeOffsets(pixel, (int)img.step, 16); //patternSize
+    makeOffsets(pixel_inner, (int)img.step, 8);
+    makeOffsets(pixel_mid, (int)img.step, 12);
+
+    keypoints.clear();
+
+    threshold = std::min(std::max(threshold, 0), 255);
+    threshold2 = scEps*(double)threshold;
+
+    // Allocating memory for all the buffer, each sizeof corresponds to one buffer
+    AutoBuffer<double> _bufScCp((img.cols+16)*3*(3*sizeof(double) + 2*sizeof(int) + 2*sizeof(uchar)) + 128 );
+
+
+    // Set the pointers for SCORES
+    double* bufSc[3];
+    bufSc[0] = _bufScCp;
+    bufSc[1] = bufSc[0] + img.cols;
+    bufSc[2] = bufSc[1] + img.cols;
+    memset(bufSc[0], 0, img.cols*3*sizeof(double));
+
+    // Set the pointers for COORDINATES POINTS
+    int* bufCp[3];
+    bufCp[0] = (int*)alignPtr(bufSc[2] + img.cols, sizeof(int)) + 1;
+    bufCp[1] = bufCp[0] + img.cols + 1;
+    bufCp[2] = bufCp[1] + img.cols + 1;
+    memset(bufCp[0], 0, (img.cols + 1)*3*sizeof(int));
+
+    double* bufV[3];
+    bufV[0] = (double*)alignPtr(bufCp[2] + img.cols + 1, sizeof(double));
+    bufV[1] = bufV[0] + img.cols;
+    bufV[2] = bufV[1] + img.cols;
+
+    // Save Deltas
+    uchar* bufDl[3];
+    bufDl[0] = (uchar*)alignPtr(bufV[2] + img.cols, sizeof(uchar));
+    bufDl[1] = bufDl[0] + img.cols;
+    bufDl[2] = bufDl[1] + img.cols;
+
+
+    // Memory allocation for the BLOB locations
+    int* bufBlobPos[3];
+    bufBlobPos[0] = (int*)alignPtr(bufDl[2] + img.cols, sizeof(int)) + 1;
+    bufBlobPos[1] = bufBlobPos[0] + img.cols + 1;
+    bufBlobPos[2] = bufBlobPos[1] + img.cols + 1;
+    memset(bufBlobPos[0], 0, (img.cols + 1)*3*sizeof(int));
+
+    double* bufBlobSc[3];
+    bufBlobSc[0] = (double*)alignPtr(bufBlobPos[2] + img.cols + 1, sizeof(double));
+    bufBlobSc[1] = bufBlobSc[0] + img.cols;
+    bufBlobSc[2] = bufBlobSc[1] + img.cols;
+    memset(bufBlobSc[0], 0, img.cols*3*sizeof(double));
+
+    uchar* bufBlobTy[3];
+    bufBlobTy[0] = (uchar*)alignPtr(bufBlobSc[2] + img.cols, sizeof(uchar));
+    bufBlobTy[1] = bufBlobTy[0] + img.cols;
+    bufBlobTy[2] = bufBlobTy[1] + img.cols;
+
+    int idx;
+    uchar p_regs, count_elem;
+    uchar *labels, *begins, *lengths;
+    int* lbl;
+
+    labels  = new uchar[9];
+    begins  = new uchar[9];
+    lengths = new uchar[9];
+
+    for(i = 3; i < img.rows-2; i++)
+    {
+      const uchar* ptr = img.ptr<uchar>(i) + 3;
+      double* curr = bufSc[(i - 3)%3];
+      double* currBlobSc = bufBlobSc[(i - 3)%3];
+      double* currV = bufV[(i - 3)%3];
+      uchar* currDl = bufDl[(i - 3)%3];
+      uchar* currBlobTy = bufBlobTy[(i - 3)%3];
+      int* cornerpos = bufCp[(i - 3)%3];
+      int* blobpos = bufBlobPos[(i - 3)%3];
+
+      memset(curr, 0, img.cols*sizeof(double));
+      memset(currBlobSc, 0, img.cols*sizeof(double));
+      int ncorners = 0, nblobs = 0;
+      
+
+      if( i < img.rows - 3 )
+      {
+        j = 3;
+
+        for( ; j < img.cols - 3; j++, ptr++)
+        {        
+          double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
+          uchar N = 0, blob_type, delta;
+
+          blob_test(pixel_mid, pixel, ptr, blob_type);
+          if (blob_type)
+          {
+            blobpos[nblobs++] = j;
+            currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, 0.0, 0, SORB::HESS_SCORE);
+            currBlobTy[j] = blob_type;
+            continue;
+          }
+          
+          inner_test(pixel_inner, pixel_mid, pixel, ptr, A, B, C, D, N, innerTstType);
+          if (!N)
+            continue;
+
+          delta = std::max( A-B, C-D );
+          if (N == 4)
+          {
+            if ((A >= D) && (B <= C))
+              v = std::min(A,C) + std::max (B,D);
+            else
+              continue;
+          }
+          else
+            v = std::max( A+B, C+D );
+          v *= 0.5;
+
+          double upperThr, lowerThr, upperThr2, lowerThr2;
+
+          if (threshold > 0)
+          {
+            upperThr = v + (double)threshold;
+            lowerThr = v - (double)threshold;
+            upperThr2 = v + threshold2;
+            lowerThr2 = v - threshold2;
+          }
+          else
+          {
+            upperThr = v + (double)(0.5*delta);
+            lowerThr = v - (double)(0.5*delta);
+            upperThr2 = v + (scEps*0.5*(double)delta);
+            lowerThr2 = v - (scEps*0.5*(double)delta);
+          }
+
+          int templateLarge[16] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+          for (k = 0; k < 16; k++)
+          {
+            if ( (double)ptr[pixel[k]] > upperThr ) // GREEN
+              templateLarge[k] = 2;
+            else if ( (double)ptr[pixel[k]] < lowerThr ) // RED
+              templateLarge[k] = 1;
+
+            // FIRST brighter or darker
+            if (((templateLarge[k]==1) && (templateLarge[k-1]==2) && (ptr[pixel[k]] > lowerThr2)) ||
+                ((templateLarge[k]==2) && (templateLarge[k-1]==1) && (ptr[pixel[k]] < upperThr2)))
+              templateLarge[k] = 0;
+          }
+
+          // Find the position of the first swap
+          k = 1;
+          while ( (k <= maxArcLength) && (templateLarge[k-1] == templateLarge[k]) )
+            k++;
+
+          if (k > maxArcLength)
+            continue;
+
+          // Registers for template checking
+          uchar n_label[] = {0,0,0};
+
+          labels[0] = templateLarge[k];
+          n_label[templateLarge[k]]++;
+          begins[0] = k++;
+          count_elem = 1;
+          p_regs = 0;
+
+          for (uchar pt=k; pt<k+15; pt++ )
+          {
+            idx = pt % 16;
+            if (labels[p_regs] != templateLarge[idx])
+            {
+              labels[p_regs+1] = templateLarge[idx];
+              n_label[labels[p_regs+1]]++;
+              begins[p_regs+1] = idx;
+              lengths[ p_regs++] = count_elem;
+              count_elem = 1;
+
+              if (p_regs>7)
+                break;
+            }
+            else
+              count_elem++;
+          }
+          lengths[p_regs++] = count_elem;
+
+          // ----------------- Constrains ----------------------- //
+
+          // Number of arcs constrains
+          if ((p_regs > 8) || (p_regs < 4)  || (n_label[0] > 4) || (n_label[1] != 2) || (n_label[2] != 2))
+            continue;
+
+          // Arc length constrains
+          bool discard=0;
+          uchar red_green_labels[4], *p_redgreen;
+          p_redgreen = red_green_labels;
+          for ( int m=0; m<p_regs && !discard; m++ )
+          {
+            if (labels[m] == 0)
+              discard = (lengths[m]>2);
+            else
+            {
+              *p_redgreen++ = labels[m];
+              discard = ( (lengths[m] < minArcLength) || (lengths[m] > maxArcLength) );
+            }
+          }
+
+          if ( discard || (red_green_labels[0] != red_green_labels[2]))
+            continue;
+
+          // Include the feature in the set
+          cornerpos[ncorners++] = j;
+          currV[j] = v;
+          currDl[j] = delta;
+
+          // Compute the feature response
+          int* lbl = templateLarge;
+          curr[j] = cmpFeatureScore(ptr, pixel, lbl, v, delta, scoreType);
+
+          // Save the point in the binary image
+          uchar* ptrBinary = binImg.ptr<uchar>(i);
+          ptrBinary[j] = 255;
+        }
+      }
+      cornerpos[-1] = ncorners;
+      blobpos[-1] = nblobs;
+
+      /*   Collecting the SADDLES   */
+      const double*  prev = bufSc[(i - 4 + 3)%3];
+      const double* pprev = bufSc[(i - 5 + 3)%3];
+      const double* prevV = bufV [(i - 4 + 3)%3];
+      const uchar* prevDl = bufDl[(i - 4 + 3)%3];
+      const uchar* prevBlobType = bufBlobTy[(i - 4 + 3)%3];
+
+      double* pr = _resp.ptr<double>(i - 1);
+      bool nmsFlag;
+      float scoreSc;
+      double v;
+      unsigned char delta, blobType;
+
+      cornerpos = bufCp[(i - 4 + 3)%3];
+      ncorners = cornerpos[-1];
+
+      for( k = 0; k < ncorners; k++ )
+      {
+        j = cornerpos[k];
+        scoreSc = prev[j];
+        v = prevV[j];
+        delta = prevDl[j];
+
+        // Compute the NMS
+        if (strictMaximum)
+          nmsFlag = scoreSc > responsethr && scoreSc > prev[j+1] && scoreSc > prev[j-1] &&
+                    scoreSc > pprev[j-1] && scoreSc > pprev[j] && scoreSc > pprev[j+1] &&
+                    scoreSc > curr[j-1] && scoreSc > curr[j] && scoreSc > curr[j+1];
+        else
+          nmsFlag = scoreSc >= responsethr && scoreSc >= prev[j+1] && scoreSc >= prev[j-1] &&
+                    scoreSc >= pprev[j-1] && scoreSc >= pprev[j] && scoreSc >= pprev[j+1] &&
+                    scoreSc >= curr[j-1] && scoreSc >= curr[j] && scoreSc >= curr[j+1];
+
+        if(!(nonmax_suppression>0) || nmsFlag)
+        {
+          float thetaX, thetaY;
+
+          subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
+          keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
+          keypoints.back().intensityCenter = v;
+          keypoints.back().delta = delta;
+          keypoints.back().class_id = 0;
+          add_labelling_array(img, j, i, keypoints, v, threshold, pixel);
+          pr[j] = scoreSc;
+        }
+      }
+
+      /*   Collecting the BLOBS   */
+      prev  = bufBlobSc[(i - 4 + 3)%3];
+      pprev = bufBlobSc[(i - 5 + 3)%3];
+      blobpos  = bufBlobPos[(i - 4 + 3)%3];
+      nblobs = blobpos[-1];
+
+      for( k = 0; k < nblobs; k++ )
+      {
+        j = blobpos[k];
+        scoreSc = prev[j];
+        blobType = prevBlobType[j];
+
+        // Compute the NMS
+        if (strictMaximum)
+          nmsFlag = scoreSc > responsethr && scoreSc > prev[j+1] && scoreSc > prev[j-1] &&
+                    scoreSc > pprev[j-1] && scoreSc > pprev[j] && scoreSc > pprev[j+1] &&
+                    scoreSc > curr[j-1] && scoreSc > curr[j] && scoreSc > curr[j+1];
+        else
+          nmsFlag = scoreSc >= responsethr && scoreSc >= prev[j+1] && scoreSc >= prev[j-1] &&
+                    scoreSc >= pprev[j-1] && scoreSc >= pprev[j] && scoreSc >= pprev[j+1] &&
+                    scoreSc >= curr[j-1] && scoreSc >= curr[j] && scoreSc >= curr[j+1];
+
+        if(!(nonmax_suppression>0) || nmsFlag)
+        {
+          float thetaX, thetaY;
+          
+          subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
+          keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
+          keypoints.back().class_id = blobType;
+          pr[j] = scoreSc;
+        }
+      }
+    } // Here the Y axis sliding window loop finishes    
+  }
+
+
   /*--------------- My FAST detector for SADDLE with inner pattern with simpler implementation  (End) -------------------*/
 
 
@@ -1468,6 +2380,18 @@ namespace cmp
       case FastFeatureDetector::TYPE_SHADDLE:
     	  FASTsaddle_shinner(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, deltaThr, scoreType,
               				allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
+        break;
+      case FastFeatureDetector::TYPE_SADDLE_CONDITIONED:
+        FASTsaddle_conditioned(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, scoreType,
+                      strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
+        break;
+      case FastFeatureDetector::TYPE_BLOB_CONDITIONED:
+        FASTblob_conditioned(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, scoreType,
+                      strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
+        break;
+      case FastFeatureDetector::TYPE_SADDLE_BLOB:
+        FASTsaddle_blob(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, scoreType,
+                      strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
         break;
       }
   }
