@@ -1108,7 +1108,6 @@ namespace cmp
                         int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength,
                         int maxArcLength )
   {
-    printf("FASTsaddle_inner\n");
     double scEps = 2.0, threshold2;
     double st;
     const Mat img = _img.getMat();
@@ -1383,7 +1382,6 @@ namespace cmp
                               bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
                               int minArcLength, int maxArcLength )
   {
-    printf("FASTsaddle_blob\n"); 
     double scEps = 2.0, threshold2;
     double st;
     const Mat img = _img.getMat();
@@ -1703,7 +1701,6 @@ namespace cmp
                               bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
                               int minArcLength, int maxArcLength )
   {
-    printf("FASTblob_conditioned\n");
     double scEps = 2.0, threshold2;
     double st;
     const Mat img = _img.getMat();
@@ -2025,7 +2022,6 @@ namespace cmp
                               bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
                               int minArcLength, int maxArcLength )
   {
-    printf("FASTsaddle_conditioned\n");
     double scEps = 2.0, threshold2;
     double st;
     const Mat img = _img.getMat();
