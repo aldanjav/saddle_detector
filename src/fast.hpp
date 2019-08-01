@@ -36,7 +36,7 @@ public:
     CV_WRAP void detect2( const Mat& image, CV_OUT vector<SadKeyPoint>& keypoints, Mat & resp, const Mat& mask=Mat() ) const;
 
     CV_WRAP FastFeatureDetector( int threshold=10, int nonmaxSuppression=2 );
-    AlgorithmInfo* info() const;
+   // AlgorithmInfo* info() const;
 
 protected:
     virtual void detectImpl ( const Mat& image, vector<SadKeyPoint>& keypoints, const Mat& mask=Mat() ) const = 0;
@@ -56,7 +56,7 @@ public:
     CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double responsethr, uchar deltaThr);
     CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double responsethr, uchar deltaThr, int scoreType);
     CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double responsethr, uchar deltaThr, int scoreType, bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength );
-    cv::AlgorithmInfo* info() const;
+   // cv::AlgorithmInfo* info() const;
 
 
 protected:
