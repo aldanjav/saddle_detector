@@ -29,7 +29,8 @@ public:
       TYPE_SHADDLE = 5,
       TYPE_SADDLE_CONDITIONED = 6,
       TYPE_BLOB_CONDITIONED = 7,
-      TYPE_SADDLE_BLOB = 8
+      TYPE_SADDLE_BLOB = 8,
+      TYPE_BLOB_CONDITIONED_OUTERTEST = 9
     };
 
     CV_WRAP void detect2( const Mat& image, CV_OUT vector<SadKeyPoint>& keypoints, Mat & resp, const Mat& mask=Mat() ) const;

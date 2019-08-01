@@ -637,9 +637,8 @@ inline void mergeSaddlesAndBlobs(std::vector< SadKeyPoint > &  keypoints, int nF
             default:
                 std::cerr << "Unknown region type (0,1,2)" << std::endl;
         }
-
     }
-    // float alpha = (float)saddleKeypoints.size()/keypoints.size();
+    
     int saddleNum = (int)round(nFeatures*alpha);
     int blobNum = (int)round(nFeatures*(1-alpha));
 
@@ -738,11 +737,13 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
         runByImageBorder(keypoints, imagePyramid[level].size(), edgeThreshold);
 
         //cull to the final desired level, using the new Harris scores or the original FAST scores.
-        if (level == 0) {
+        if (level == 0)
             featuresNum = nfeatures - taken_sum;
-          }
         
-        mergeSaddlesAndBlobs(keypoints, featuresNum, alpha);
+        if (ringsType < 6)
+            retainBest(keypoints, featuresNum);
+        else
+            mergeSaddlesAndBlobs(keypoints, featuresNum, alpha);
 
         taken_sum += (int)keypoints.size();
         needed_sum += nfeaturesPerLevel[level];
