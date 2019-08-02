@@ -759,18 +759,28 @@ namespace cmp
        ( ptr[pixel_outer[4]]  > ptr[pixel_mid[3]]) &&
        ( ptr[pixel_outer[8]]  > ptr[pixel_mid[6]]) &&
        ( ptr[pixel_outer[12]] > ptr[pixel_mid[9]]) )
-    {
       N = 1;
-    }
       else  if ((ptr[pixel_outer[0 ]] < ptr[pixel_mid[0]]) &&
                ( ptr[pixel_outer[4 ]] < ptr[pixel_mid[3]]) &&
                ( ptr[pixel_outer[8 ]] < ptr[pixel_mid[6]]) &&
                ( ptr[pixel_outer[12]] < ptr[pixel_mid[9]]))
-    {
       N = 2;
-    }
+  }
 
-}
+  inline void cmpDeltaForBlob(int pixel_mid[25], int pixel_outer[25], const uchar* ptr, uchar& delta)
+  {
+    std::vector<uchar> v;
+    float deltaf;
+
+    v.push_back((uchar) std::abs(ptr[pixel_outer[0]] - ptr[pixel_mid[0]]));
+    v.push_back((uchar) std::abs(ptr[pixel_outer[4]] - ptr[pixel_mid[3]]));
+    v.push_back((uchar) std::abs(ptr[pixel_outer[8]] - ptr[pixel_mid[6]]));
+    v.push_back((uchar) std::abs(ptr[pixel_outer[12]]- ptr[pixel_mid[9]]));
+
+    std::sort(v.begin(), v.end());
+    delta = (uchar)(v[1] + v[2])/2;
+  }
+
 
   inline void subpixel_precision(int j, int i, const double* curr, const double* prev, const double* pprev, float& x, float& y, float& scoreSc, unsigned char interp_mode)
   {
@@ -1488,7 +1498,8 @@ namespace cmp
           if (blob_type)
           {
             blobpos[nblobs++] = j;
-            currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, 0.0, 0, SORB::HESS_SCORE);
+            cmpDeltaForBlob(pixel_mid, pixel, ptr, delta);
+            currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, (double)ptr[0], delta, scoreType);//scoreType SORB::HESS_SCORE
             currBlobTy[j] = blob_type;
           }
 
@@ -1811,7 +1822,8 @@ namespace cmp
             if (blob_type)
             {
               blobpos[nblobs++] = j;
-              currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, 0.0, 0, SORB::HESS_SCORE);
+              cmpDeltaForBlob(pixel_mid, pixel, ptr, delta);
+              currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, (double)ptr[0], delta, scoreType);//scoreType SORB::HESS_SCORE
               currBlobTy[j] = blob_type;
             }
             continue;
@@ -2129,7 +2141,8 @@ namespace cmp
           if (blob_type)
           {
             blobpos[nblobs++] = j;
-            currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, 0.0, 0, SORB::HESS_SCORE);
+            cmpDeltaForBlob(pixel_mid, pixel, ptr, delta);
+            currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, (double)ptr[0], delta, scoreType);//scoreType SORB::HESS_SCORE
             currBlobTy[j] = blob_type;
             continue;
           }
@@ -2556,7 +2569,8 @@ namespace cmp
             if (blob_type)
             {
               blobpos[nblobs++] = j;
-              currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, 0.0, 0, SORB::HESS_SCORE);
+              cmpDeltaForBlob(pixel_mid, pixel, ptr, delta);
+              currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, (double)ptr[0], delta, scoreType);//scoreType SORB::HESS_SCORE
               currBlobTy[j] = blob_type;
             }
             continue;

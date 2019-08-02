@@ -740,10 +740,10 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
         if (level == 0)
             featuresNum = nfeatures - taken_sum;
         
-        if (ringsType < 6)
-            retainBest(keypoints, featuresNum);
-        else
-            mergeSaddlesAndBlobs(keypoints, featuresNum, alpha);
+        // if (ringsType < 6)
+        retainBest(keypoints, featuresNum);
+        // else
+        //     mergeSaddlesAndBlobs(keypoints, featuresNum, alpha);
 
         taken_sum += (int)keypoints.size();
         needed_sum += nfeaturesPerLevel[level];
