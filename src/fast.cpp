@@ -769,7 +769,6 @@ namespace cmp
       res2 = ptr[pixel_outer[4]]  - ptr[pixel_mid[3]];
       res3 = ptr[pixel_outer[8]]  - ptr[pixel_mid[6]];
       res4 = ptr[pixel_outer[12]] - ptr[pixel_mid[9]];
-
       res5 = ptr[pixel_outer[2]]  - ptr[pixel_inner[1]];
       res6 = ptr[pixel_outer[6]]  - ptr[pixel_inner[3]];
       res7 = ptr[pixel_outer[10]] - ptr[pixel_inner[5]];
@@ -782,7 +781,6 @@ namespace cmp
              ( ptr[pixel_outer[4 ]] < ptr[pixel_mid[3]]) &&
              ( ptr[pixel_outer[8 ]] < ptr[pixel_mid[6]]) &&
              ( ptr[pixel_outer[12]] < ptr[pixel_mid[9]]) &&
-
              ( ptr[pixel_outer[2]]  < ptr[pixel_inner[1]]) &&
              ( ptr[pixel_outer[6]]  < ptr[pixel_inner[3]]) &&
              ( ptr[pixel_outer[10]] < ptr[pixel_inner[5]]) &&
@@ -793,7 +791,6 @@ namespace cmp
       res2 = ptr[pixel_mid[3]] - ptr[pixel_outer[4]];
       res3 = ptr[pixel_mid[6]] - ptr[pixel_outer[8]];
       res4 = ptr[pixel_mid[9]] - ptr[pixel_outer[12]];
-      
       res5 = ptr[pixel_inner[1]] - ptr[pixel_outer[2]];
       res6 = ptr[pixel_inner[3]] - ptr[pixel_outer[6]];
       res7 = ptr[pixel_inner[5]] - ptr[pixel_outer[10]];
@@ -802,23 +799,9 @@ namespace cmp
       if ((res1>=thr) && (res2>=thr) && (res3>=thr) && (res4>=thr) && (res5>=thr) && (res6>=thr) && (res7>=thr) && (res8>=thr))
       N = 2;
     }
-
-#if false
-    N = 0;
-    if ((ptr[pixel_outer[0]]  > ptr[pixel_mid[0]]) &&
-       ( ptr[pixel_outer[4]]  > ptr[pixel_mid[3]]) &&
-       ( ptr[pixel_outer[8]]  > ptr[pixel_mid[6]]) &&
-       ( ptr[pixel_outer[12]] > ptr[pixel_mid[9]]) )
-      N = 1;
-      else  if ((ptr[pixel_outer[0 ]] < ptr[pixel_mid[0]]) &&
-               ( ptr[pixel_outer[4 ]] < ptr[pixel_mid[3]]) &&
-               ( ptr[pixel_outer[8 ]] < ptr[pixel_mid[6]]) &&
-               ( ptr[pixel_outer[12]] < ptr[pixel_mid[9]]))
-      N = 2;
-#endif
   }
 
-  inline void cmpDeltaForBlob(int pixel_mid[25], int pixel_outer[25], const uchar* ptr, uchar& delta)
+  inline void cmpDeltaForBlob(int pixel_inner[25], int pixel_mid[25], int pixel_outer[25], const uchar* ptr, uchar& delta)
   {
     std::vector<uchar> v;
     float deltaf;
@@ -827,6 +810,10 @@ namespace cmp
     v.push_back((uchar) std::abs(ptr[pixel_outer[4]] - ptr[pixel_mid[3]]));
     v.push_back((uchar) std::abs(ptr[pixel_outer[8]] - ptr[pixel_mid[6]]));
     v.push_back((uchar) std::abs(ptr[pixel_outer[12]]- ptr[pixel_mid[9]]));
+    v.push_back((uchar) std::abs(ptr[pixel_outer[2]]  - ptr[pixel_inner[1]]));
+    v.push_back((uchar) std::abs(ptr[pixel_outer[6]]  - ptr[pixel_inner[3]]));
+    v.push_back((uchar) std::abs(ptr[pixel_outer[10]] - ptr[pixel_inner[5]]));
+    v.push_back((uchar) std::abs(ptr[pixel_outer[14]] - ptr[pixel_inner[7]]));
 
     std::sort(v.begin(), v.end());
     delta = (uchar)(v[1] + v[2])/2;
@@ -1557,7 +1544,7 @@ namespace cmp
           if (blob_type)
           {
             blobpos[nblobs++] = j;
-            cmpDeltaForBlob(pixel_mid, pixel, ptr, delta);
+            cmpDeltaForBlob(pixel_inner, pixel_mid, pixel, ptr, delta);
             currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, (double)ptr[0], delta, scoreType);//scoreType SORB::HESS_SCORE
             currBlobTy[j] = blob_type;
           }
@@ -1881,7 +1868,7 @@ namespace cmp
             if (blob_type)
             {
               blobpos[nblobs++] = j;
-              cmpDeltaForBlob(pixel_mid, pixel, ptr, delta);
+              cmpDeltaForBlob(pixel_inner, pixel_mid, pixel, ptr, delta);
               currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, (double)ptr[0], delta, scoreType);//scoreType SORB::HESS_SCORE
               currBlobTy[j] = blob_type;
             }
@@ -2200,7 +2187,7 @@ namespace cmp
           if (blob_type)
           {
             blobpos[nblobs++] = j;
-            cmpDeltaForBlob(pixel_mid, pixel, ptr, delta);
+            cmpDeltaForBlob(pixel_inner, pixel_mid, pixel, ptr, delta);
             currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, (double)ptr[0], delta, scoreType);//scoreType SORB::HESS_SCORE
             currBlobTy[j] = blob_type;
             continue;
@@ -2635,7 +2622,7 @@ namespace cmp
             if (blob_type)
             {
               blobpos[nblobs++] = j;
-              cmpDeltaForBlob(pixel_mid, pixel, ptr, delta);
+              cmpDeltaForBlob(pixel_inner, pixel_mid, pixel, ptr, delta);
               currBlobSc[j] = cmpFeatureScore(ptr, pixel, lbl, (double)ptr[0], delta, scoreType);//scoreType SORB::HESS_SCORE
               currBlobTy[j] = blob_type;
             }
