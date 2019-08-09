@@ -58,23 +58,23 @@ namespace cmp
   void FASTsaddle_conditioned(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                               int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
                               bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
-                              int minArcLength, int maxArcLength );
+                              int minArcLength, int maxArcLength, uchar blob_thr );
   void FASTblob_conditioned(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                             int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
                             bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
-                            int minArcLength, int maxArcLength );
+                            int minArcLength, int maxArcLength, uchar blob_thr );
   void FASTsaddle_blob(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                        int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
                        bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
-                       int minArcLength, int maxArcLength );
+                       int minArcLength, int maxArcLength, uchar blob_thr );
   void FASTblob_conditioned_outertest(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                               int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
                               bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
-                              int minArcLength, int maxArcLength );
+                              int minArcLength, int maxArcLength, uchar blob_thr );
   double FitQuadratic(double offset[2], const double* resp_up, const double* resp_cent, const double* resp_down, int c);
   inline bool inner_test(int pixel_inner[25], int pixel_mid[25], int pixel_outer[25], const uchar* ptr, double& A, double& B, double& C, double& D, uchar& N, uchar opc);
   inline bool inner_sym_test(int pixel_inner[25], const uchar* ptr, double& A, double& B, double& C, double& D, uchar& N );
-  inline void blob_test(int pixel_mid[25], int pixel_outer[25], const uchar* ptr, uchar& N);
+  inline void blob_test(int pixel_inner[25], int pixel_mid[25], int pixel_outer[25], const uchar* ptr, uchar& N, uchar thr);
   inline void subpixel_precision(int i, int j, const double* curr, const double* prev, const double* pprev, float& x, float& y, float& scoreSc, unsigned char interp_mode);
   inline void add_labelling_array(Mat img, int j, int i, std::vector<SadKeyPoint>& kpts, double v, int threshold, int pixel[25]);
 
@@ -749,11 +749,61 @@ namespace cmp
 		  return true;
 	  else
 		  return false;
-
   }
 
-  inline void blob_test(int pixel_mid[25], int pixel_outer[25], const uchar* ptr, uchar& N)
+  inline void blob_test(int pixel_inner[25], int pixel_mid[25], int pixel_outer[25], const uchar* ptr, uchar& N, uchar thr)
   {
+    // uchar thr=10;
+    N = 0;
+    if ((ptr[pixel_outer[0]]  > ptr[pixel_mid[0]]) &&
+       ( ptr[pixel_outer[4]]  > ptr[pixel_mid[3]]) &&
+       ( ptr[pixel_outer[8]]  > ptr[pixel_mid[6]]) &&
+       ( ptr[pixel_outer[12]] > ptr[pixel_mid[9]]) &&
+       ( ptr[pixel_outer[2]]  > ptr[pixel_inner[1]]) &&
+       ( ptr[pixel_outer[6]]  > ptr[pixel_inner[3]]) &&
+       ( ptr[pixel_outer[10]] > ptr[pixel_inner[5]]) &&
+       ( ptr[pixel_outer[14]] > ptr[pixel_inner[7]]) )
+    {
+      uchar res1,res2,res3,res4,res5,res6,res7,res8;
+      res1 = ptr[pixel_outer[0]]  - ptr[pixel_mid[0]];
+      res2 = ptr[pixel_outer[4]]  - ptr[pixel_mid[3]];
+      res3 = ptr[pixel_outer[8]]  - ptr[pixel_mid[6]];
+      res4 = ptr[pixel_outer[12]] - ptr[pixel_mid[9]];
+
+      res5 = ptr[pixel_outer[2]]  - ptr[pixel_inner[1]];
+      res6 = ptr[pixel_outer[6]]  - ptr[pixel_inner[3]];
+      res7 = ptr[pixel_outer[10]] - ptr[pixel_inner[5]];
+      res8 = ptr[pixel_outer[14]] - ptr[pixel_inner[7]];
+
+      if ((res1>=thr) && (res2>=thr) && (res3>=thr) && (res4>=thr) && (res5>=thr) && (res6>=thr) && (res7>=thr) && (res8>=thr))
+        N = 1;
+    }
+    else  if ((ptr[pixel_outer[0 ]] < ptr[pixel_mid[0]]) &&
+             ( ptr[pixel_outer[4 ]] < ptr[pixel_mid[3]]) &&
+             ( ptr[pixel_outer[8 ]] < ptr[pixel_mid[6]]) &&
+             ( ptr[pixel_outer[12]] < ptr[pixel_mid[9]]) &&
+
+             ( ptr[pixel_outer[2]]  < ptr[pixel_inner[1]]) &&
+             ( ptr[pixel_outer[6]]  < ptr[pixel_inner[3]]) &&
+             ( ptr[pixel_outer[10]] < ptr[pixel_inner[5]]) &&
+             ( ptr[pixel_outer[14]] < ptr[pixel_inner[7]]) )
+    {
+      uchar res1,res2,res3,res4,res5,res6,res7,res8;
+      res1 = ptr[pixel_mid[0]] - ptr[pixel_outer[0]];
+      res2 = ptr[pixel_mid[3]] - ptr[pixel_outer[4]];
+      res3 = ptr[pixel_mid[6]] - ptr[pixel_outer[8]];
+      res4 = ptr[pixel_mid[9]] - ptr[pixel_outer[12]];
+      
+      res5 = ptr[pixel_inner[1]] - ptr[pixel_outer[2]];
+      res6 = ptr[pixel_inner[3]] - ptr[pixel_outer[6]];
+      res7 = ptr[pixel_inner[5]] - ptr[pixel_outer[10]];
+      res8 = ptr[pixel_inner[7]] - ptr[pixel_outer[14]];
+      
+      if ((res1>=thr) && (res2>=thr) && (res3>=thr) && (res4>=thr) && (res5>=thr) && (res6>=thr) && (res7>=thr) && (res8>=thr))
+      N = 2;
+    }
+
+#if false
     N = 0;
     if ((ptr[pixel_outer[0]]  > ptr[pixel_mid[0]]) &&
        ( ptr[pixel_outer[4]]  > ptr[pixel_mid[3]]) &&
@@ -765,6 +815,7 @@ namespace cmp
                ( ptr[pixel_outer[8 ]] < ptr[pixel_mid[6]]) &&
                ( ptr[pixel_outer[12]] < ptr[pixel_mid[9]]))
       N = 2;
+#endif
   }
 
   inline void cmpDeltaForBlob(int pixel_mid[25], int pixel_outer[25], const uchar* ptr, uchar& delta)
@@ -852,7 +903,8 @@ namespace cmp
 
   void FASTsaddle_shinner(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                           int threshold, int nonmax_suppression, float scale, double responsethr, uchar deltaThr, int scoreType,
-  						bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
+  						            bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
+                          int minArcLength, int maxArcLength )
   {
 
 	  const Mat img = _img.getMat();
@@ -1125,6 +1177,13 @@ namespace cmp
     double st;
     const Mat img = _img.getMat();
 
+#if true
+    ostringstream ss;
+    ss << scale;
+    String imgpath = (("./imscale_" + ss.str() ) + ".ppm");
+    imwrite( imgpath, img );
+#endif
+
     Mat binImg; // Mask of all pixels that fulfill the 1st and 2nd condition
     binImg = Mat::zeros(img.rows, img.cols, CV_8UC1);
 
@@ -1393,7 +1452,7 @@ namespace cmp
   void FASTsaddle_blob(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                               int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
                               bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
-                              int minArcLength, int maxArcLength )
+                              int minArcLength, int maxArcLength, uchar blob_thr )
   {
     double scEps = 2.0, threshold2;
     double st;
@@ -1494,7 +1553,7 @@ namespace cmp
           double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
           uchar N = 0, blob_type, delta;
 
-          blob_test(pixel_mid, pixel, ptr, blob_type);
+          blob_test(pixel_inner, pixel_mid, pixel, ptr, blob_type, blob_thr);
           if (blob_type)
           {
             blobpos[nblobs++] = j;
@@ -1713,7 +1772,7 @@ namespace cmp
   void FASTblob_conditioned(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                               int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
                               bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
-                              int minArcLength, int maxArcLength )
+                              int minArcLength, int maxArcLength, uchar blob_thr )
   {
     double scEps = 2.0, threshold2;
     double st;
@@ -1818,7 +1877,7 @@ namespace cmp
           inner_test(pixel_inner, pixel_mid, pixel, ptr, A, B, C, D, N, innerTstType);
           if (!N)
           {
-            blob_test(pixel_mid, pixel, ptr, blob_type);
+            blob_test(pixel_inner, pixel_mid, pixel, ptr, blob_type, blob_thr);
             if (blob_type)
             {
               blobpos[nblobs++] = j;
@@ -2035,7 +2094,7 @@ namespace cmp
   void FASTsaddle_conditioned(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                               int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
                               bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
-                              int minArcLength, int maxArcLength )
+                              int minArcLength, int maxArcLength, uchar blob_thr )
   {
     double scEps = 2.0, threshold2;
     double st;
@@ -2137,7 +2196,7 @@ namespace cmp
           double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
           uchar N = 0, blob_type, delta;
 
-          blob_test(pixel_mid, pixel, ptr, blob_type);
+          blob_test(pixel_inner, pixel_mid, pixel, ptr, blob_type, blob_thr);
           if (blob_type)
           {
             blobpos[nblobs++] = j;
@@ -2357,11 +2416,18 @@ namespace cmp
   void FASTblob_conditioned_outertest(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
                               int threshold, int nonmax_suppression, float scale, double responsethr, int scoreType,
                               bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
-                              int minArcLength, int maxArcLength )
+                              int minArcLength, int maxArcLength, uchar blob_thr )
   {
     double scEps = 2.0, threshold2;
     double st;
     const Mat img = _img.getMat();
+
+#if true
+    ostringstream ss;
+    ss << scale;
+    String imgpath = (("./imscale_" + ss.str() ) + ".ppm");
+    imwrite( imgpath, img );
+#endif
 
     Mat binImg; // Mask of all pixels that fulfill the 1st and 2nd condition
     binImg = Mat::zeros(img.rows, img.cols, CV_8UC1);
@@ -2565,7 +2631,7 @@ namespace cmp
 
           if ( discard || (red_green_labels[0] != red_green_labels[2]))
           {
-            blob_test(pixel_mid, pixel, ptr, blob_type);
+            blob_test(pixel_inner, pixel_mid, pixel, ptr, blob_type, blob_thr);
             if (blob_type)
             {
               blobpos[nblobs++] = j;
@@ -2701,8 +2767,10 @@ namespace cmp
   }
 
   void FASTX2(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
-              int threshold, int nonmax_suppression, int type, float scale, double responsethr, uchar deltaThr, int scoreType,
-			  bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength )
+              int threshold, int nonmax_suppression, int type, float scale,
+              double responsethr, uchar deltaThr, int scoreType, bool allC1feats,
+              bool strictMaximum, int subPixPrecision, bool gravityCenter,
+              int innerTstType, int minArcLength, int maxArcLength, uchar blobThr )
   {
     switch(type) {
       case FastFeatureDetector::TYPE_SADDLE_CENTRAL_PIXEL:
@@ -2718,19 +2786,19 @@ namespace cmp
         break;
       case FastFeatureDetector::TYPE_SADDLE_CONDITIONED:
         FASTsaddle_conditioned(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, scoreType,
-                      strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
+                      strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength, blobThr );
         break;
       case FastFeatureDetector::TYPE_BLOB_CONDITIONED:
         FASTblob_conditioned(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, scoreType,
-                      strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
+                      strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength, blobThr );
         break;
       case FastFeatureDetector::TYPE_SADDLE_BLOB:
         FASTsaddle_blob(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, scoreType,
-                      strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
+                      strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength, blobThr );
         break;
       case FastFeatureDetector::TYPE_BLOB_CONDITIONED_OUTERTEST:
         FASTblob_conditioned_outertest(_img, keypoints, _resp, threshold, nonmax_suppression, scale, responsethr, scoreType,
-                                      strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
+                                      strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength, blobThr );
         break;
       }
   }
@@ -2783,8 +2851,8 @@ namespace cmp
   FastFeatureDetector2::FastFeatureDetector2( int _threshold, int _nonmaxSuppression, int _type, float _scale, double _responsethr, uchar _deltaThr, int _scoreType )
     : FastFeatureDetector(_threshold, _nonmaxSuppression), type((short)_type), scale((float)_scale), responsethr((double)_responsethr), deltaThr((uchar)_deltaThr), scoreType((int)_scoreType), allC1feats(false), strictMaximum(false), subPixPrecision(0), gravityCenter(false), innerTstType(0), minArcLength(2), maxArcLength(8)
   {}
-  FastFeatureDetector2::FastFeatureDetector2( int _threshold, int _nonmaxSuppression, int _type, float _scale, double _responsethr, uchar _deltaThr, int _scoreType, bool _allC1feats, bool _strictMaximum, int _subPixPrecision, bool _gravityCenter, int _innerTstType, int _minArcLength, int _maxArcLength )
-    : FastFeatureDetector(_threshold, _nonmaxSuppression), type((short)_type), scale((float)_scale), responsethr((double)_responsethr), deltaThr((uchar)_deltaThr), scoreType((int)_scoreType), allC1feats((bool)_allC1feats), strictMaximum((bool)_strictMaximum), subPixPrecision((int)_subPixPrecision), gravityCenter((bool)_gravityCenter), innerTstType((int) _innerTstType), minArcLength((int)_minArcLength), maxArcLength((int)_maxArcLength)
+  FastFeatureDetector2::FastFeatureDetector2( int _threshold, int _nonmaxSuppression, int _type, float _scale, double _responsethr, uchar _deltaThr, int _scoreType, bool _allC1feats, bool _strictMaximum, int _subPixPrecision, bool _gravityCenter, int _innerTstType, int _minArcLength, int _maxArcLength, uchar _blobThr )
+    : FastFeatureDetector(_threshold, _nonmaxSuppression), type((short)_type), scale((float)_scale), responsethr((double)_responsethr), deltaThr((uchar)_deltaThr), scoreType((int)_scoreType), allC1feats((bool)_allC1feats), strictMaximum((bool)_strictMaximum), subPixPrecision((int)_subPixPrecision), gravityCenter((bool)_gravityCenter), innerTstType((int) _innerTstType), minArcLength((int)_minArcLength), maxArcLength((int)_maxArcLength), blobThr((uchar)_blobThr)
   {}
   // I changed here (FastFeatureDetector2, KeyPoint)
   void FastFeatureDetector2::detectImpl( const Mat& image, vector<SadKeyPoint>& keypoints, const Mat& mask ) const
@@ -2802,7 +2870,7 @@ namespace cmp
     // The image is already in gray scale from SORB functions
     if( image.type() != CV_8U ) cvtColor( image, grayImage, CV_BGR2GRAY );
     cmp::FASTX2( grayImage, keypoints, resp, threshold, nonmaxSuppression, type, scale, responsethr, deltaThr, scoreType,
-    			 allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength );
+    			 allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength, blobThr );
   }
 
 

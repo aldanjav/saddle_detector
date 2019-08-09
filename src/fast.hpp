@@ -55,7 +55,7 @@ public:
     CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double thr);
     CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double responsethr, uchar deltaThr);
     CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double responsethr, uchar deltaThr, int scoreType);
-    CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double responsethr, uchar deltaThr, int scoreType, bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength );
+    CV_WRAP FastFeatureDetector2( int threshold, int nonmaxSuppression, int type, float scale, double responsethr, uchar deltaThr, int scoreType, bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType, int minArcLength, int maxArcLength, uchar blobThr );
    // cv::AlgorithmInfo* info() const;
 
 
@@ -75,6 +75,7 @@ protected:
     int innerTstType;
     int minArcLength;
     int maxArcLength;
+    uchar blobThr;
 
 };
 
