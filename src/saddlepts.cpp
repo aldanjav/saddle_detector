@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <fstream>
 #include <iostream>
-#include <opencv/cv.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/highgui/highgui_c.h>
 #include <opencv2/features2d/features2d.hpp>

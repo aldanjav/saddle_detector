@@ -441,7 +441,7 @@ namespace cmp
           }
       }
   }
-  
+
 
   inline bool inner_test(int pixel_inner[25], int pixel_mid[25], int pixel_outer[25], const uchar* ptr, double& A, double& B, double& C, double& D, uchar& N, uchar opc)
   {
@@ -795,7 +795,7 @@ namespace cmp
       res6 = ptr[pixel_inner[3]] - ptr[pixel_outer[6]];
       res7 = ptr[pixel_inner[5]] - ptr[pixel_outer[10]];
       res8 = ptr[pixel_inner[7]] - ptr[pixel_outer[14]];
-      
+
       if ((res1>=thr) && (res2>=thr) && (res3>=thr) && (res4>=thr) && (res5>=thr) && (res6>=thr) && (res7>=thr) && (res8>=thr))
       N = 2;
     }
@@ -1183,7 +1183,7 @@ namespace cmp
     keypoints.clear();
 
     // Relating delta and epsilon (there is no adaptation)
-    if (threshold == 0)  
+    if (threshold == 0)
     {
       threshold = (int)(deltaThr/2);
       threshold2 = scEps*(double)threshold;
@@ -1239,17 +1239,17 @@ namespace cmp
       double* currV = bufV[(i - 3)%3];
       uchar* currDl = bufDl[(i - 3)%3];
       int* cornerpos = bufCp[(i - 3)%3];
-      
+
       memset(curr, 0, img.cols*sizeof(double));
       int ncorners = 0;
-      
+
 
       if( i < img.rows - 3 )
       {
         j = 3;
 
         for( ; j < img.cols - 3; j++, ptr++)
-        {        
+        {
           double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
           uchar N = 0, blob_type, delta;
           inner_test(pixel_inner, pixel_mid, pixel, ptr, A, B, C, D, N, innerTstType);
@@ -1433,7 +1433,7 @@ namespace cmp
           pr[j] = scoreSc;
         }
       }
-    } // Here the Y axis sliding window loop finishes    
+    } // Here the Y axis sliding window loop finishes
   }
 
   void FASTsaddle_blob(InputArray _img, std::vector<SadKeyPoint>& keypoints, Mat& _resp,
@@ -1529,14 +1529,14 @@ namespace cmp
       memset(curr, 0, img.cols*sizeof(double));
       memset(currBlobSc, 0, img.cols*sizeof(double));
       int ncorners = 0, nblobs = 0;
-      
+
 
       if( i < img.rows - 3 )
       {
         j = 3;
 
         for( ; j < img.cols - 3; j++, ptr++)
-        {        
+        {
           double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
           uchar N = 0, blob_type, delta;
 
@@ -1745,14 +1745,14 @@ namespace cmp
         if(!(nonmax_suppression>0) || nmsFlag)
         {
           float thetaX, thetaY;
-          
+
           subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
           keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
           keypoints.back().class_id = blobType;
           pr[j] = scoreSc;
         }
       }
-    } // Here the Y axis sliding window loop finishes    
+    } // Here the Y axis sliding window loop finishes
   }
 
 
@@ -1850,14 +1850,14 @@ namespace cmp
       memset(curr, 0, img.cols*sizeof(double));
       memset(currBlobSc, 0, img.cols*sizeof(double));
       int ncorners = 0, nblobs = 0;
-      
+
 
       if( i < img.rows - 3 )
       {
         j = 3;
 
         for( ; j < img.cols - 3; j++, ptr++)
-        {        
+        {
           double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
           uchar N = 0, blob_type, delta;
 
@@ -2067,14 +2067,14 @@ namespace cmp
         if(!(nonmax_suppression>0) || nmsFlag)
         {
           float thetaX, thetaY;
-          
+
           subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
           keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
           keypoints.back().class_id = blobType;
           pr[j] = scoreSc;
         }
       }
-    } // Here the Y axis sliding window loop finishes    
+    } // Here the Y axis sliding window loop finishes
   }
 
 
@@ -2172,14 +2172,14 @@ namespace cmp
       memset(curr, 0, img.cols*sizeof(double));
       memset(currBlobSc, 0, img.cols*sizeof(double));
       int ncorners = 0, nblobs = 0;
-      
+
 
       if( i < img.rows - 3 )
       {
         j = 3;
 
         for( ; j < img.cols - 3; j++, ptr++)
-        {        
+        {
           double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
           uchar N = 0, blob_type, delta;
 
@@ -2192,7 +2192,7 @@ namespace cmp
             currBlobTy[j] = blob_type;
             continue;
           }
-          
+
           inner_test(pixel_inner, pixel_mid, pixel, ptr, A, B, C, D, N, innerTstType);
           if (!N)
             continue;
@@ -2389,14 +2389,14 @@ namespace cmp
         if(!(nonmax_suppression>0) || nmsFlag)
         {
           float thetaX, thetaY;
-          
+
           subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
           keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
           keypoints.back().class_id = blobType;
           pr[j] = scoreSc;
         }
       }
-    } // Here the Y axis sliding window loop finishes    
+    } // Here the Y axis sliding window loop finishes
   }
 
 
@@ -2501,14 +2501,14 @@ namespace cmp
       memset(curr, 0, img.cols*sizeof(double));
       memset(currBlobSc, 0, img.cols*sizeof(double));
       int ncorners = 0, nblobs = 0;
-      
+
 
       if( i < img.rows - 3 )
       {
         j = 3;
 
         for( ; j < img.cols - 3; j++, ptr++)
-        {        
+        {
           double v = 0.0, A = 0.0, B = 0.0, C = 0.0, D = 0.0;
           uchar N = 0, blob_type, delta;
 
@@ -2718,21 +2718,21 @@ namespace cmp
         if(!(nonmax_suppression>0) || nmsFlag)
         {
           float thetaX, thetaY;
-          
+
           subpixel_precision(j, i, curr, prev, pprev, thetaX, thetaY, scoreSc, subPixPrecision);
           keypoints.push_back(SadKeyPoint(thetaX, thetaY, 7.f, -1, scoreSc, 1.f ));
           keypoints.back().class_id = blobType;
           pr[j] = scoreSc;
         }
       }
-    } // Here the Y axis sliding window loop finishes    
+    } // Here the Y axis sliding window loop finishes
   }
 
 
 
   /*--------------- My FAST detector for SADDLE with inner pattern with simpler implementation  (End) -------------------*/
 
-  
+
   void FASTX(InputArray _img, std::vector<SadKeyPoint>& keypoints, int threshold, int nonmax_suppression, int type)
   {
     switch(type) {
@@ -2845,7 +2845,7 @@ namespace cmp
   void FastFeatureDetector2::detectImpl( const Mat& image, vector<SadKeyPoint>& keypoints, const Mat& mask ) const
   {
     Mat grayImage = image;
-    if( image.type() != CV_8U ) cvtColor( image, grayImage, CV_BGR2GRAY );
+    if( image.type() != CV_8U ) cvtColor( image, grayImage, COLOR_BGR2GRAY );
     cmp::FASTX( grayImage, keypoints, threshold, nonmaxSuppression, type );
     // KeyPointsFilter::runByPixelsMask( keypoints, mask );
   }
@@ -2855,7 +2855,7 @@ namespace cmp
   {
     Mat grayImage = image;
     // The image is already in gray scale from SORB functions
-    if( image.type() != CV_8U ) cvtColor( image, grayImage, CV_BGR2GRAY );
+    if( image.type() != CV_8U ) cvtColor( image, grayImage, COLOR_BGR2GRAY );
     cmp::FASTX2( grayImage, keypoints, resp, threshold, nonmaxSuppression, type, scale, responsethr, deltaThr, scoreType,
     			 allC1feats, strictMaximum, subPixPrecision, gravityCenter, innerTstType, minArcLength, maxArcLength, blobThr );
   }
