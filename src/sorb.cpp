@@ -322,7 +322,7 @@ SORB::SORB(double _responseThr, float _scaleFactor, int _nlevels, int _edgeThres
 		 scoreType(_scoreType), patchSize(_patchSize), doNMS(_doNMS),
 		 descSize(_descSize), deltaThr(_deltaThr), nfeatures(_nfeatures),
 		 allC1feats(_allC1feats), strictMaximum(_strictMaximum), subPixPrecision(_subPixPrecision), gravityCenter(_gravityCenter),
-		 innerTstType(_innerTstType), minArcLength(_minArcLength), maxArcLength(_maxArcLength), ringsType(_ringsType), 
+		 innerTstType(_innerTstType), minArcLength(_minArcLength), maxArcLength(_maxArcLength), ringsType(_ringsType),
          binPattern(_binPattern), blobThr(_blobThr)
 {}
 
@@ -349,6 +349,13 @@ int SORB::descriptorType() const
 void SORB::operator()(InputArray image, InputArray mask, vector<SadKeyPoint>& keypoints) const
 {
     (*this)(image, mask, keypoints, noArray(), false);
+}
+
+std::vector<SadKeyPoint> SORB::detectSadKeypoints(cv::InputArray image, cv::InputArray mask) const
+{
+    std::vector<SadKeyPoint> keypoints;
+    (*this)(image, mask, keypoints);
+    return keypoints;
 }
 
 
@@ -446,10 +453,10 @@ static void nmsPyramid(vector<Mat>& respPyramid, vector<vector<SadKeyPoint> >& a
 		vector<SadKeyPoint> & kptsCurr = allKeypoints[level];
 		vector<SadKeyPoint> & kptsDown = allKeypoints[level+1];
 		vector<SadKeyPoint> & kptsUp   = allKeypoints[level-1];
-        
+
         if ((int)kptsCurr.size())
         {
-            // One level DOWN 
+            // One level DOWN
             if ((int)kptsDown.size())
             	nmsVectorwiseDown(kptsCurr, respPyramid[level+1], scaleFactor);
             // One level UP
@@ -615,7 +622,7 @@ static void runByImageBorder( vector<SadKeyPoint>& keypoints, Size imageSize, in
 
 inline void mergeSaddlesAndBlobs(std::vector< SadKeyPoint > &  keypoints, int nFeatures, float alpha)
 {
-    vector<SadKeyPoint> saddleKeypoints, blobKeypoints; 
+    vector<SadKeyPoint> saddleKeypoints, blobKeypoints;
 
     saddleKeypoints.reserve(nFeatures*2);
     blobKeypoints.reserve(nFeatures*2);
@@ -638,7 +645,7 @@ inline void mergeSaddlesAndBlobs(std::vector< SadKeyPoint > &  keypoints, int nF
                 std::cerr << "Unknown region type (0,1,2)" << std::endl;
         }
     }
-    
+
     int saddleNum = (int)round(nFeatures*alpha);
     int blobNum = (int)round(nFeatures*(1-alpha));
 
@@ -650,9 +657,9 @@ inline void mergeSaddlesAndBlobs(std::vector< SadKeyPoint > &  keypoints, int nF
 
     retainBest(saddleKeypoints, saddleNum);
     retainBest(blobKeypoints, blobNum);
-    
+
     keypoints.clear();
-    
+
     for (vector<SadKeyPoint>::iterator keypoint = saddleKeypoints.begin(),
          keypointEnd = saddleKeypoints.end(); keypoint != keypointEnd; ++keypoint)
         keypoints.push_back(*keypoint);
@@ -732,14 +739,14 @@ void computeKeyPoints(const vector<Mat>& imagePyramid,
                                  maxArcLength, 10 );
         fd.detect2(imagePyramid[level], keypoints, respPyramid[level], maskPyramid[level]);
 
-        
+
         // Remove keypoints very close to the border
         runByImageBorder(keypoints, imagePyramid[level].size(), edgeThreshold);
 
         //cull to the final desired level, using the new Harris scores or the original FAST scores.
         if (level == 0)
             featuresNum = nfeatures - taken_sum;
-        
+
         retainBest(keypoints, featuresNum);
 
         taken_sum += (int)keypoints.size();
@@ -920,11 +927,11 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
         }
     }
 
-    
+
     // Pre-compute the keypoints (we keep the best over all scales, so this has to be done beforehand
     vector < vector<SadKeyPoint> > allKeypoints;
     if( do_keypoints )
-    {   
+    {
         // Get keypoints, those will be far enough from the border that no check will be required for the descriptor
         computeKeyPoints(imagePyramid, maskPyramid, respPyramid, allKeypoints,
                          responseThr, epsilon, scaleFactor, edgeThreshold,
@@ -934,7 +941,7 @@ void SORB::operator()( InputArray _image, InputArray _mask, vector<SadKeyPoint>&
     }
     else
     {
-        
+
         // Cluster the input keypoints depending on the level they were computed at
         allKeypoints.resize(levelsNum);
         for (vector<SadKeyPoint>::iterator keypoint = _keypoints.begin(),

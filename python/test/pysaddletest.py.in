@@ -1,0 +1,30 @@
+import cv2
+import sys
+sys.path.append('@PYSADDLEPTS_BUILD_PATH@')
+import pysaddlepts
+
+
+def sadKeyPointsToCVKeyPoints(sad_kpts):
+    kps = []
+    for sad_kp in sad_kpts:
+        kp = cv2.KeyPoint(
+            sad_kp.pt[0], sad_kp.pt[1], sad_kp.size, sad_kp.angle,
+            sad_kp.response, sad_kp.octave, sad_kp.class_id)
+        kps.append(kp)
+    return kps
+
+
+if __name__ == "__main__":
+    img1 = cv2.imread('img1.ppm')
+    sorb = pysaddlepts.cmp_SORB(
+        scaleFactor=1.3, edgeThreshold=3,
+        doNMS=1, innerTstType=1, scoreType=1
+    )
+    sad_kpts = sorb.detectSadKeypoints(img1)
+    kps = sadKeyPointsToCVKeyPoints(sad_kpts)
+    img1 = cv2.drawKeypoints(
+        img1, kps, img1,
+        flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS
+    )
+    cv2.imshow('SAD keypoints', img1)
+    cv2.waitKey(0)

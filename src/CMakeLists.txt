@@ -1,6 +1,3 @@
-cmake_minimum_required(VERSION 2.8)
-PROJECT( saddle_detector_project )
-FIND_PACKAGE( OpenCV REQUIRED )
 
 #IF(CMAKE_COMPILER_IS_GNUCXX)
   #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-strict-aliasing")
@@ -11,5 +8,9 @@ FIND_PACKAGE( OpenCV REQUIRED )
 #ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 message("OCV includes: ${OpenCV_INCLUDE_DIRS}")
-add_executable( saddlepts saddlepts.cpp anyoption.cpp lbq.cpp sorb.cpp fast.cpp fast_score.cpp )
-TARGET_LINK_LIBRARIES( saddlepts ${OpenCV_LIBS} )
+
+add_executable(saddlepts-bin saddlepts.cpp anyoption.cpp lbq.cpp sorb.cpp fast.cpp fast_score.cpp)
+target_include_directories(saddlepts-bin PRIVATE ${OpenCV_INCLUDE_DIRS})
+
+TARGET_LINK_LIBRARIES(saddlepts-bin ${OpenCV_LIBS})
+set_target_properties(saddlepts-bin PROPERTIES OUTPUT_NAME saddlepts)

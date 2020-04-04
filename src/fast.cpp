@@ -1164,7 +1164,7 @@ namespace cmp
     double st;
     const Mat img = _img.getMat();
 
-#if true
+#if FALSE
     ostringstream ss;
     ss << scale;
     String imgpath = (("./imscale_" + ss.str() ) + ".ppm");
