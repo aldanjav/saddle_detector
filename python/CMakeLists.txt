@@ -11,9 +11,14 @@ set(cv2_generated_files
     "${CMAKE_CURRENT_BINARY_DIR}/pyopencv_generated_signatures.h"
 )
 
+configure_file(
+    ${PYTHON_SOURCE_DIR}/headers.txt.in
+    ${CMAKE_CURRENT_BINARY_DIR}/headers.txt
+)
+
 add_custom_command(
     OUTPUT ${cv2_generated_files}
-    COMMAND "${Python3_EXECUTABLE}" "${PYTHON_SOURCE_DIR}/src2/gen2.py" "${CMAKE_CURRENT_BINARY_DIR}" "${PYTHON_SOURCE_DIR}/headers.txt"
+    COMMAND "${Python3_EXECUTABLE}" "${PYTHON_SOURCE_DIR}/src2/gen2.py" "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_BINARY_DIR}/headers.txt"
     DEPENDS "${PYTHON_SOURCE_DIR}/src2/gen2.py"
             "${PYTHON_SOURCE_DIR}/src2/hdr_parser.py"
             # not a real build dependency (file(WRITE) result): ${CMAKE_CURRENT_BINARY_DIR}/headers.txt

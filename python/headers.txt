@@ -1,2 +1,0 @@
-../../src/sorb.h
-/usr/local/include/opencv4/opencv2/core/types.hpp
