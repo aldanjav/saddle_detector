@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.14)
 PROJECT( saddle_detector_project )
-FIND_PACKAGE( OpenCV REQUIRED )
+FIND_PACKAGE(OpenCV 4 REQUIRED)
 
 cmake_policy(SET CMP0037 NEW)
 set(CMAKE_CXX_STANDARD 11)
