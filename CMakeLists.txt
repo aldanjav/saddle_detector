@@ -8,7 +8,6 @@ set(CMAKE_CXX_STANDARD 11)
 add_subdirectory(src)
 
 find_package (Python3 COMPONENTS Interpreter Development NumPy)
-find_package(SWIG)
 
 set(OpenCV_BINARY_DIR src)
 
