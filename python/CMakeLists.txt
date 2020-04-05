@@ -63,4 +63,9 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/../pysaddletest.py
 )
 
-install(TARGETS pysaddlepts LIBRARY DESTINATION ${Python3_SITEARCH})
+if (PYTHON_INSTALL_PATH)
+    install(TARGETS pysaddlepts LIBRARY DESTINATION ${PYTHON_INSTALL_PATH})
+else()
+	MESSAGE(FATAL_ERROR "Unable to install pysaddlepts, please set PYTHON_INSTALL_PATH to your PYTHONPATH")
+endif()
+

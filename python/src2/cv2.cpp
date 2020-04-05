@@ -69,7 +69,7 @@ struct PyOpenCV_Converter
             return true;
         return pyopencv_to(obj, p, info);
     }
-    static inline PyObject* from(const T& src);
+    static inline PyObject* from(const T& src){}
 };
 
 ////
