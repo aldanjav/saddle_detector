@@ -20,13 +20,13 @@ host system has Python3, NumPy, and OpenCV 4 installed, the python module
 pysaddlepts is built automatically.
 
 ## Building and installation
-Make sure you have CMake, Python3, Numpy, and OpenCV 4 installed on your system. To install the `pysaddlepts` module, run following in your terminal:
+Make sure you have CMake, Python3, Numpy, and OpenCV 4 installed on your system. To install the `pysaddlepts` module run following in your terminal (please, change `<YOUR_PYTHONPATH>` to the python path where you want to install the compiled python moudule):
 ```
 cd <build_path>
 git clone https://github.com/brejchajan/saddle_detector.git
 cd saddle_detector
 mkdir build && cd build
-cmake ..
+cmake -DPYTHON_INSTALL_PATH=<YOUR_PYTHONPATH> ..
 make
 make install
 ```
