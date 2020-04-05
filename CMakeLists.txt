@@ -11,6 +11,6 @@ find_package (Python3 COMPONENTS Interpreter Development NumPy)
 
 set(OpenCV_BINARY_DIR src)
 
-if (Python3_FOUND AND SWIG_FOUND)
+if (Python3_FOUND)
     add_subdirectory(python)
 endif()
