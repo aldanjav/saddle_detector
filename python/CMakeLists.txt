@@ -60,5 +60,7 @@ add_dependencies(pysaddlepts gen_opencv_python_source)
 set(PYSADDLEPTS_BUILD_PATH ${CMAKE_CURRENT_BINARY_DIR})
 configure_file(
     ${PYTHON_SOURCE_DIR}/test/pysaddletest.py.in
-    ${PROJECT_SOURCE_DIR}/pysaddletest.py
+    ${CMAKE_CURRENT_BINARY_DIR}/../pysaddletest.py
 )
+
+install(TARGETS pysaddlepts LIBRARY DESTINATION ${Python3_SITEARCH})
