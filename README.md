@@ -13,7 +13,7 @@ with similar speed, the Saddle features show superior matching performance on
 number of challenging datasets.
 
 # Python3 support
-This fork adds the python3 support for the original saddle_detector package. So far, it was tested on MacOS catalina.
+This fork adds the python3 support for the original saddle_detector package. So far, it was tested on MacOS catalina and Fedora 30.
 The saddle_detector package was first migrated to opencv4 (very minor changes)
 and then the OpenCV scripts for creating python wrappers were adapted. If the
 host system has Python3, NumPy, and OpenCV 4 installed, the python module
