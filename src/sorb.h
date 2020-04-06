@@ -56,8 +56,8 @@ public:
            GM_DELTA_SCORE = 7 };
 
     CV_WRAP explicit SORB(double responseThr = 0.0, float scaleFactor = 1.3f, int nlevels = 8, int edgeThreshold = 3,
-                       int epsilon = 1, int WTA_K=2, int scoreType=DELTA_SCORE, int patchSize=31, int doNMS=1,
-                       int descSize=K_BYTES, uchar deltaThr=0, int nfeatures = 5000, bool allC1feats = false,
+                       int epsilon = 1, int WTA_K=2, int scoreType=cmp::SORB::DELTA_SCORE, int patchSize=31, int doNMS=1,
+                       int descSize=cmp::SORB::K_BYTES, uchar deltaThr=0, int nfeatures = 5000, bool allC1feats = false,
                        bool strictMaximum = false, int subPixPrecision = 0, bool gravityCenter = false,
                        int innerTstType = 1, int minArcLength = 2, int maxArcLength = 8, short ringsType = 4,
                        int binPattern = Binpat::OCV, uchar blobThr = 10 );
