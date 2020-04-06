@@ -16,10 +16,7 @@ def sadKeyPointsToCVKeyPoints(sad_kpts):
 
 if __name__ == "__main__":
     img1 = cv2.imread('img1.ppm')
-    sorb = pysaddlepts.cmp_SORB(
-        scaleFactor=1.3, edgeThreshold=3,
-        doNMS=1, innerTstType=1, scoreType=1
-    )
+    sorb = pysaddlepts.cmp_SORB()
     sad_kpts = sorb.detectSadKeypoints(img1)
     kps = sadKeyPointsToCVKeyPoints(sad_kpts)
     img1 = cv2.drawKeypoints(
