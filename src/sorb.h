@@ -11,17 +11,17 @@
 #include <opencv2/features2d/features2d.hpp>
 #include "lbq.h"
 
-using namespace cv;
+//using namespace cv;
 
 
 namespace cmp{
 
 class SadKeyPoint;
 
-void computeKeyPoints(const vector<Mat>& imagePyramid,
-                             const vector<Mat>& maskPyramid,
-                             vector<Mat>& respPyramid,
-                             vector<vector<SadKeyPoint> >& allKeypoints,
+void computeKeyPoints(const std::vector<cv::Mat>& imagePyramid,
+                             const std::vector<cv::Mat>& maskPyramid,
+                             std::vector<cv::Mat>& respPyramid,
+                             std::vector<std::vector<SadKeyPoint> >& allKeypoints,
                              double responseThr, int epsilon, float scaleFactor,
                              int edgeThreshold, int patchSize, int scoreType, int doNMS, uchar deltaThr, int nfeatures,
                              bool allC1feats, bool strictMaximum, int subPixPrecision, bool gravityCenter, int innerTstType,
@@ -36,7 +36,7 @@ public:
 
 	virtual ~FeatureDetector(){};
 
-	virtual void detectKeypoints(const Mat& image, vector<SadKeyPoint>& keypoints, cv::Mat mask = cv::Mat()) const = 0;
+	virtual void detectKeypoints(const cv::Mat& image, std::vector<SadKeyPoint>& keypoints, cv::Mat mask = cv::Mat()) const = 0;
 
 };
 
@@ -55,28 +55,29 @@ public:
            HARRIS_SCORE = 6,
            GM_DELTA_SCORE = 7 };
 
-    CV_WRAP explicit SORB(double responseThr = 0.0, float scaleFactor = 1.2f, int nlevels = 8, int edgeThreshold = 31,
-                int epsilon = 1, int WTA_K=2, int scoreType=SUMOFABS_SCORE, int patchSize=31, int doNMS=2,
-                int descSize=K_BYTES, uchar deltaThr=0, int nfeatures = 5000, bool allC1feats = false,
-                bool strictMaximum = false, int subPixPrecision = 0, bool gravityCenter = false,
-                int innerTstType = 0, int minArcLength = 2, int maxArcLength = 8, short ringsType = 4,
-                int binPattern = Binpat::OCV, uchar blobThr = 10 );
+    CV_WRAP explicit SORB(double responseThr = 0.0, float scaleFactor = 1.3f, int nlevels = 8, int edgeThreshold = 3,
+                       int epsilon = 1, int WTA_K=2, int scoreType=cmp::SORB::DELTA_SCORE, int patchSize=31, int doNMS=1,
+                       int descSize=cmp::SORB::K_BYTES, uchar deltaThr=0, int nfeatures = 5000, bool allC1feats = false,
+                       bool strictMaximum = false, int subPixPrecision = 0, bool gravityCenter = false,
+                       int innerTstType = 1, int minArcLength = 2, int maxArcLength = 8, short ringsType = 4,
+                       int binPattern = Binpat::OCV, uchar blobThr = 10 );
 
     // returns the descriptor size in bytes
-    int descriptorSize() const;
+    CV_WRAP int descriptorSize() const;
     // Set the descriptor size in bytes
-    void setDescriptorSize(int dsize);
+    CV_WRAP void setDescriptorSize(int dsize);
     // returns the descriptor type
-    int descriptorType() const;
+    CV_WRAP int descriptorType() const;
 
     // Compute the ORB features and descriptors on an image
-    void operator()(InputArray image, InputArray mask, vector<SadKeyPoint>& keypoints) const;
+    CV_WRAP std::vector<SadKeyPoint> detectSadKeypoints(cv::InputArray image, cv::InputArray mask = cv::Mat()) const;
+    void operator()(cv::InputArray image, cv::InputArray mask, std::vector<SadKeyPoint>& keypoints) const;
 
     // Compute the ORB features and descriptors on an image
-    void operator()( InputArray image, InputArray mask, vector<SadKeyPoint>& keypoints,
-                     OutputArray descriptors, bool useProvidedKeypoints=false ) const;
+    void operator()( cv::InputArray image, cv::InputArray mask, std::vector<SadKeyPoint>& keypoints,
+                     cv::OutputArray descriptors, bool useProvidedKeypoints=false ) const;
 
-    virtual void detectKeypoints(const Mat& image, vector<SadKeyPoint>& keypoints, cv::Mat mask = cv::Mat()) const
+    virtual void detectKeypoints(const cv::Mat& image, std::vector<SadKeyPoint>& keypoints, cv::Mat mask = cv::Mat()) const
     {
     	cv::Mat descriptors;
     	(*this)(image, mask, keypoints, descriptors);
@@ -87,8 +88,8 @@ public:
 
 protected:
 
-    void computeImpl( const Mat& image, vector<SadKeyPoint>& keypoints, Mat& descriptors ) const;
-    void detectImpl( const Mat& image, vector<SadKeyPoint>& keypoints, const Mat& mask=Mat() ) const;
+    void computeImpl( const cv::Mat& image, std::vector<SadKeyPoint>& keypoints, cv::Mat& descriptors ) const;
+    void detectImpl( const cv::Mat& image, std::vector<SadKeyPoint>& keypoints, const cv::Mat& mask=cv::Mat() ) const;
 
     CV_PROP_RW int nfeatures;
     CV_PROP_RW double responseThr;
@@ -180,13 +181,13 @@ public:
      * gridRows            Grid rows count.
      * gridCols            Grid column count.
      */
-    CV_WRAP GridAdaptedFeatureDetector( const Ptr<cmp::FeatureDetector>& detector,
+    CV_WRAP GridAdaptedFeatureDetector( const cv::Ptr<cmp::FeatureDetector>& detector,
                                         int maxTotalKeypoints=1000,
                                         int gridRows=4, int gridCols=4 );
 
-    virtual void detectKeypoints(const Mat& image, vector<SadKeyPoint>& keypoints, cv::Mat mask = cv::Mat()) const;
+    virtual void detectKeypoints(const cv::Mat& image, std::vector<SadKeyPoint>& keypoints, cv::Mat mask = cv::Mat()) const;
 
-    Ptr<cmp::FeatureDetector> detector;
+    cv::Ptr<cmp::FeatureDetector> detector;
     int maxTotalKeypoints;
     int gridRows;
     int gridCols;

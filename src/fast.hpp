@@ -12,6 +12,7 @@
 #include "sorb.h"
 
 using namespace cv;
+using namespace std;
 
 namespace cmp{
 
@@ -46,7 +47,7 @@ protected:
     int nonmaxSuppression;
 };
 
-class FastFeatureDetector2 : public cmp::FastFeatureDetector
+class CV_EXPORTS_W FastFeatureDetector2 : public cmp::FastFeatureDetector
 {
 public:
     CV_WRAP FastFeatureDetector2( int threshold=10, int nonmaxSuppression=2);
